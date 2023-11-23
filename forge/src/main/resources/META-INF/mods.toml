@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+#issueTrackerURL = ""
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "ftbfiltersystem"
+version = "${version}"
+displayName = "FTB Filter System"
+authors = "FTB Team"
+description = '''
+Smart and highly configurable item filtering system with useful GUI configuration
+'''
+#logoFile = ""
+
+[[dependencies.ftbfiltersystem]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "architectury"
+mandatory = true
+versionRange = "[9.1.12,)"
+ordering = "AFTER"
+side = "BOTH"

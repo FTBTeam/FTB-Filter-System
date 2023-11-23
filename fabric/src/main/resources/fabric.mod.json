@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "ftbfiltersystem",
+  "version": "${version}",
+  "name": "FTB Filter System",
+  "description": "Smart and highly configurable item filtering system with useful GUI configuration",
+  "authors": [
+    "FTB Team"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "All Rights Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.ftb.mods.ftbfiltersystem.fabric.FTBFilterSystemFabric"
+    ]
+  },
+  "mixins": [
+    "ftbfiltersystem.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.20.1",
+    "architectury": ">=9.1.12"
+  }
+}
