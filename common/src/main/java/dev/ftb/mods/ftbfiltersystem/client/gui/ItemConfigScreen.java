@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> {
+public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> implements GhostDropReceiver {
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
 
     private static final int SEARCH_ROWS = 4;
@@ -57,7 +57,6 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> {
         super(filter, parentScreen,194, 115);
 
         cachedInventoryEntries = null; // recheck inventory each time we open
-
     }
 
     @Override
@@ -202,6 +201,17 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> {
         currentStacks.addAll(applicableEntries);
 
         scrollTo(0.0);
+    }
+
+
+    @Override
+    public Rect2i getGhostDropRegion() {
+        return new Rect2i(selectedWidget.getX(), selectedWidget.getY(), selectedWidget.getWidth(), selectedWidget.getHeight());
+    }
+
+    @Override
+    public void receiveGhostDrop(ItemStack stack) {
+        selectedWidget.setStack(stack);
     }
 
     enum ItemSource {

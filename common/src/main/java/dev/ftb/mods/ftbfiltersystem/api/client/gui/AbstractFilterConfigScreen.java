@@ -12,6 +12,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,7 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     protected final AbstractFilterScreen parentScreen;
     protected final int guiWidth, guiHeight;
     protected int leftPos, topPos;
+    private Rect2i bounds = new Rect2i(0, 0, 0, 0);
     protected T modifiedFilter;
     private int updateCounter = 0;
     private boolean deleteOnCancel = false;
@@ -70,6 +72,10 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
      */
     @Nullable
     protected abstract T makeNewFilter();
+
+    public Rect2i getGuiBounds() {
+        return new Rect2i(leftPos, topPos, guiWidth, guiHeight);
+    }
 
     @Override
     protected void init() {
@@ -139,6 +145,7 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     private void setupGuiDimensions() {
         leftPos = (width - guiWidth) / 2;
         topPos = (height - guiHeight) / 2;
+        bounds = new Rect2i(leftPos, topPos, width, height);
     }
 
     protected final void applyChanges() {

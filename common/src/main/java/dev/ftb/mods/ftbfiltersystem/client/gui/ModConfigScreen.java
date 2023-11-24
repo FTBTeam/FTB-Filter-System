@@ -8,8 +8,10 @@ import dev.ftb.mods.ftbfiltersystem.filter.ModFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> {
+public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> implements GhostDropReceiver {
     private static String lastSearch;
 
     private final List<ModData> matchingModData = new ArrayList<>();
@@ -87,6 +89,20 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> {
                 .map(mod -> new ModData(mod.getModId(), mod.getName()))
                 .sorted()
                 .toList());
+    }
+
+    @Override
+    public Rect2i getGhostDropRegion() {
+        return new Rect2i(leftPos + 9, topPos + 33, getListWidth() + 6, getListHeight() + 2);
+    }
+
+    @Override
+    public void receiveGhostDrop(ItemStack stack) {
+        String modId = stack.getItem().arch$registryName().getNamespace();
+        modList.children().stream()
+                .filter(entry -> entry.modData.modId.equals(modId))
+                .findFirst()
+                .ifPresent(modEntry -> modList.selectAndCenter(modEntry));
     }
 
     private record ModData(String modId, String modName) implements Comparable<ModData> {
