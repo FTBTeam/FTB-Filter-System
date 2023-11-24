@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "T": {
+      "item": "minecraft:stick"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    "TST",
+    "SPS",
+    "TST"
+  ],
+  "result": {
+    "item": "ftbfiltersystem:smart_filter"
+  }
+}
