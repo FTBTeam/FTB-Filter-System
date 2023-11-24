@@ -76,13 +76,31 @@ components.java {
 publishing {
     publications {
         mavenForge(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
+            artifactId = "${rootProject.archives_base_name}-${project.name}"
+            version ftbPublishing.mavenVersion
             from components.java
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        if (ftbPublishing.ftbToken) {
+            maven {
+                url ftbPublishing.ftbURL
+                credentials {
+                    username = ftbPublishing.ftbUser
+                    password = ftbPublishing.ftbToken
+                }
+            }
+        }
+
+        if (ftbPublishing.sapsToken) {
+            maven {
+                url ftbPublishing.sapsURL
+                credentials {
+                    username = ftbPublishing.sapsUser
+                    password = ftbPublishing.sapsToken
+                }
+            }
+        }
     }
 }
