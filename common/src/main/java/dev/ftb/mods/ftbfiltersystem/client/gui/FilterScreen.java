@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.Textures;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
+import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
@@ -343,7 +344,7 @@ public class FilterScreen extends AbstractFilterScreen {
 
     private class FilterList extends ObjectSelectionList<FilterList.FilterEntry> {
         private static final int ELEMENT_HEIGHT = 12;
-        private SmartFilter dragging = null;
+        private FilterEntry dragging = null;
         private SmartFilter.Compound dragTarget = null;
 
         public FilterList(Minecraft minecraft, int width, int height, int top, int bottom) {
@@ -400,7 +401,7 @@ public class FilterScreen extends AbstractFilterScreen {
         @Override
         public boolean mouseReleased(double mouseX, double mouseY, int btn) {
             if (dragging != null && dragTarget != null) {
-                FilterParser.parseFilterList(dragTarget, dragging.toString()).stream().findFirst().ifPresent(newFilter -> {
+                FilterParser.parseFilterList(dragTarget, dragging.dumpedFilter.filter().toString()).stream().findFirst().ifPresent(newFilter -> {
                     dragTarget.getChildren().add(newFilter);
                     deleteSelectedFilter(false);
                     addChildren();
@@ -418,8 +419,9 @@ public class FilterScreen extends AbstractFilterScreen {
             if (dragging != null) {
                 FilterEntry entry = getEntryAtPosition(pMouseX, pMouseY);
                 if (entry != null && entry.dumpedFilter.filter() instanceof SmartFilter.Compound compound
-                        && compound != dragging
-                        && compound != dragging.getParent()
+                        && (!(dragging.dumpedFilter.filter() instanceof SmartFilter.Compound) || entry.dumpedFilter.indent() <= dragging.dumpedFilter.indent())
+                        && compound != dragging.dumpedFilter.filter()
+                        && compound != dragging.dumpedFilter.filter().getParent()
                         && compound.getChildren().size() < compound.maxChildren())
                 {
                     dragTarget = compound;
@@ -437,10 +439,10 @@ public class FilterScreen extends AbstractFilterScreen {
             if (dragging != null) {
                 FilterEntry entry = getEntryAtPosition(pMouseX, pMouseY);
                 if (entry != null && entry.dumpedFilter.filter() != dragging) {
-                    int w = font.width(dragging.getDisplayName());
+                    int w = font.width(dragging.dumpedFilter.filter().getDisplayName());
                     guiGraphics.fill(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, pMouseX + w + 10, pMouseY + ELEMENT_HEIGHT / 2, 0xC0E1F1FD);
                     guiGraphics.renderOutline(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, w + 10, ELEMENT_HEIGHT, 0xC0404040);
-                    guiGraphics.drawString(font, dragging.getDisplayName(), pMouseX + 5, pMouseY - ELEMENT_HEIGHT / 2 + 3, 0xC0404040, false);
+                    guiGraphics.drawString(font, dragging.dumpedFilter.filter().getDisplayName(), pMouseX + 5, pMouseY - ELEMENT_HEIGHT / 2 + 3, 0xC0404040, false);
                 }
             }
         }
@@ -497,7 +499,9 @@ public class FilterScreen extends AbstractFilterScreen {
             public boolean mouseClicked(double x, double y, int button) {
                 FilterList.this.setSelected(this);
 
-                dragging = dumpedFilter.filter();
+                if (dumpedFilter.filter().getParent() != null) {
+                    dragging = this;
+                }
 
                 if (Util.getMillis() - this.lastClickTime < 250L) {
                     FilterScreen.this.configureSelectedFilter(false);
