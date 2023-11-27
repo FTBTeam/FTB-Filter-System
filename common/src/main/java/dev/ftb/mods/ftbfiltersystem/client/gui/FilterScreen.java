@@ -5,7 +5,6 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.Textures;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
@@ -261,10 +260,14 @@ public class FilterScreen extends AbstractFilterScreen {
             if (getSelectionPanel().isVisible()) {
                 getSelectionPanel().setVisible(false);
                 return true;
-            } else if (titleEditBox.canConsumeInput() && keyCode == InputConstants.KEY_ESCAPE) {
-                titleEditBox.setValue(newTitle == null ? title.getString() : newTitle.getString());
-                showingTitleEdit = false;
-                return true;
+            } else if (titleEditBox.canConsumeInput()) {
+                if (keyCode == InputConstants.KEY_ESCAPE) {
+                    titleEditBox.setValue(newTitle == null ? title.getString() : newTitle.getString());
+                    showingTitleEdit = false;
+                    return true;
+                } else {
+                    return titleEditBox.keyPressed(keyCode, scanCode, modifier);
+                }
             } else {
                 closeWithConfirmation();
                 return true;

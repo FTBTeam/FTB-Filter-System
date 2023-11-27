@@ -17,11 +17,12 @@ allprojects {
     apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/git-md-changelog.gradle"
 
     base {
-        archivesName = rootProject.archives_base_name
+        archivesName = project.archives_base_name
     }
 
-    version = rootProject.mod_version
-    group = rootProject.maven_group
+    version = project.mod_version
+    group = project.maven_group
+    archivesBaseName = project.archives_base_name
 
     // needs to be done AFTER version is set
     apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"

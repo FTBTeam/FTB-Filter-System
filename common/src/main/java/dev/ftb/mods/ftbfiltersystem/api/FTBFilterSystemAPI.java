@@ -4,6 +4,8 @@ import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -103,7 +105,8 @@ public class FTBFilterSystemAPI {
         FTBFilterSystemRegistry getRegistry();
 
         /**
-         * Check if the given itemstack is an FTB Filter System filter
+         * Check if the given itemstack is an FTB Filter System filter.
+         *
          * @param stack the stack to check
          * @return true if it's a filter, false otherwise
          */
@@ -111,9 +114,10 @@ public class FTBFilterSystemAPI {
 
         /**
          * Check if the given filter stack matches the given item stack
+         * .
          * @param filterStack the filter stack, which should be a FTB Filter System filter
          * @param toMatch the item stack to test
-         * @return true if the filter stack matches, false otherwise (including if the filter stack isn't a filter)
+         * @return true if the filter stack matches, false otherwise (the filter stack isn't a filter, or the filter NBT is bad)
          */
         boolean doesFilterMatch(ItemStack filterStack, ItemStack toMatch);
 
@@ -146,6 +150,16 @@ public class FTBFilterSystemAPI {
         SmartFilter parseFilter(String filterStr) throws FilterException;
 
         /**
+         * Create a new filter, parsed from the given serialized string. Such strings are produced by calling
+         * the overridden {@code toString()} on any {@link SmartFilter} implementation.
+         *
+         * @param filterStack the itemstack, which should be a valid filter item
+         * @return a new filter
+         * @throws FilterException if the item stack doesn't have valid filter NBT, or there's a problem parsing the data
+         */
+        SmartFilter parseFilter(ItemStack filterStack) throws FilterException;
+
+        /**
          * Create a list of new filters, parsed from the given serialized string. Such strings are produced by calling
          * the overridden {@code toString()} method on any {@link SmartFilter} implementation; multiples of such strings
          * can be concatenated to act as input for this method.
@@ -156,5 +170,13 @@ public class FTBFilterSystemAPI {
          * @throws FilterException if there's a problem parsing the data
          */
         List<SmartFilter> parseFilterList(@NotNull SmartFilter.Compound parent, String filterStr) throws FilterException;
+
+        /**
+         * Create a simple filter which just filters on a specific item tag.
+         *
+         * @param tagKey the item tag to filter on
+         * @return the new filter itemstack
+         */
+        ItemStack makeTagFilter(TagKey<Item> tagKey);
     }
 }
