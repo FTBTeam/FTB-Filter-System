@@ -264,10 +264,10 @@ public class FilterScreen extends AbstractFilterScreen {
                 if (keyCode == InputConstants.KEY_ESCAPE) {
                     titleEditBox.setValue(newTitle == null ? title.getString() : newTitle.getString());
                     showingTitleEdit = false;
-                    return true;
                 } else {
-                    return titleEditBox.keyPressed(keyCode, scanCode, modifier);
+                    titleEditBox.keyPressed(keyCode, scanCode, modifier);
                 }
+                return true;
             } else {
                 closeWithConfirmation();
                 return true;
@@ -441,7 +441,7 @@ public class FilterScreen extends AbstractFilterScreen {
         protected void renderDecorations(GuiGraphics guiGraphics, int pMouseX, int pMouseY) {
             if (dragging != null) {
                 FilterEntry entry = getEntryAtPosition(pMouseX, pMouseY);
-                if (entry != null && entry.dumpedFilter.filter() != dragging) {
+                if (entry != null && entry.dumpedFilter.filter() != dragging.dumpedFilter.filter()) {
                     int w = font.width(dragging.dumpedFilter.filter().getDisplayName());
                     guiGraphics.fill(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, pMouseX + w + 10, pMouseY + ELEMENT_HEIGHT / 2, 0xC0E1F1FD);
                     guiGraphics.renderOutline(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, w + 10, ELEMENT_HEIGHT, 0xC0404040);
@@ -477,7 +477,7 @@ public class FilterScreen extends AbstractFilterScreen {
             public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
                 int labelLeft = left + dumpedFilter.indent() * 10;
                 int yBase = top + height / 2;
-                if (dumpedFilter.filter() == dragTarget && dragging != dragTarget) {
+                if (dumpedFilter.filter() == dragTarget && dragging.dumpedFilter.filter() != dragTarget) {
                     guiGraphics.fill(labelLeft - 2, top - 3, labelLeft + font.width(getLabel()) + 2, top + font.lineHeight, 0xFFCAE9BE);
                     guiGraphics.renderOutline(labelLeft - 2, top - 3, font.width(getLabel()) + 4, font.lineHeight + 4, 0xFF306844);
                 }
