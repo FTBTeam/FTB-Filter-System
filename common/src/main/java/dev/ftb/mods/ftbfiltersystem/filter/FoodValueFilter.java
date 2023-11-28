@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.util.PlatformUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -26,8 +27,7 @@ public class FoodValueFilter extends AbstractComparisonFilter {
 
     @Override
     protected int getValueToCompare(ItemStack stack) {
-        // TODO use forge-extended method via ExpectPlatform
-        return stack.getItem().getFoodProperties() == null ? 0 : stack.getItem().getFoodProperties().getNutrition();
+        return PlatformUtil.getFoodValue(stack);
     }
 
     public static FoodValueFilter fromString(SmartFilter.Compound parent, String str) {
