@@ -118,7 +118,6 @@ publishMods {
         file = project(":forge").tasks.remapJar.archiveFile
 
         requires {
-            slug = 'ftb-library-forge'
             slug = 'architectury-api'
         }
     }
@@ -131,7 +130,7 @@ publishMods {
 
         requires {
             slug = "fabric-api"
-            slug = 'ftb-library-fabric'
+            slug = "architectury-api"
         }
     }
 

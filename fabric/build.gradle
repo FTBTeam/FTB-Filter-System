@@ -52,6 +52,8 @@ remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
+    setArchiveClassifier(null)
+    setArchiveBaseName("${rootProject.archivesBaseName}-${project.name}")
 }
 
 sourcesJar {
