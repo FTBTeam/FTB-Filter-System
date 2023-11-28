@@ -2,16 +2,17 @@ package dev.ftb.mods.ftbfiltersystem.client;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
-import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
-import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory;
+import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.event.client.ClientFilterRegistrationEvent;
+import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.gui.*;
 import dev.ftb.mods.ftbfiltersystem.filter.*;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -70,6 +71,10 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
             screen.setDeleteOnCancel(deleteOnCancel);
             Minecraft.getInstance().setScreen(screen);
         }
+    }
+
+    public static boolean shouldShowItemTooltip() {
+        return Minecraft.getInstance().screen instanceof EffectRenderingInventoryScreen<?>;
     }
 
     //------------------------------------------------------------
