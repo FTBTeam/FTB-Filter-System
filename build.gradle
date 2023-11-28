@@ -139,7 +139,7 @@ publishMods {
     }
 
     github {
-        repository = "ftbteam/ftb-economy"
+        repository = "ftbteam/ftb-filter-system"
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
         commitish = providers.environmentVariable("GITHUB_SHA").orElse("dryRun")
         tagName = providers.environmentVariable("GITHUB_REF_NAME").orElse("dryRun")
