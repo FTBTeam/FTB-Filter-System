@@ -35,3 +35,16 @@ Other tips and tricks:
 * You can quickly test if a filter matches what it's supposed to:
   * Hold the configured filter in your main hand, and the item to be tested in your offhand
   * Then sneak-right-click the filter and you'll get a chat response indicating a match success or failure
+* FFS fires a client-side event which can be used to add custom items which will be used to augment the usual list of items retrieved from the creative search tab when looking for items which match a given filter
+  * The Java (architectury) event is `FilterRegistrationEvent.REGISTER`
+  * With FTB XMod Compat installed, a corresponding KubeJS event is also fired: `FTBQuestsEvents.customFilterItem`
+
+Example of KubeJS custom filter registration:
+
+```javascript
+FTBQuestsEvents.customFilterItem(event => {
+	console.info('custom filter called!')
+	event.addStack('minecraft:iron_axe {display:{Name:{text:\"Test Axe!\"}}, Damage: 50}')
+	event.addStack('minecraft:diamond_axe {display:{Name:{text:\"Test Axe 2!\"}}, Damage: 300}')
+})
+```
