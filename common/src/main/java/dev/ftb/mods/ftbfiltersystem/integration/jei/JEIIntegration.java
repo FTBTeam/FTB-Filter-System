@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.integration.jei;
 
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
-import dev.ftb.mods.ftbfiltersystem.client.gui.AbstractNBTConfigScreen;
+import dev.ftb.mods.ftbfiltersystem.client.gui.NBTConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.client.gui.ItemConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.client.gui.ModConfigScreen;
 import mezz.jei.api.IModPlugin;
@@ -24,8 +24,8 @@ public class JEIIntegration implements IModPlugin {
         registration.addGuiScreenHandler(ItemConfigScreen.class, new FFSScreenHandler<>());
         registration.addGhostIngredientHandler(ItemConfigScreen.class, new FFSGhostHandler<>());
 
-        registration.addGuiScreenHandler(AbstractNBTConfigScreen.class, new FFSScreenHandler<>());
-        registration.addGhostIngredientHandler(AbstractNBTConfigScreen.class, new FFSGhostHandler<>(ItemStack::hasTag));
+        registration.addGuiScreenHandler(NBTConfigScreen.class, new FFSScreenHandler<>());
+        registration.addGhostIngredientHandler(NBTConfigScreen.class, new FFSGhostHandler<>(ItemStack::hasTag));
 
         registration.addGuiScreenHandler(ModConfigScreen.class, new FFSScreenHandler<>());
         registration.addGhostIngredientHandler(ModConfigScreen.class, new FFSGhostHandler<>());

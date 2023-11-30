@@ -58,7 +58,6 @@ public class FTBFilterSystem {
         reg.register(DurabilityFilter.ID, DurabilityFilter::fromString, DurabilityFilter::new);
         reg.register(FilterStackFilter.ID, FilterStackFilter::fromString, FilterStackFilter::new);
         reg.register(FoodValueFilter.ID, FoodValueFilter::fromString, FoodValueFilter::new);
-        reg.register(FuzzyNbtFilter.ID, FuzzyNbtFilter::fromString, FuzzyNbtFilter::new);
         reg.register(ItemFilter.ID, ItemFilter::fromString, ItemFilter::new);
         reg.register(ItemTagFilter.ID, ItemTagFilter::fromString, ItemTagFilter::new);
         reg.register(MaxStackSizeFilter.ID, MaxStackSizeFilter::fromString, MaxStackSizeFilter::new);

@@ -23,6 +23,7 @@
   "ftbfiltersystem.gui.changes_made": "You have made changes to this filter",
   "ftbfiltersystem.gui.changes_made.question": "Close the editor without saving?",
   "ftbfiltersystem.gui.compound": "Compound Filters",
+  "ftbfiltersystem.gui.fuzzy_match": "Fuzzy NBT Match?",
   "ftbfiltersystem.gui.basic": "Basic Filters",
   "filter.ftbfiltersystem.and.name": "All Of",
   "filter.ftbfiltersystem.and.tooltip": "Compound filter: this filter matches if ALL of its child filters match.",
@@ -56,5 +57,5 @@
   "filter.ftbfiltersystem.custom.tooltip": "Advanced filter intended for modders and modpack makers.\nFires a CustomFilterEvent when a match is attempted; set the event result to indicate a successful or failed match.\nUse the textfield to provide freeform text data which is passed to the event as the 'data' parameter.",
   "filter.ftbfiltersystem.filter_stack.name": "Filter Stack",
   "filter.ftbfiltersystem.filter_stack.tooltip": "Allows re-use of an existing and configured Smart Filter item from your inventory.\nIt is strongly recommended to meaningfully name your filters for clarity!",
-  "filter.ftbfiltersystem.root.name": "Root"
+  "filter.ftbfiltersystem.root.name": "All Of (Root)"
 }

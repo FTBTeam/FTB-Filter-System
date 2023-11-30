@@ -43,7 +43,6 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         api.registerFilterScreenFactory(ItemTagFilter.ID, ItemTagConfigScreen::new);
         api.registerFilterScreenFactory(ModFilter.ID, ModConfigScreen::new);
         api.registerFilterScreenFactory(NbtFilter.ID, NBTConfigScreen::new);
-        api.registerFilterScreenFactory(FuzzyNbtFilter.ID, FuzzyNBTConfigScreen::new);
         api.registerFilterScreenFactory(CustomFilter.ID, CustomConfigScreen::new);
         api.registerFilterScreenFactory(FilterStackFilter.ID, FilterStackConfigScreen::new);
     }
