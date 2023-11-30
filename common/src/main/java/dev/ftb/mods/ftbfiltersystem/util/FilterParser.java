@@ -1,6 +1,5 @@
 package dev.ftb.mods.ftbfiltersystem.util;
 
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
@@ -14,12 +13,7 @@ import java.util.List;
 public class FilterParser {
     public static SmartFilter parse(String str) throws FilterException {
         RootFilter root = new RootFilter();
-        List<SmartFilter> l = parseFilterList(root, str);
-        if (l.size() > 1) {
-            throw new FilterException("expected single filter, got " + l.size() + ": " + str);
-        } else if (l.size() == 1) {
-            root.getChildren().add(l.get(0));
-        }
+        root.getChildren().addAll(parseFilterList(root, str));
         return root;
     }
 
