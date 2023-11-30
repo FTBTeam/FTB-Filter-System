@@ -38,6 +38,7 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         api.registerFilterScreenFactory(ItemFilter.ID, ItemConfigScreen::new);
         api.registerFilterScreenFactory(DurabilityFilter.ID, DurabilityConfigScreen::new);
         api.registerFilterScreenFactory(MaxStackSizeFilter.ID, MaxCountConfigScreen::new);
+        api.registerFilterScreenFactory(StackSizeFilter.ID, StackSizeConfigScreen::new);
         api.registerFilterScreenFactory(FoodValueFilter.ID, FoodValueConfigScreen::new);
         api.registerFilterScreenFactory(ItemTagFilter.ID, ItemTagConfigScreen::new);
         api.registerFilterScreenFactory(ModFilter.ID, ModConfigScreen::new);
