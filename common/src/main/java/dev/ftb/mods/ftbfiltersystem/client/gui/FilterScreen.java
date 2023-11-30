@@ -519,7 +519,8 @@ public class FilterScreen extends AbstractFilterScreen {
                 if (dumpedFilter.filter() instanceof SmartFilter.Compound) {
                     return disp;
                 } else {
-                    return disp.copy().append(" ").append(Component.literal(dumpedFilter.filter().getStringArg()).withStyle(ChatFormatting.DARK_BLUE));
+                    Component text = dumpedFilter.filter().getDisplayArg();
+                    return disp.copy().append(" ").append(text.copy().withStyle(ChatFormatting.DARK_BLUE));
                 }
             }
 

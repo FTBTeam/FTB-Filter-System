@@ -4,7 +4,6 @@ import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomCheckbox;
 import dev.ftb.mods.ftbfiltersystem.filter.NbtFilter;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -33,13 +32,13 @@ public class NBTConfigScreen extends AbstractItemEditorConfigScreen<NbtFilter> i
     @Override
     protected void doScheduledUpdate() {
         if (editBox.getValue().isEmpty()) {
-            statusMsg = Component.empty();
+            setStatus(true, Component.empty(), null);
         } else {
             try {
                 NbtFilter.fromString(filter.getParent(), editBox.getValue());
-                statusMsg = Component.translatable("ftbfiltersystem.gui.nbt_ok").withStyle(ChatFormatting.DARK_GREEN);
+                setStatus(true, Component.translatable("ftbfiltersystem.gui.nbt_ok"), null);
             } catch (FilterException e) {
-                statusMsg = Component.translatable("ftbfiltersystem.gui.nbt_bad").withStyle(ChatFormatting.DARK_RED);
+                setStatus(false, Component.translatable("ftbfiltersystem.gui.nbt_bad"), e.getMessage());
             }
         }
     }

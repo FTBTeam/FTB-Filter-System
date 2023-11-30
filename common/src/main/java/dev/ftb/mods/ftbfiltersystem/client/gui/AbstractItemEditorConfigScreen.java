@@ -3,10 +3,13 @@ package dev.ftb.mods.ftbfiltersystem.client.gui;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomStringWidget;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.ItemWidget;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -24,9 +27,10 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     private static final int SEARCH_COLS = 9;
 
     protected MultiLineEditBox editBox;
+    private CustomStringWidget statusLine;
     private final List<SearchItemWidget> itemWidgets = new ArrayList<>();
     protected Component customHoverName = null;
-    protected Component statusMsg = Component.empty();
+//    protected Component statusMsg = Component.empty();
 
     @Override
     protected void init() {
@@ -45,7 +49,9 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         });
         setFocused(editBox);
         editBox.setValueListener(s -> scheduleUpdate(5));
-        editBox.setValue(filter.getStringArg());
+
+        statusLine = addRenderableWidget(new CustomStringWidget(leftPos + 8, topPos + 98, guiWidth - 16, font.lineHeight, Component.empty(), font));
+        statusLine.alignRight();
 
         itemWidgets.clear();
         for (int row = 0; row < SEARCH_ROWS; ++row) {
@@ -68,15 +74,23 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
         guiGraphics.renderOutline(leftPos + 7, topPos + 109, 164, 74, 0xFFA0A0A0);
-        int w = font.width(statusMsg);
-        guiGraphics.drawString(font, statusMsg, leftPos + guiWidth - (w + 8), topPos + 98, 0x404040, false);
+//        int w = font.width(statusMsg);
+//        guiGraphics.drawString(font, statusMsg, leftPos + guiWidth - (w + 8), topPos + 98, 0x404040, false);
     }
 
     protected abstract Predicate<ItemStack> inventoryChecker();
 
-    protected abstract String serialize(ItemStack stack);
+    protected void onItemWidgetClicked() {
+    }
 
+    protected void setStatus(boolean ok, Component message, String detail) {
+        statusLine.setMessage(message.copy().withStyle(ok ? ChatFormatting.DARK_GREEN : ChatFormatting.DARK_RED));
+        statusLine.setTooltip(detail == null || detail.isEmpty() ? null : Tooltip.create(Component.literal(detail)));
+    }
+
+    protected abstract String serialize(ItemStack stack);
     private class SearchItemWidget extends ItemWidget {
+
         public SearchItemWidget(int row, int col) {
             super(leftPos + 8 + 18 * col, topPos + 110 + 18 * row, 18, 18, ItemStack.EMPTY);
         }
@@ -87,9 +101,9 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
                 editBox.setValue(serialize(getStack()));
                 customHoverName = getStack().hasCustomHoverName() ? getStack().getHoverName() : null;
                 AbstractItemEditorConfigScreen.this.setFocused(editBox);
+                AbstractItemEditorConfigScreen.this.onItemWidgetClicked();
             }
         }
-
         @Override
         protected void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             super.renderWidget(guiGraphics, pMouseX, pMouseY, pPartialTick);
@@ -100,5 +114,6 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
                 guiGraphics.pose().popPose();
             }
         }
+
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
@@ -44,7 +45,7 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         api.registerFilterScreenFactory(ModFilter.ID, ModConfigScreen::new);
         api.registerFilterScreenFactory(NbtFilter.ID, NBTConfigScreen::new);
         api.registerFilterScreenFactory(CustomFilter.ID, CustomConfigScreen::new);
-        api.registerFilterScreenFactory(FilterStackFilter.ID, FilterStackConfigScreen::new);
+        api.registerFilterScreenFactory(ExpressionFilter.ID, ExpressionConfigScreen::new);
     }
 
     private void onClientStarted(Minecraft minecraft) {
@@ -71,6 +72,11 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
             screen.setDeleteOnCancel(deleteOnCancel);
             Minecraft.getInstance().setScreen(screen);
         }
+    }
+
+    public static boolean isPlayerHolding(ItemStack stack) {
+        Player player = Minecraft.getInstance().player;
+        return player != null && (player.getMainHandItem() == stack || player.getOffhandItem() == stack);
     }
 
     public static boolean shouldShowItemTooltip() {
