@@ -19,7 +19,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public class SmartFilterItem extends Item {
     private static final String FILTER_TAG_NAME = "ftbfiltersystem:filter";
@@ -32,12 +31,8 @@ public class SmartFilterItem extends Item {
         return filterStack.hasTag() ? filterStack.getTag().getString(FILTER_TAG_NAME) : "";
     }
 
-    public static Optional<SmartFilter> getFilter(ItemStack filterStack) {
-        try {
-            return Optional.of(FilterParser.parse(getFilterString(filterStack)));
-        } catch (FilterException e) {
-            return Optional.empty();
-        }
+    public static SmartFilter getFilter(ItemStack filterStack) throws FilterException {
+        return FilterParser.parse(getFilterString(filterStack));
     }
 
     public static void setFilter(ItemStack filterStack, String string) {
@@ -52,7 +47,7 @@ public class SmartFilterItem extends Item {
         } else if (!level.isClientSide && player.isCrouching()) {
             try {
                 FilterSystemCommands.tryMatch(player.createCommandSourceStack());
-            } catch (CommandSyntaxException e) {
+            } catch (CommandSyntaxException | FilterException e) {
                 player.displayClientMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
             }
         }

@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbfiltersystem.client;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
+import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
@@ -11,8 +12,10 @@ import dev.ftb.mods.ftbfiltersystem.client.gui.*;
 import dev.ftb.mods.ftbfiltersystem.filter.*;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -57,10 +60,15 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     }
 
     public void openFilterScreen(InteractionHand interactionHand) {
-        ItemStack stack = Minecraft.getInstance().player.getItemInHand(interactionHand);
+        Player player = Minecraft.getInstance().player;
+        ItemStack stack = player.getItemInHand(interactionHand);
+
         if (stack.getItem() instanceof SmartFilterItem) {
-            SmartFilterItem.getFilter(stack).ifPresent(filter ->
-                    Minecraft.getInstance().setScreen(new FilterScreen(stack.getHoverName(), filter, interactionHand)));
+            try {
+                Minecraft.getInstance().setScreen(new FilterScreen(stack.getHoverName(), SmartFilterItem.getFilter(stack), interactionHand));
+            } catch (FilterException e) {
+                player.displayClientMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
+            }
         }
     }
 
