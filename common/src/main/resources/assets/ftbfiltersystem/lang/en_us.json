@@ -19,6 +19,7 @@
   "ftbfiltersystem.gui.nbt_bad": "SNBT Parse Failed!",
   "ftbfiltersystem.gui.filter_ok": "Filter Parsed OK",
   "ftbfiltersystem.gui.filter_bad": "Filter Parse Failed!",
+  "ftbfiltersystem.gui.custom_id": "Custom Event ID:",
   "ftbfiltersystem.gui.custom_data": "Extra Custom Data:",
   "ftbfiltersystem.gui.changes_made": "You have made changes to this filter",
   "ftbfiltersystem.gui.changes_made.question": "Close the editor without saving?",

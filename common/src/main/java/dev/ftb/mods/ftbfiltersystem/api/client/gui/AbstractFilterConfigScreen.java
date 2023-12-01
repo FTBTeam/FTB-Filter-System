@@ -31,11 +31,11 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     protected final AbstractFilterScreen parentScreen;
     protected final int guiWidth, guiHeight;
     protected int leftPos, topPos;
-    private Rect2i bounds = new Rect2i(0, 0, 0, 0);
     protected T modifiedFilter;
     private int updateCounter = 0;
     private boolean deleteOnCancel = false;
     private boolean changesApplied = false;
+    private Rect2i bounds = new Rect2i(0, 0, 0, 0);
 
     public AbstractFilterConfigScreen(T filter, AbstractFilterScreen parentScreen, int guiWidth, int guiHeight) {
         super(filter.getDisplayName());
@@ -73,8 +73,8 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     @Nullable
     protected abstract T makeNewFilter();
 
-    public Rect2i getGuiBounds() {
-        return new Rect2i(leftPos, topPos, guiWidth, guiHeight);
+    public final Rect2i getGuiBounds() {
+        return bounds;
     }
 
     @Override
