@@ -12,6 +12,10 @@ import java.util.List;
 
 public class FilterParser {
     public static SmartFilter parse(String str) throws FilterException {
+        return FilterCache.INSTANCE.getOrCreateFilter(str);
+    }
+
+    static SmartFilter parseRaw(String str) throws FilterException {
         RootFilter root = new RootFilter();
         root.getChildren().addAll(parseFilterList(root, str));
         return root;
