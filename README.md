@@ -15,12 +15,15 @@ on the right:
 * Click "Add..." to pop up a list of available subfilters which you can add. 
   * On the left side of the list are **compound** filters, to which more filters can be added as children, forming a filter hierarchy.
   * On the right side (in possibly multiple columns) are **basic** filters, which do actual matching against items.
-  * All the filter buttons have a tooltip with a brief explanation of what they do (should be obvious in general)
+  * All the filter buttons have a tooltip with a brief explanation of what they do (it should be obvious in general)
 * Click "Delete" to delete the currently-selected filter.
   * Deleting a compound filter also deletes all its children
 * Click "Configure..." to pop up another screen allowing the currently-selected filter to be configured
   * Not all filters can be configured; compound filters don't have any configuration, and some basic filters don't either
   * You can also double-click any filter in the list to open its configuration screen
+
+The "Root" element implicitly behaves as an "All Of" compound subfilter, so if you just need a filter which matches 
+several conditions, you can simply add those conditions directly to root.
 
 At the bottom are "Done" and "Cancel" buttons:
 * Click "Done" to save any changes you've made to the filter
@@ -47,4 +50,30 @@ FTBQuestsEvents.customFilterItem(event => {
 	event.addStack('minecraft:iron_axe {display:{Name:{text:\"Test Axe!\"}}, Damage: 50}')
 	event.addStack('minecraft:diamond_axe {display:{Name:{text:\"Test Axe 2!\"}}, Damage: 300}')
 })
+```
+
+* FFS fires a server-side event when the **Custom** filter is used. This filter takes two string arguments: the event ID, and extra data
+  * The event ID is primarily for the benefit of KubeJS (see examples below). It can be blank, but if supplied, must be an alphanumeric string
+  * The extra data string is freeform text which is passed to the event handler
+  * To handle the event in Java, subscribe to the `CustomFilterEvent.MATCH_ITEM` architectury event
+  * To handle the event in KubeJS (**FTB XMod Compat** must also be installed), use code like this:
+
+```javscript
+// "test1" is the contents of the Event ID in the custom filter
+// the extra data can be retrieved with event.getData()
+// event.getStack() gets the item currently being evaluated
+FTBFilterSystemEvents.customFilter('test1', event => {
+        console.info("custom filter event for test1: " + event.getStack() + " data = " + event.getData())
+        if (event.getData() === "yep" || event.getStack().id === 'minecraft:stick') {
+                event.success()
+        } else {
+                event.cancel()
+        }
+});
+
+// a generic version, ignoring the event id
+FTBFilterSystemEvents.customFilter(event => {
+        console.info("custom filter event for <generic>: " + event.getStack() + " data = " + event.getData())
+        event.cancel()
+});
 ```
