@@ -58,7 +58,7 @@ FTBQuestsEvents.customFilterItem(event => {
   * To handle the event in Java, subscribe to the `CustomFilterEvent.MATCH_ITEM` architectury event
   * To handle the event in KubeJS (**FTB XMod Compat** must also be installed), use code like this:
 
-```javscript
+```javascript
 // "test1" is the contents of the Event ID in the custom filter
 // the extra data can be retrieved with event.getData()
 // event.getStack() gets the item currently being evaluated
