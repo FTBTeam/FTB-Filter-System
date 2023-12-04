@@ -46,6 +46,10 @@ public interface SmartFilter extends Predicate<ItemStack> {
      */
     String getStringArg();
 
+    default Component getDisplayArg() {
+        return Component.literal(getStringArg());
+    }
+
     /**
      * Is this filter configurable, i.e. does it have a setup GUI? Most filters do, but some (e.g. the "Is Block"
      * filter) don't have any configurable properties.

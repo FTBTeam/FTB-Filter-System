@@ -16,6 +16,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 
 import static net.minecraft.commands.Commands.argument;
@@ -63,8 +64,13 @@ public class FilterSystemCommands {
     private static int tryParseCommand(CommandSourceStack source, String string) throws CommandSyntaxException {
         try {
             for (DumpedFilter entry :  FTBFilterSystemAPI.api().dump(FilterParser.parse(string))) {
-                source.sendSuccess(() -> Component.literal(makeDumpPrefix(entry.indent())).withStyle(ChatFormatting.YELLOW)
-                                .append(Component.literal(dumpFilter(entry.filter())).withStyle(ChatFormatting.AQUA)),
+                source.sendSuccess(() -> {
+                            MutableComponent txt = entry.filter().getDisplayName().copy().withStyle(ChatFormatting.AQUA);
+                            if (!(entry.filter() instanceof SmartFilter.Compound)) {
+                                txt.append(" ").append(entry.filter().getDisplayArg().copy().withStyle(ChatFormatting.YELLOW));
+                            }
+                            return Component.literal(makeDumpPrefix(entry.indent())).withStyle(ChatFormatting.YELLOW).append(txt);
+                        },
                         false);
             }
         } catch (FilterException e) {
@@ -138,13 +144,5 @@ public class FilterSystemCommands {
         if (indent == 0) return "";
         String s1 = "┃ ".repeat(indent - 1);
         return s1 + "┣━";
-    }
-
-    private static String dumpFilter(SmartFilter filter) {
-        if (filter instanceof SmartFilter.Compound) {
-            return FTBFilterSystemAPI.modDefaultedString(filter.getId());
-        } else {
-            return filter.toString();
-        }
     }
 }

@@ -8,8 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
@@ -60,9 +62,13 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
 
     @Override
     protected @Nullable ItemTagFilter makeNewFilter() {
-        return itemTagList.getSelected() != null ?
-                new ItemTagFilter(filter.getParent(), itemTagList.getSelected().tagKey) :
-                null;
+        if (itemTagList.getSelected() != null) {
+            return new ItemTagFilter(filter.getParent(), itemTagList.getSelected().tagKey);
+        } else if (itemTagList.children().isEmpty() && ResourceLocation.isValidResourceLocation(searchField.getValue())) {
+            return new ItemTagFilter(filter.getParent(), TagKey.create(Registries.ITEM, new ResourceLocation(searchField.getValue())));
+        } else {
+            return null;
+        }
     }
 
     @Override

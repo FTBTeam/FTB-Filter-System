@@ -16,34 +16,26 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${rootProject.minecraft_version}-common-api:${rootProject.jei_version}")
 }
 
+tasks.register("buildApi", Jar) {
+    group "build"
+
+    include "dev/ftb/mods/ftbfiltersystem/api/**"
+    archiveClassifier = "api"
+
+    from sourceSets.main.output
+    from sourceSets.main.allJava
+
+    manifest {
+        attributes("Fabric-Loom-Remap": true)
+    }
+}
+
 publishing {
     publications {
         mavenForge(MavenPublication) {
             artifactId = "${rootProject.archives_base_name}"
             version ftbPublishing.mavenVersion
             from components.java
-        }
-    }
-
-    repositories {
-        if (ftbPublishing.ftbToken) {
-            maven {
-                url ftbPublishing.ftbURL
-                credentials {
-                    username = ftbPublishing.ftbUser
-                    password = ftbPublishing.ftbToken
-                }
-            }
-        }
-
-        if (ftbPublishing.sapsToken) {
-            maven {
-                url ftbPublishing.sapsURL
-                credentials {
-                    username = ftbPublishing.sapsUser
-                    password = ftbPublishing.sapsToken
-                }
-            }
         }
     }
 }

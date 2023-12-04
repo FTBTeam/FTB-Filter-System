@@ -145,6 +145,16 @@ public class FilterScreen extends AbstractFilterScreen {
         new SyncFilterMessage(filter.toString(), newTitle == null ? null : newTitle.getString(), interactionHand).sendToServer();
 
         onClose();
+
+        if (changesHaveBeenMade()) {
+            Minecraft.getInstance().player.displayClientMessage(
+                    Component.translatable("ftbfiltersystem.message.changes_saved").withStyle(ChatFormatting.GREEN),
+                    true);
+        }
+    }
+
+    private boolean changesHaveBeenMade() {
+        return !filter.toString().equals(origFilterStr) || newTitle != null;
     }
 
     private void createNewFilter(ResourceLocation filterId) {
@@ -272,14 +282,20 @@ public class FilterScreen extends AbstractFilterScreen {
                 closeWithConfirmation();
                 return true;
             }
-        } else if ((keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) && titleEditBox.canConsumeInput()) {
-            applyNewTitle();
+        } else if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
+            if (titleEditBox.canConsumeInput()) {
+                applyNewTitle();
+                return true;
+            } else if (Screen.hasShiftDown()) {
+                applyChanges();
+                return true;
+            }
         }
         return super.keyPressed(keyCode, scanCode, modifier);
     }
 
     private void closeWithConfirmation() {
-        if (!filter.toString().equals(origFilterStr) || newTitle != null) {
+        if (changesHaveBeenMade()) {
             newSelection = filterList.getSelectedFilter();
             minecraft.setScreen(new ConfirmScreen(this::exitCallback,
                     Component.translatable("ftbfiltersystem.gui.changes_made"),
@@ -397,11 +413,6 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        public boolean mouseClicked(double d, double e, int i) {
-            return super.mouseClicked(d, e, i);
-        }
-
-        @Override
         public boolean mouseReleased(double mouseX, double mouseY, int btn) {
             if (dragging != null && dragTarget != null) {
                 FilterParser.parseFilterList(dragTarget, dragging.dumpedFilter.filter().toString()).stream().findFirst().ifPresent(newFilter -> {
@@ -435,6 +446,15 @@ public class FilterScreen extends AbstractFilterScreen {
             } else {
                 return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
             }
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            if (keyCode == InputConstants.KEY_SPACE || keyCode == InputConstants.KEY_RETURN) {
+                configureSelectedFilter(false);
+                return true;
+            }
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
         @Override
@@ -519,7 +539,8 @@ public class FilterScreen extends AbstractFilterScreen {
                 if (dumpedFilter.filter() instanceof SmartFilter.Compound) {
                     return disp;
                 } else {
-                    return disp.copy().append(" ").append(Component.literal(dumpedFilter.filter().getStringArg()).withStyle(ChatFormatting.DARK_BLUE));
+                    Component text = dumpedFilter.filter().getDisplayArg();
+                    return disp.copy().append(" ").append(text.copy().withStyle(ChatFormatting.DARK_BLUE));
                 }
             }
 

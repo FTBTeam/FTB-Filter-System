@@ -33,4 +33,9 @@ public class CustomStringWidget extends StringWidget {
         int y = this.getY() + (this.getHeight() - 9) / 2;
         guiGraphics.drawString(font, component, x, y, this.getColor(), dropShadow);
     }
+
+    public static CustomStringWidget withText(int x, int y, Component text, Font font) {
+        int w = font.width(text);
+        return new CustomStringWidget(x, y, w, font.lineHeight + 6, text, font);
+    }
 }
