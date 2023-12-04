@@ -96,13 +96,13 @@ Closure<ReleaseType> releaseTypeToPublishType = { type ->
 }
 
 publishMods {
-    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
+    dryRun = providers.environmentVariable("CURSEFORGE_KEY").getOrNull() == null
     changelog = providers.environmentVariable("CHANGELOG").orElse("")
     version = mod_version
     type = releaseTypeToPublishType(ftbPublishing.relType)
 
     def curseOptions = curseforgeOptions {
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        accessToken = providers.environmentVariable("CURSEFORGE_KEY")
         projectId = project.curseforge_id
         minecraftVersions.add(rootProject.minecraft_version)
 
