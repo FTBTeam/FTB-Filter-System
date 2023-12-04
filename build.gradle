@@ -116,26 +116,28 @@ publishMods {
         modLoaders.add("neoforge")
         modLoaders.add("forge")
         file = project(":forge").tasks.remapJar.archiveFile
+        displayName = "[FORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
     }
 
     curseforge("fabric") {
         from curseOptions
-
-        file = project(":fabric").tasks.remapJar.archiveFile
         modLoaders.add("fabric")
+        file = project(":fabric").tasks.remapJar.archiveFile
+        displayName = "[FABRIC] FTB Filter System ${mod_version} MC ${minecraft_version}"
 
         requires {
             slug = "fabric-api"
         }
     }
 
-    github {
-        repository = "ftbteam/ftb-filter-system"
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        commitish = providers.environmentVariable("GITHUB_SHA").orElse("dryRun")
-        tagName = providers.environmentVariable("GITHUB_REF_NAME").orElse("dryRun")
-
-        // Gradle doesn't like accessing the buildApi task directly so we need to use the provider
-        file = project.provider { project(":common").tasks.buildApi }.flatMap { it.archiveFile }
-    }
+    // TODO uncomment this one day but will need to redo how our publishing workflow happens
+//    github {
+//        repository = "ftbteam/ftb-filter-system"
+//        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+//        commitish = providers.environmentVariable("GITHUB_SHA").orElse("dryRun")
+//        tagName = providers.environmentVariable("GITHUB_REF_NAME").orElse("dryRun")
+//
+//        // Gradle doesn't like accessing the buildApi task directly so we need to use the provider
+//        file = project.provider { project(":common").tasks.buildApi }.flatMap { it.archiveFile }
+//    }
 }
