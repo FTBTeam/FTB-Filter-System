@@ -116,10 +116,6 @@ publishMods {
         modLoaders.add("neoforge")
         modLoaders.add("forge")
         file = project(":forge").tasks.remapJar.archiveFile
-
-        requires {
-            slug = 'architectury-api'
-        }
     }
 
     curseforge("fabric") {
@@ -130,7 +126,6 @@ publishMods {
 
         requires {
             slug = "fabric-api"
-            slug = "architectury-api"
         }
     }
 
