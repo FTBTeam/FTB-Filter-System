@@ -2,7 +2,7 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
     id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
@@ -113,10 +113,16 @@ publishMods {
 
     curseforge("forge") {
         from curseOptions
-        modLoaders.add("neoforge")
         modLoaders.add("forge")
         file = project(":forge").tasks.remapJar.archiveFile
         displayName = "[FORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
+    }
+
+    curseforge("neoforge") {
+        from curseOptions
+        modLoaders.add("neoforge")
+        file = project(":neoforge").tasks.remapJar.archiveFile
+        displayName = "[NEOFORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
     }
 
     curseforge("fabric") {

@@ -17,10 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -75,21 +72,21 @@ public class FilterScreen extends AbstractFilterScreen {
         // add these early; they will render above other widgets so need to get mouse clicks first
         getSelectionPanel().visitWidgets(this::addWidget);
 
-        filterList = new FilterList(minecraft, getListWidth(), getListHeight(), topPos + 20, topPos + 20 + getListHeight());
-        filterList.setLeftPos(leftPos + 8);
+        filterList = new FilterList(minecraft, topPos + 20, getListWidth(), getListHeight());
+        filterList.setX(leftPos + 8);
         filterList.setRenderBackground(false);
-        filterList.setRenderTopAndBottom(false);
         addWidget(filterList);
 
-        titleEditBtn = addRenderableWidget(new ImageButton(leftPos, topPos + 3, 16, 16, 0, 0, 0,
-                Textures.EDIT_BUTTON, 16, 16, b -> showingTitleEdit = true));
+        titleEditBtn = addRenderableWidget(new ImageButton(leftPos, topPos + 3, 16, 16,
+                new WidgetSprites(Textures.EDIT_BUTTON, Textures.EDIT_BUTTON_HI),
+                b -> showingTitleEdit = true));
 
         titleEditBox = addRenderableWidget(new EditBox(font, leftPos + 5, topPos + 4, getListWidth(), font.lineHeight + 4, Component.empty()));
         titleEditBox.visible = false;
         titleEditBox.setValue(title.getString());
 
         int buttonWidth = guiWidth - getListWidth() - 25;
-        LinearLayout buttonPanel = new LinearLayout(leftPos + getListWidth() + 15, topPos + 20, buttonWidth, 70, LinearLayout.Orientation.VERTICAL);
+        LinearLayout buttonPanel = new LinearLayout(leftPos + getListWidth() + 15, topPos + 20, LinearLayout.Orientation.VERTICAL).spacing(2);
         addFilterBtn = buttonPanel.addChild(Button.builder(Component.translatable("ftbfiltersystem.gui.add"),
                 b -> getSelectionPanel().setVisible(true)).width(buttonWidth).build());
         deleteFilterBtn = buttonPanel.addChild(Button.builder(Component.translatable("ftbfiltersystem.gui.delete"),
@@ -99,7 +96,7 @@ public class FilterScreen extends AbstractFilterScreen {
         buttonPanel.arrangeElements();
         buttonPanel.visitWidgets(this::addRenderableWidget);
 
-        LinearLayout bottomPanel = new LinearLayout(leftPos, topPos + guiHeight - 25, guiWidth, 20, LinearLayout.Orientation.HORIZONTAL);
+        LinearLayout bottomPanel = new LinearLayout(leftPos, topPos + guiHeight - 25, LinearLayout.Orientation.HORIZONTAL);
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
                 .addChild(Button.builder(CommonComponents.GUI_DONE, b -> applyChanges()).size(80, 20).build());
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
@@ -218,7 +215,7 @@ public class FilterScreen extends AbstractFilterScreen {
                 titleEditBox.visible = true;
                 titleEditBtn.visible = false;
                 if (Screen.hasShiftDown()) {
-                    titleEditBox.moveCursorToEnd();
+                    titleEditBox.moveCursorToEnd(false);
                     titleEditBox.setHighlightPos(0);
                 }
                 setFocused(titleEditBox);
@@ -232,21 +229,17 @@ public class FilterScreen extends AbstractFilterScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (guiHeight > 0) {
-            guiGraphics.blitNineSliced(Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight, 4, 32, 32, 0, 0);
             GuiUtil.drawPanel(guiGraphics, new Rect2i(leftPos + 7, topPos + 20, getListWidth() + 2, getListHeight()),
                     0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
+            filterList.render(guiGraphics, mouseX, mouseY, partialTick);
 
             Component displayTitle = newTitle == null ? title : newTitle;
             guiGraphics.drawString(font, displayTitle,leftPos + 8, topPos + 7, 0x404040, false);
             titleEditBtn.setX(leftPos + font.width(displayTitle) + 8);
-
-            filterList.render(guiGraphics, mouseX, mouseY, partialTick);
         }
-
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (getSelectionPanel().isVisible()) {
             guiGraphics.pose().pushPose();
@@ -255,6 +248,13 @@ public class FilterScreen extends AbstractFilterScreen {
             getSelectionPanel().positionAndRender(guiGraphics, addFilterBtn.getY(), addFilterBtn.getX() - 10, mouseX, mouseY, partialTick);
             guiGraphics.pose().popPose();
         }
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+
+        guiGraphics.blitSprite(Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
     }
 
     @Override
@@ -366,8 +366,8 @@ public class FilterScreen extends AbstractFilterScreen {
         private FilterEntry dragging = null;
         private SmartFilter.Compound dragTarget = null;
 
-        public FilterList(Minecraft minecraft, int width, int height, int top, int bottom) {
-            super(minecraft, width, height, top, bottom, ELEMENT_HEIGHT);
+        public FilterList(Minecraft minecraft, int y, int width, int height) {
+            super(minecraft, width, height, y, ELEMENT_HEIGHT);
 
             addChildren();
         }
@@ -402,7 +402,7 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        public void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
         }
 
         @Override
@@ -472,8 +472,8 @@ public class FilterScreen extends AbstractFilterScreen {
 
         @Override
         protected void renderSelection(GuiGraphics guiGraphics, int pTop, int pWidth, int pHeight, int pOuterColor, int pInnerColor) {
-            int minX = this.x0 + (this.width - pWidth) / 2;
-            int maxX = this.x0 + (this.width + pWidth) / 2;
+            int minX = this.getX() + (this.width - pWidth) / 2;
+            int maxX = this.getX() + (this.width + pWidth) / 2;
             int col = isFocused() ? 0xFFE1F1FD : 0xFFA6B4C4;
             GuiUtil.drawPanel(guiGraphics, new Rect2i(minX + 1, pTop - 2, maxX - minX - 2, pHeight + 3), col,
                     0xFF4663AC, GuiUtil.BorderStyle.PLAIN, 1);
