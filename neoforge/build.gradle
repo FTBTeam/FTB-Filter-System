@@ -9,14 +9,6 @@ architectury {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
-
-//    neoForge {
-//        convertAccessWideners = true
-//        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-//
-//        //mixinConfig "ftbfiltersystem-common.mixins.json"
-//        //mixinConfig "ftbfiltersystem.mixins.json"
-//    }
 }
 
 configurations {
@@ -41,7 +33,7 @@ dependencies {
     modCompileOnly("mezz.jei:jei-1.20.2-forge-api:${rootProject.jei_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 }
 
 apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
@@ -67,6 +59,7 @@ remapJar {
     dependsOn shadowJar
     setArchiveClassifier(null)
     setArchiveBaseName("${rootProject.archivesBaseName}-${project.name}")
+    atAccessWideners.add('ftbfiltersystem.accesswidener')
 }
 
 sourcesJar {
