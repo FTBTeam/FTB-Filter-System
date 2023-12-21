@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[1,)"
+loaderVersion = "[${neoforgeloaderversion},)"
 issueTrackerURL = "https://go.ftb.team/support-mod-issues"
 license = "All Rights Reserved"
 
@@ -15,21 +15,21 @@ Smart and highly configurable item filtering system with useful GUI configuratio
 
 [[dependencies.ftbfiltersystem]]
 modId = "neoforge"
-mandatory = true
-versionRange = "[20.4.20-beta,)"
+type = "required"
+versionRange = "[${neoforgeversion},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.ftbfiltersystem]]
 modId = "minecraft"
-mandatory = true
-versionRange = "[1.20.4,)"
+type = "required"
+versionRange = "[${mcversion},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.ftbfiltersystem]]
 modId = "architectury"
-mandatory = true
-versionRange = "[11.0.8,)"
+type = "required"
+versionRange = "[${archversion},)"
 ordering = "AFTER"
 side = "BOTH"
