@@ -37,14 +37,15 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
     protected void init() {
         super.init();
 
-        searchField = makeSearchEditBox(leftPos + 8, topPos + 20, () -> lastSearch, s -> lastSearch = s);
+        searchField = makeSearchEditBox(leftPos + 8, topPos + 18, () -> lastSearch, s -> lastSearch = s);
 
         updateSearchEntries();
 
-        itemTagList = new ItemTagList(minecraft, getListWidth() + 8, getListHeight(), topPos + 32, topPos + 35 + getListHeight());
-        itemTagList.setLeftPos(leftPos + 8);
+//        itemTagList = new ItemTagList(minecraft, getListWidth() + 8, getListHeight(), topPos + 32, topPos + 35 + getListHeight());
+        itemTagList = new ItemTagList(minecraft,topPos + 32, getListWidth(), getListHeight());
+        itemTagList.setX(leftPos + 8);
         itemTagList.setRenderBackground(false);
-        itemTagList.setRenderTopAndBottom(false);
+//        itemTagList.setRenderTopAndBottom(false);
         addWidget(itemTagList);
 
         itemTagList.children().stream()
@@ -99,10 +100,8 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
     private class ItemTagList extends CustomSelectionList<ItemTagList.ItemTagEntry> {
         private static final int ELEMENT_HEIGHT = 12;
 
-        public ItemTagList(Minecraft minecraft, int width, int height, int top, int bottom) {
-            super(minecraft, width, height, top, bottom, ELEMENT_HEIGHT);
-
-            addChildren();
+        public ItemTagList(Minecraft minecraft, int y, int width, int height) {
+            super(minecraft, width, height, y, ELEMENT_HEIGHT);
         }
 
         @Override

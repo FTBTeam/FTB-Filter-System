@@ -80,8 +80,8 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
-        adjustVal(dir < 0 ? -1 : 1);
+    public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
+        adjustVal(dirY < 0 ? -1 : 1);
 
         return true;
     }

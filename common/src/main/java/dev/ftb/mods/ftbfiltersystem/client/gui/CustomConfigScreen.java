@@ -15,14 +15,14 @@ public class CustomConfigScreen extends AbstractFilterConfigScreen<CustomFilter>
     private EditBox extraEditBox;
 
     public CustomConfigScreen(CustomFilter filter, AbstractFilterScreen parentScreen) {
-        super(filter, parentScreen, 176, 90);
+        super(filter, parentScreen, 176, 80);
     }
 
     @Override
     protected void init() {
         super.init();
 
-        idEditBox = new EditBox(font, leftPos + 8, topPos + 42, guiWidth - 16, font.lineHeight + 1, Component.empty());
+        idEditBox = new EditBox(font, leftPos + 8, topPos + 40, guiWidth - 16, font.lineHeight + 4, Component.empty());
         idEditBox.setMaxLength(1024);
         idEditBox.setBordered(true);
         idEditBox.setVisible(true);
@@ -31,7 +31,7 @@ public class CustomConfigScreen extends AbstractFilterConfigScreen<CustomFilter>
         idEditBox.setFilter(s -> s.isEmpty() || StringUtils.isAlphanumeric(s));
         addRenderableWidget(idEditBox);
 
-        extraEditBox = new EditBox(font, leftPos + 8, topPos + 72, guiWidth - 16, font.lineHeight + 1, Component.empty());
+        extraEditBox = new EditBox(font, leftPos + 8, topPos + 70, guiWidth - 16, font.lineHeight + 4, Component.empty());
         extraEditBox.setMaxLength(1024);
         extraEditBox.setBordered(true);
         extraEditBox.setVisible(true);

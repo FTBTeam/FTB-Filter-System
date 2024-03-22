@@ -35,14 +35,15 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
     protected void init() {
         super.init();
 
-        searchField = makeSearchEditBox(leftPos + 8, topPos + 20, () -> lastSearch, s -> lastSearch = s);
+        searchField = makeSearchEditBox(leftPos + 8, topPos + 18, () -> lastSearch, s -> lastSearch = s);
 
         updateSearchEntries();
 
-        modList = new ModList(minecraft, getListWidth() + 8, getListHeight(), topPos + 32, topPos + 35 + getListHeight());
-        modList.setLeftPos(leftPos + 8);
+//        modList = new ModList(minecraft, getListWidth() + 8, getListHeight(), topPos + 32, topPos + 35 + getListHeight());
+        modList = new ModList(minecraft, topPos + 32, getListWidth(), getListHeight());
+        modList.setX(leftPos + 8);
         modList.setRenderBackground(false);
-        modList.setRenderTopAndBottom(false);
+//        modList.setRenderTopAndBottom(false);
         addWidget(modList);
 
         modList.children().stream()
@@ -115,10 +116,8 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
     private class ModList extends CustomSelectionList<ModList.ModEntry> {
         private static final int ELEMENT_HEIGHT = 12;
 
-        public ModList(Minecraft minecraft, int width, int height, int top, int bottom) {
-            super(minecraft, width, height, top, bottom, ELEMENT_HEIGHT);
-
-            addChildren();
+        public ModList(Minecraft minecraft, int y, int width, int height) {
+            super(minecraft, width, height, y, ELEMENT_HEIGHT);
         }
 
         @Override
