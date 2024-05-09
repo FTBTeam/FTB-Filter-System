@@ -45,12 +45,12 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
     }
 
     @Override
-    protected void renderList(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderListItems(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         int w = getMaxScroll() > 0 ? width - 6 : width;
         GuiUtil.drawPanel(guiGraphics, new Rect2i(getX(), getY(), w, height + 4),
                 0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
 
-        super.renderList(guiGraphics, mouseX, mouseY, partialTick);
+        super.renderListItems(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override

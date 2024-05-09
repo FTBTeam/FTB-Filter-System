@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.filter;
 
-import dev.ftb.mods.ftbfiltersystem.api.*;
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
+import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
+import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.ResourceLocationException;

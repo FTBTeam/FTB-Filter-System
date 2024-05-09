@@ -1,66 +1,53 @@
 package dev.ftb.mods.ftbfiltersystem.network;
 
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.BaseC2SMessage;
-import dev.architectury.networking.simple.MessageType;
 import dev.ftb.mods.ftbfiltersystem.FTBFilterSystem;
+import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class SyncFilterMessage extends BaseC2SMessage {
-    private final String filterStr;
-    private final @Nullable String newTitle;
-    private final InteractionHand hand;
+public record SyncFilterMessage(String filterStr, Optional<String> newTitle, InteractionHand hand) implements CustomPacketPayload {
+    public static final Type<SyncFilterMessage> TYPE = new Type<>(FTBFilterSystemAPI.rl("sync_filter"));
 
-    public SyncFilterMessage(String filterStr, @Nullable String newTitle, InteractionHand hand) {
-        this.filterStr = filterStr;
-        this.newTitle = newTitle;
-        this.hand = hand;
-    }
+    public static StreamCodec<FriendlyByteBuf, SyncFilterMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, SyncFilterMessage::filterStr,
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs::optional), SyncFilterMessage::newTitle,
+            FTBFilterSystemNet.enumCodec(InteractionHand.class), SyncFilterMessage::hand,
+            SyncFilterMessage::new
+    );
 
-    public SyncFilterMessage(FriendlyByteBuf buf) {
-        filterStr = buf.readUtf();
-        newTitle = buf.readNullable(FriendlyByteBuf::readUtf);
-        hand = buf.readEnum(InteractionHand.class);
-    }
-
-    @Override
-    public MessageType getType() {
-        return FTBFilterSystemNet.SYNC_FILTER;
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeUtf(filterStr);
-        buf.writeNullable(newTitle, FriendlyByteBuf::writeUtf);
-        buf.writeEnum(hand);
-    }
-
-    @Override
-    public void handle(NetworkManager.PacketContext context) {
-        ItemStack stack = context.getPlayer().getItemInHand(hand);
+    public static void handle(SyncFilterMessage message, NetworkManager.PacketContext context) {
+        ItemStack stack = context.getPlayer().getItemInHand(message.hand);
         if (stack.getItem() instanceof SmartFilterItem) {
             try {
-                SmartFilterItem.setFilter(stack, FilterParser.parse(filterStr).toString());
-                if (newTitle != null) {
-                    if (newTitle.isEmpty()) {
-                        stack.resetHoverName();
+                SmartFilterItem.setFilter(stack, FilterParser.parse(message.filterStr).toString());
+                message.newTitle.ifPresent(title -> {
+                    if (title.isEmpty()) {
+                        stack.remove(DataComponents.CUSTOM_NAME);
                     } else {
-                        stack.setHoverName(Component.literal(newTitle));
+                        stack.set(DataComponents.CUSTOM_NAME, Component.literal(title));
                     }
-                }
+                });
             } catch (FilterException e) {
                 FTBFilterSystem.LOGGER.error("received filter sync message with bad filter data from client {}: {}",
                         context.getPlayer().getGameProfile().getName(), e.getMessage());
             }
         }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

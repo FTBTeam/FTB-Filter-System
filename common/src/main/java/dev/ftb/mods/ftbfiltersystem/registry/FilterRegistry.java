@@ -1,6 +1,5 @@
 package dev.ftb.mods.ftbfiltersystem.registry;
 
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.resources.ResourceLocation;

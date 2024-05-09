@@ -5,32 +5,35 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import dev.ftb.mods.ftbfiltersystem.util.NBTUtil;
+import dev.ftb.mods.ftbfiltersystem.util.PlatformUtil;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class NbtFilter extends AbstractSmartFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("nbt");
-    protected final CompoundTag tag;
+public class ComponentFilter extends AbstractSmartFilter {
+    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("component");
+    protected final DataComponentMap map;
     private final boolean fuzzyMatch;
 
-    public NbtFilter(@Nullable SmartFilter.Compound parent) {
-        this(parent, true, new CompoundTag());
+    public ComponentFilter(@Nullable SmartFilter.Compound parent) {
+        this(parent, true, DataComponentMap.EMPTY);
     }
 
-    public NbtFilter(SmartFilter.Compound parent, boolean fuzzyMatch, CompoundTag tag) {
+    public ComponentFilter(SmartFilter.Compound parent, boolean fuzzyMatch, DataComponentMap map) {
         super(parent);
 
         this.fuzzyMatch = fuzzyMatch;
-        this.tag = tag;
+        this.map = map;
     }
 
     @NotNull
-    public static String getNBTPrefix(boolean fuzzy) {
+    public static String getPrefixStr(boolean fuzzy) {
         return fuzzy ? "fuzzy:" : "strict:";
     }
 
@@ -41,36 +44,43 @@ public class NbtFilter extends AbstractSmartFilter {
 
     @Override
     public boolean test(ItemStack stack) {
-        return tag.isEmpty() ?
-                stack.getTag() == null || stack.getTag().isEmpty() :
-                (fuzzyMatch ? fuzzyMatch(stack.getTag()) : tag.equals(stack.getTag()));
+        //noinspection UnreachableCode
+        return PlatformUtil.hasComponentPatch(stack) ?
+                (fuzzyMatch ? fuzzyMatch(stack.getComponents()) : stack.getComponents().equals(map)) :
+                map.isEmpty();
     }
 
-    private boolean fuzzyMatch(CompoundTag toMatch) {
-        return tag != null && NBTUtil.compareNbt(tag, toMatch, true, true);
+    private boolean fuzzyMatch(DataComponentMap toMatch) {
+        return map.stream().allMatch(tc -> toMatch.has(tc.type()) && toMatch.get(tc.type()).equals(tc.value()));
     }
 
     @Override
     public String getStringArg() {
-        return getNBTPrefix(fuzzyMatch) + tag.toString();
+        try {
+            Tag tag = DataComponentMap.CODEC.encodeStart(NbtOps.INSTANCE, map).getOrThrow();
+            return getPrefixStr(fuzzyMatch) + tag.toString();
+        } catch (IllegalStateException e) {
+            return "";
+        }
     }
 
-    public CompoundTag getTag() {
-        return tag;
+    public DataComponentMap getComponentMap() {
+        return map;
     }
 
     public boolean isFuzzyMatch() {
         return fuzzyMatch;
     }
 
-    public static NbtFilter fromString(SmartFilter.Compound parent, String str) {
+    public static ComponentFilter fromString(SmartFilter.Compound parent, String str) {
         try {
             boolean fuzzy = true;
             if (str.startsWith("strict:") || str.startsWith("fuzzy:")) {
                 fuzzy = str.startsWith("fuzzy:");
                 str = str.substring(str.indexOf(':') + 1);
             }
-            return new NbtFilter(parent, fuzzy, parseNBT(str));
+            DataComponentMap map = DataComponentMap.CODEC.parse(NbtOps.INSTANCE, parseNBT(str)).getOrThrow(FilterException::new);
+            return new ComponentFilter(parent, fuzzy, map);
         } catch (CommandSyntaxException e) {
             throw new FilterException("invalid NBT tag: " + str, e);
         }

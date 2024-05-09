@@ -5,7 +5,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class PlatformUtil {
     @ExpectPlatform
-    public static int getFoodValue(ItemStack stack) {
+    public static boolean hasComponentPatch(ItemStack stack) {
         throw new AssertionError();
     }
 }

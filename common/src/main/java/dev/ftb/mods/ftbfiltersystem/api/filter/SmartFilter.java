@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * Represent a filter object, which can be used to test item stacks for specific properties. Smart filters may be
+ * Represents a filter object, which can be used to test item stacks for specific properties. Smart filters may be
  * compound (see {@link AbstractCompoundFilter}) and represent a hierarchy of filters.
  *
  * @apiNote Implementations should extend {@link AbstractSmartFilter} or {@link AbstractCompoundFilter} rather than

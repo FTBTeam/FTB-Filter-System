@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbfiltersystem.FilterSystemCommands;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
+import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.ChatFormatting;
@@ -16,19 +17,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class SmartFilterItem extends Item {
-    private static final String FILTER_TAG_NAME = "ftbfiltersystem:filter";
-
     public SmartFilterItem() {
         super(ModItems.defaultProps());
+//                .component(ModDataComponents.FILTER_STRING.get(), ""));
     }
 
     public static String getFilterString(ItemStack filterStack) {
-        return filterStack.hasTag() ? filterStack.getTag().getString(FILTER_TAG_NAME) : "";
+        return filterStack.getOrDefault(ModDataComponents.FILTER_STRING.get(), "");
     }
 
     public static SmartFilter getFilter(ItemStack filterStack) throws FilterException {
@@ -36,7 +35,7 @@ public class SmartFilterItem extends Item {
     }
 
     public static void setFilter(ItemStack filterStack, String string) {
-        filterStack.getOrCreateTag().putString(FILTER_TAG_NAME, string);
+        filterStack.set(ModDataComponents.FILTER_STRING.get(), string);
     }
 
     @Override
@@ -55,8 +54,8 @@ public class SmartFilterItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> list, TooltipFlag tooltipFlag) {
-        if (level == null || level.isClientSide && !FTBFilterSystemClient.shouldShowItemTooltip()) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> list, TooltipFlag tooltipFlag) {
+        if (context.registries() == null || !FTBFilterSystemClient.shouldShowItemTooltip()) {
             return;  // avoids spurious tooltips in places like FTB Quests where a filter could be a matching display item
         }
         list.add(Component.translatable("item.ftbfiltersystem.smart_filter.tooltip.1").withStyle(ChatFormatting.GRAY));

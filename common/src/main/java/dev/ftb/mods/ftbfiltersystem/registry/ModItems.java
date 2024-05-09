@@ -24,15 +24,13 @@ public class ModItems {
     public static final RegistrySupplier<Item> SMART_FILTER = ITEMS.register("smart_filter", SmartFilterItem::new);
 
     public static Item.Properties defaultProps() {
-        return new Item.Properties().arch$tab(CREATIVE_TAB);
+        return new Item.Properties();
     }
 
     private static CreativeModeTab buildDefaultTab() {
         return CreativeTabRegistry.create(builder -> builder.title(Component.translatable(FTBFilterSystemAPI.MOD_ID))
                 .icon(() -> new ItemStack(ModItems.SMART_FILTER.get()))
-                .displayItems((params, output) -> {
-                    output.accept(new ItemStack(ModItems.SMART_FILTER.get()));
-                })
+                .displayItems((params, output) -> output.accept(new ItemStack(ModItems.SMART_FILTER.get())))
         );
     }
 }

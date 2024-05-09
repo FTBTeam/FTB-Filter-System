@@ -19,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
@@ -32,8 +33,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> implements GhostDropReceiver {
-    private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
-
     private static final int SEARCH_ROWS = 4;
     private static final int SEARCH_COLS = 9;
 
@@ -270,7 +269,7 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
             List<String> l;
             try {
                 Minecraft mc = Minecraft.getInstance();
-                l = stack.getTooltipLines(mc.player, mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL).stream()
+                l = stack.getTooltipLines(Item.TooltipContext.of(mc.level), mc.player, mc.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL).stream()
                         .map(Component::getString)
                         .collect(Collectors.toList());
             } catch (Exception ignored) {

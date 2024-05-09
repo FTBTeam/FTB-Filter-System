@@ -118,7 +118,7 @@ public class SelectionPanel {
         layout.setPosition(bounds.getX(), bounds.getY());
 
         GuiUtil.drawPanel(guiGraphics, GuiUtil.outsetRect(bounds, 3), 0xFFD6D6D6, 0xFF404040, GuiUtil.BorderStyle.PLAIN, 1);
-        guiGraphics.vLine(xBase + compoundButtons.get(0).getWidth() + 5, topEdge, topEdge + layout.getHeight(), 0xFFA0A0A0);
+        guiGraphics.vLine(xBase + compoundButtons.getFirst().getWidth() + 5, topEdge, topEdge + layout.getHeight(), 0xFFA0A0A0);
         visitWidgets(w -> w.render(guiGraphics, mouseX, mouseY, partialTick));
     }
 

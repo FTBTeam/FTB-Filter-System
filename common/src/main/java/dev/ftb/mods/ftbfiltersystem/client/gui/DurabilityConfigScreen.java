@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbfiltersystem.client.gui;
 
+import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractComparisonConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.filter.DurabilityFilter;
 

@@ -15,6 +15,7 @@ import dev.ftb.mods.ftbfiltersystem.filter.compound.OnlyOneFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.OrFilter;
 import dev.ftb.mods.ftbfiltersystem.network.FTBFilterSystemNet;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
+import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +39,7 @@ public class FTBFilterSystem {
         FilterRegistrationEvent.REGISTER.register(this::registerBuiltinFilters);
         ModItems.TABS.register();
         ModItems.ITEMS.register();
+        ModDataComponents.COMPONENT_TYPES.register();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> FTBFilterSystemClient.INSTANCE::init);
 
@@ -62,7 +64,7 @@ public class FTBFilterSystem {
         reg.register(ItemTagFilter.ID, ItemTagFilter::fromString, ItemTagFilter::new);
         reg.register(MaxStackSizeFilter.ID, MaxStackSizeFilter::fromString, MaxStackSizeFilter::new);
         reg.register(ModFilter.ID, ModFilter::fromString, ModFilter::new);
-        reg.register(NbtFilter.ID, NbtFilter::fromString, NbtFilter::new);
+        reg.register(ComponentFilter.ID, ComponentFilter::fromString, ComponentFilter::new);
         reg.register(StackSizeFilter.ID, StackSizeFilter::fromString, StackSizeFilter::new);
 
         reg.register(AndFilter.ID, AndFilter::fromString, AndFilter::new);

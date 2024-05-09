@@ -27,7 +27,7 @@ public class DurabilityFilter extends AbstractComparisonFilter {
     protected int getValueToCompare(ItemStack stack) {
         if (stack.getMaxDamage() != 0) {
             int durability = stack.getMaxDamage() - stack.getDamageValue();
-            return comparison.isPercentage() ?
+            return comparison.percentage() ?
                     (int) (durability * 100L / stack.getMaxDamage()) :  // long arithmetic for int overflow avoidance
                     durability;
         } else {

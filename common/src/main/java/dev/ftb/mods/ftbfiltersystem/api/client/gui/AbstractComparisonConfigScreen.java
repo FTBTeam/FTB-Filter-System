@@ -1,13 +1,10 @@
-package dev.ftb.mods.ftbfiltersystem.client.gui;
+package dev.ftb.mods.ftbfiltersystem.api.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
-import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
-import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
+import dev.ftb.mods.ftbfiltersystem.api.client.gui.widget.CustomCheckbox;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomCheckbox;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -20,6 +17,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.function.BiFunction;
 
+/**
+ * Base screen class for all comparison filters - see {@link AbstractComparisonFilter}. You can extend this class;
+ * typical implementations are extremely simple, needing only a constructor which satisfies the
+ * {@link dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory} interface contract.
+ *
+ * @param <T> the filter implementation type
+ */
 public abstract class AbstractComparisonConfigScreen<T extends AbstractComparisonFilter> extends AbstractFilterConfigScreen<T> {
     private final BiFunction<SmartFilter.Compound, NumericComparison, T> comparisonFactory;
     protected CycleButton<NumericComparison.ComparisonOp> opBtn;
@@ -42,7 +46,7 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
 
         opBtn = rowHelper.addChild(CycleButton.builder(NumericComparison.ComparisonOp::getDisplayName)
                 .withValues(NumericComparison.ComparisonOp.values())
-                .withInitialValue(filter.getComparison().getOp())
+                .withInitialValue(filter.getComparison().op())
                 .displayOnlyValue()
                 .create(0, 0, 20, font.lineHeight + 8,
                         Component.empty(), (btn, val) -> {}));
@@ -54,7 +58,7 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
         rowHelper.addChild(Button.builder(Component.literal("+"), b -> adjustVal(1)).size(12, 12).build(),
                 LayoutSettings.defaults().alignVerticallyMiddle().paddingLeft(2));
 
-        numBox.setValue(Integer.toString(filter.getComparison().getValue()));
+        numBox.setValue(Integer.toString(filter.getComparison().value()));
         numBox.setResponder(str -> adjustVal(0));
         numBox.setFilter(str -> isValidNumber(str) || str.isEmpty());
 
@@ -62,7 +66,7 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
             rowHelper.addChild(SpacerElement.height(5), 5);
             MutableComponent txt = Component.translatable("ftbfiltersystem.gui.percentage");
             pctCheckBox = rowHelper.addChild(new CustomCheckbox(0, 0, font.width(txt), 20,
-                    txt, filter.getComparison().isPercentage()), 5);
+                    txt, filter.getComparison().percentage()), 5);
         }
 
         layout.arrangeElements();

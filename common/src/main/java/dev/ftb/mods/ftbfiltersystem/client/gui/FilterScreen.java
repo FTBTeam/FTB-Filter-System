@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.architectury.networking.NetworkManager;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.Textures;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
@@ -32,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class FilterScreen extends AbstractFilterScreen {
     private static SelectionPanel selectionPanel = null;
@@ -74,7 +76,6 @@ public class FilterScreen extends AbstractFilterScreen {
 
         filterList = new FilterList(minecraft, topPos + 20, getListWidth(), getListHeight());
         filterList.setX(leftPos + 8);
-        filterList.setRenderBackground(false);
         addWidget(filterList);
 
         titleEditBtn = addRenderableWidget(new ImageButton(leftPos, topPos + 3, 16, 16,
@@ -139,7 +140,9 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     private void applyChanges() {
-        new SyncFilterMessage(filter.toString(), newTitle == null ? null : newTitle.getString(), interactionHand).sendToServer();
+        NetworkManager.sendToServer(new SyncFilterMessage(
+                filter.toString(), newTitle == null ? Optional.empty() : Optional.of(newTitle.getString()), interactionHand)
+        );
 
         onClose();
 
@@ -232,9 +235,9 @@ public class FilterScreen extends AbstractFilterScreen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (guiHeight > 0) {
-            GuiUtil.drawPanel(guiGraphics, new Rect2i(leftPos + 7, topPos + 20, getListWidth() + 2, getListHeight()),
+            GuiUtil.drawPanel(guiGraphics, new Rect2i(leftPos + 7, topPos + 19, getListWidth() + 2, getListHeight() + 1),
                     0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
-            filterList.render(guiGraphics, mouseX, mouseY, partialTick);
+            filterList.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
 
             Component displayTitle = newTitle == null ? title : newTitle;
             guiGraphics.drawString(font, displayTitle,leftPos + 8, topPos + 7, 0x404040, false);
@@ -372,6 +375,10 @@ public class FilterScreen extends AbstractFilterScreen {
             addChildren();
         }
 
+        @Override
+        protected void renderListBackground(GuiGraphics guiGraphics) {
+        }
+
         private void addChildren() {
             List<FilterEntry> entries = new ArrayList<>();
 
@@ -477,6 +484,10 @@ public class FilterScreen extends AbstractFilterScreen {
             int col = isFocused() ? 0xFFE1F1FD : 0xFFA6B4C4;
             GuiUtil.drawPanel(guiGraphics, new Rect2i(minX + 1, pTop - 2, maxX - minX - 2, pHeight + 3), col,
                     0xFF4663AC, GuiUtil.BorderStyle.PLAIN, 1);
+        }
+
+        @Override
+        protected void renderListSeparators(GuiGraphics guiGraphics) {
         }
 
         private void findAndSelect(SmartFilter filter) {

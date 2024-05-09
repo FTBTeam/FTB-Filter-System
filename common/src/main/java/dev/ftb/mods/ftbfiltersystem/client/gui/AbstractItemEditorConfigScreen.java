@@ -99,7 +99,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         protected void handleClick(boolean doubleClick) {
             if (inventoryChecker().test(getStack()) && minecraft.player.hasPermissions(2)) {
                 editBox.setValue(serialize(getStack()));
-                customHoverName = getStack().hasCustomHoverName() ? getStack().getHoverName() : null;
+                customHoverName = getStack().getHoverName();
                 AbstractItemEditorConfigScreen.this.setFocused(editBox);
                 AbstractItemEditorConfigScreen.this.onItemWidgetClicked();
             }

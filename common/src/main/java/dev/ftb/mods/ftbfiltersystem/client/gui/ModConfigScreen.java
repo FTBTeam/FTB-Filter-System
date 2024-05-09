@@ -39,11 +39,8 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
 
         updateSearchEntries();
 
-//        modList = new ModList(minecraft, getListWidth() + 8, getListHeight(), topPos + 32, topPos + 35 + getListHeight());
         modList = new ModList(minecraft, topPos + 32, getListWidth(), getListHeight());
         modList.setX(leftPos + 8);
-        modList.setRenderBackground(false);
-//        modList.setRenderTopAndBottom(false);
         addWidget(modList);
 
         modList.children().stream()
@@ -118,6 +115,10 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
 
         public ModList(Minecraft minecraft, int y, int width, int height) {
             super(minecraft, width, height, y, ELEMENT_HEIGHT);
+        }
+
+        @Override
+        protected void renderListBackground(GuiGraphics guiGraphics) {
         }
 
         @Override
