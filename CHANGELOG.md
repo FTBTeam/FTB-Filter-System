@@ -4,8 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2]
+
+### Fixed
+* Fixed some crashes related to invalid filter text
+
 ## [2.0.1]
 
+### Changed
 * Ported to MC 1.20.4. Supports Forge, NeoForge & Fabric.
 
 ## [1.0.2]
