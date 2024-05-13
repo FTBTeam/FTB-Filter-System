@@ -127,13 +127,17 @@ public class FilterSystemCommands {
             throw NO_OFFHAND_ITEM.create();
         }
 
-        SmartFilter filter = FilterParser.parse(SmartFilterItem.getFilterString(getHeldFilter(source)));
-        if (filter.test(offhandItem)) {
-            source.sendSuccess(() -> TICK_MARK.copy().append(Component.translatable("ftbfiltersystem.message.matched", offhandItem.getDisplayName())), false);
-            return 1;
-        } else {
-            source.sendSuccess(() -> X_MARK.copy().append(Component.translatable("ftbfiltersystem.message.not_matched", offhandItem.getDisplayName())), false);
-            return 0;
+        try {
+            SmartFilter filter = FilterParser.parse(SmartFilterItem.getFilterString(getHeldFilter(source)));
+            if (filter.test(offhandItem)) {
+                source.sendSuccess(() -> TICK_MARK.copy().append(Component.translatable("ftbfiltersystem.message.matched", offhandItem.getDisplayName())), false);
+                return 1;
+            } else {
+                source.sendSuccess(() -> X_MARK.copy().append(Component.translatable("ftbfiltersystem.message.not_matched", offhandItem.getDisplayName())), false);
+                return 0;
+            }
+        } catch (FilterException e) {
+            throw PARSE_FAILED.create(e.getMessage());
         }
     }
 
