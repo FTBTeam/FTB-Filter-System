@@ -2,12 +2,9 @@ package dev.ftb.mods.ftbfiltersystem.client;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
 
 public class GuiUtil {
     public static void drawPanel(GuiGraphics graphics, Rect2i area, int bgColor, int borderColor, BorderStyle borderStyle, int borderWidth) {
@@ -73,10 +70,6 @@ public class GuiUtil {
 
     private static int makeRGB(int a, int r, int g, int b) {
         return a << 24 | r << 16 | g << 8 | b;
-    }
-
-    public static ImageButton make16x16ImageButton(ResourceLocation texture, Button.OnPress onPress) {
-        return new ImageButton(0, 0, 16, 16, 0, 0, 0, texture, 16, 16, onPress);
     }
 
     public static Rect2i outsetRect(Rect2i orig, int amount) {

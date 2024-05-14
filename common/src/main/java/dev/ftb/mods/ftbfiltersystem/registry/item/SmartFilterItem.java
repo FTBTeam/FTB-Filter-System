@@ -16,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class SmartFilterItem extends Item {
         return filterStack.hasTag() ? filterStack.getTag().getString(FILTER_TAG_NAME) : "";
     }
 
+    @NotNull
     public static SmartFilter getFilter(ItemStack filterStack) throws FilterException {
         return FilterParser.parse(getFilterString(filterStack));
     }

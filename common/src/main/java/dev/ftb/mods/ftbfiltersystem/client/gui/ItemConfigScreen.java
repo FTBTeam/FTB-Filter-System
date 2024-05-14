@@ -54,7 +54,7 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
     private ItemWidget selectedWidget;
 
     public ItemConfigScreen(ItemFilter filter, AbstractFilterScreen parentScreen) {
-        super(filter, parentScreen,194, 115);
+        super(filter, parentScreen,194, 117);
 
         cachedInventoryEntries = null; // recheck inventory each time we open
     }
@@ -92,7 +92,7 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
             }
         }
 
-        scrollArea = new Rect2i(leftPos + 174, topPos + 52, 14, 70);
+        scrollArea = new Rect2i(leftPos + 174, topPos + 55, 14, 70);
 
         setSelectedStack(new ItemStack(filter.getMatchItem()));
 
@@ -121,18 +121,19 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
 
         guiGraphics.fill(scrollArea.getX() - 2, scrollArea.getY() - 2, scrollArea.getX() + scrollArea.getWidth(), scrollArea.getY() + scrollArea.getHeight(), 0xFF808080);
         guiGraphics.fill(scrollArea.getX() - 1, scrollArea.getY() - 1, scrollArea.getX() + scrollArea.getWidth() - 1, scrollArea.getY() + scrollArea.getHeight() - 1, 0xFFA0A0A0);
-        guiGraphics.blit(SCROLL_TEXTURE, sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
+//        guiGraphics.blit(SCROLL_TEXTURE, sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
+        guiGraphics.blitSprite(new ResourceLocation("container/creative_inventory/scroller"), sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 12, 15);
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        if (dir != 0 && needsScrollBars()) {
+    public boolean mouseScrolled(double x, double y, double dirX, double dirY) {
+        if (dirY != 0 && needsScrollBars()) {
             int j = currentStacks.size() / (SEARCH_COLS + 1) - (SEARCH_ROWS - 1) + 1;
-            float i = dir > 0 ? 1f : -1f;
+            float i = dirY > 0 ? 1f : -1f;
             scrollTo(Mth.clamp(currentScroll - i / j, 0.0, 1.0));
             return true;
         }
-        return super.mouseScrolled(x, y, dir);
+        return super.mouseScrolled(x, y, dirX, dirY);
     }
 
     @Override
@@ -287,7 +288,7 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
 
     private class SearchItemWidget extends ItemWidget {
         public SearchItemWidget(int row, int col) {
-            super(ItemConfigScreen.this.leftPos + 8 + 18 * col, ItemConfigScreen.this.topPos + 50 + 18 * row, 18, 18, ItemStack.EMPTY);
+            super(ItemConfigScreen.this.leftPos + 8 + 18 * col, ItemConfigScreen.this.topPos + 53 + 18 * row, 18, 18, ItemStack.EMPTY);
         }
 
         @Override

@@ -25,3 +25,9 @@ run
 custom.gradle
 .architectury-transformer/debug.log
 common/src/generated/.cache/*
+**/extra-mods-*/
+
+# Files from bad operating systems :^)
+Thumbs.db
+.DS_Store
+.architectury-transformer

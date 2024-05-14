@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.Rect2i;
 import java.util.List;
 
 public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>> extends ObjectSelectionList<T> {
-    public CustomSelectionList(Minecraft minecraft, int width, int height, int top, int bottom, int elementHeight) {
-        super(minecraft, width, height, top, bottom, elementHeight);
+    public CustomSelectionList(Minecraft minecraft, int width, int height, int y, int elementHeight) {
+        super(minecraft, width, height, y, elementHeight);
 
         addChildren();
     }
@@ -37,17 +37,17 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
 
     @Override
     protected int getScrollbarPosition() {
-        return x0 + width - 6;
+        return getX() + width - 6;
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
     }
 
     @Override
     protected void renderList(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         int w = getMaxScroll() > 0 ? width - 6 : width;
-        GuiUtil.drawPanel(guiGraphics, new Rect2i(x0, y0, w, height + 4),
+        GuiUtil.drawPanel(guiGraphics, new Rect2i(getX(), getY(), w, height + 4),
                 0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
 
         super.renderList(guiGraphics, mouseX, mouseY, partialTick);
@@ -55,8 +55,8 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
 
     @Override
     protected void renderSelection(GuiGraphics guiGraphics, int pTop, int pWidth, int pHeight, int pOuterColor, int pInnerColor) {
-        int minX = this.x0 + (this.width - pWidth) / 2;
-        int maxX = this.x0 + (this.width + pWidth) / 2 + (getMaxScroll() > 0 ? -3 : 3);
+        int minX = getX() + (this.width - pWidth) / 2;
+        int maxX = getX() + (this.width + pWidth) / 2 + (getMaxScroll() > 0 ? -3 : 3);
         int col = isFocused() ? 0xFFE1F1FD : 0xFFC8D9ED;
         GuiUtil.drawPanel(guiGraphics, new Rect2i(minX + 1, pTop - 2, maxX - minX - 2, pHeight + 4), col, 0xFF4663AC, GuiUtil.BorderStyle.PLAIN, 1);
     }

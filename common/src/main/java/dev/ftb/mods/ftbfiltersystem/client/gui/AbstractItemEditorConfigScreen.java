@@ -30,7 +30,6 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     private CustomStringWidget statusLine;
     private final List<SearchItemWidget> itemWidgets = new ArrayList<>();
     protected Component customHoverName = null;
-//    protected Component statusMsg = Component.empty();
 
     @Override
     protected void init() {
@@ -74,8 +73,6 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
         guiGraphics.renderOutline(leftPos + 7, topPos + 109, 164, 74, 0xFFA0A0A0);
-//        int w = font.width(statusMsg);
-//        guiGraphics.drawString(font, statusMsg, leftPos + guiWidth - (w + 8), topPos + 98, 0x404040, false);
     }
 
     protected abstract Predicate<ItemStack> inventoryChecker();
@@ -89,6 +86,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     }
 
     protected abstract String serialize(ItemStack stack);
+
     private class SearchItemWidget extends ItemWidget {
 
         public SearchItemWidget(int row, int col) {

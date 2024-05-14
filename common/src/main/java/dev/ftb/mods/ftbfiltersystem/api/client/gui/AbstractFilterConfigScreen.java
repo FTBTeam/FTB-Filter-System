@@ -81,7 +81,7 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     protected void init() {
         setupGuiDimensions();
 
-        LinearLayout bottomPanel = new LinearLayout(leftPos, topPos + guiHeight - 25, guiWidth, 20, LinearLayout.Orientation.HORIZONTAL);
+        LinearLayout bottomPanel = new LinearLayout(leftPos, topPos + guiHeight - 25, LinearLayout.Orientation.HORIZONTAL);
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
                 .addChild(Button.builder(Component.translatable("gui.done"), b -> applyChanges()).width(70).build());
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
@@ -89,7 +89,8 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
         bottomPanel.arrangeElements();
         bottomPanel.visitWidgets(this::addRenderableWidget);
 
-        ImageWidget img = addRenderableWidget(new ImageWidget(leftPos + guiWidth - 19, topPos + 3, 16, 16, Textures.INFO_ICON));
+        ImageWidget img = addRenderableWidget(ImageWidget.sprite(16, 16, Textures.INFO_ICON));
+        img.setPosition(leftPos + guiWidth - 19, topPos + 3);
         img.setTooltip(Tooltip.create(AbstractSmartFilter.getTooltip(filter.getId())));
     }
 
@@ -111,20 +112,23 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
 
     @Override
     public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        renderBackground(guiGraphics);
-
-        guiGraphics.blitNineSliced(Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight, 4, 32, 32, 0, 0);
+        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
         guiGraphics.hLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 29, 0x80404040);
         guiGraphics.hLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 28, 0x80FFFFFF);
 
         guiGraphics.drawString(font, title, leftPos + 8, topPos + 6, 0x404040, false);
+    }
 
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+
+        guiGraphics.blitSprite(Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
     }
 
     protected final EditBox makeSearchEditBox(int x, int y, Supplier<String> prevStrSupplier, Consumer<String> prevStrConsumer) {
-        EditBox editBox = new EditBox(font, x, y, 88, font.lineHeight + 1, Component.empty());
+        EditBox editBox = new EditBox(font, x, y, 88, font.lineHeight + 4, Component.empty());
         editBox.setMaxLength(15);
         editBox.setBordered(true);
         editBox.setVisible(true);
