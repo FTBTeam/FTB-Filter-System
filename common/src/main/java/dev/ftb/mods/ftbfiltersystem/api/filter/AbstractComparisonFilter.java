@@ -3,6 +3,9 @@ package dev.ftb.mods.ftbfiltersystem.api.filter;
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * Base class for all simple comparison filters; those filters which compare a single integer property.
+ */
 public abstract class AbstractComparisonFilter extends AbstractSmartFilter {
     protected final NumericComparison comparison;
 
@@ -15,8 +18,17 @@ public abstract class AbstractComparisonFilter extends AbstractSmartFilter {
         return comparison;
     }
 
+    /**
+     * Retrieve the actual value to be compared from the given itemstack
+     * @param stack the stack to check
+     * @return the value to be compared
+     */
     protected abstract int getValueToCompare(ItemStack stack);
 
+    /**
+     * Does this filter allow the comparison value to alternately be specified as a percentage of the maximum amount?
+     * @return true to allow percentage comparisons, false otherwise
+     */
     public boolean allowsPercentage() {
         return false;
     }

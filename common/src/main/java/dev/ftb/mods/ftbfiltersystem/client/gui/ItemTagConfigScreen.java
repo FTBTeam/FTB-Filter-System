@@ -41,11 +41,8 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
 
         updateSearchEntries();
 
-//        itemTagList = new ItemTagList(minecraft, getListWidth() + 8, getListHeight(), topPos + 32, topPos + 35 + getListHeight());
         itemTagList = new ItemTagList(minecraft,topPos + 32, getListWidth(), getListHeight());
         itemTagList.setX(leftPos + 8);
-        itemTagList.setRenderBackground(false);
-//        itemTagList.setRenderTopAndBottom(false);
         addWidget(itemTagList);
 
         itemTagList.children().stream()
@@ -102,6 +99,10 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
 
         public ItemTagList(Minecraft minecraft, int y, int width, int height) {
             super(minecraft, width, height, y, ELEMENT_HEIGHT);
+        }
+
+        @Override
+        protected void renderListBackground(GuiGraphics guiGraphics) {
         }
 
         @Override

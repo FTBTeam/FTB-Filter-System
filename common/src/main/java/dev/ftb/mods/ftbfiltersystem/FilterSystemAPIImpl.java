@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
@@ -30,6 +31,11 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
     @Override
     public boolean isFilterItem(ItemStack stack) {
         return stack.getItem() instanceof SmartFilterItem;
+    }
+
+    @Override
+    public Item filterItem() {
+        return Objects.requireNonNull(ModItems.SMART_FILTER.get());
     }
 
     @Override

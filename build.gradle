@@ -2,7 +2,7 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
     id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
@@ -38,7 +38,7 @@ allprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
-        options.release = 17
+        options.release = 21
     }
 
     java {
@@ -111,12 +111,12 @@ publishMods {
         }
     }
 
-    curseforge("forge") {
-        from curseOptions
-        modLoaders.add("forge")
-        file = project(":forge").tasks.remapJar.archiveFile
-        displayName = "[FORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
-    }
+//    curseforge("forge") {
+//        from curseOptions
+//        modLoaders.add("forge")
+//        file = project(":forge").tasks.remapJar.archiveFile
+//        displayName = "[FORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
+//    }
 
     curseforge("neoforge") {
         from curseOptions

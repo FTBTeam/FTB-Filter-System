@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "P": {
       "item": "minecraft:paper"
@@ -17,6 +18,7 @@
     "TST"
   ],
   "result": {
-    "item": "ftbfiltersystem:smart_filter"
+    "count": 1,
+    "id": "ftbfiltersystem:smart_filter"
   }
 }

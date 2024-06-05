@@ -9,17 +9,26 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntPredicate;
 
-public class NumericComparison implements IntPredicate {
-    private final ComparisonOp op;
-    private final int value;
-    private final boolean percentage;
-
-    public NumericComparison(ComparisonOp op, int value, boolean percentage) {
-        this.op = op;
-        this.value = value;
-        this.percentage = percentage;
-    }
-
+/**
+ * A comparison object, which is retrieved from a
+ * {@link dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter comparison filter}. Effectively just an
+ * integer predicate.
+ *
+ * @param op the comparison operator
+ * @param value the value to compare
+ * @param percentage true if this is a percentage comparison
+ */
+public record NumericComparison(ComparisonOp op, int value, boolean percentage) implements IntPredicate {
+    /**
+     * Create a new comparison from the given string. The expected format is {@code {OP}{VAL}[%]}, where OP is a
+     * comparison operator (see {@link ComparisonOp}, and VAL is an integer quantity. See the {@link #toString()}
+     * for an illustration of the reverse process.
+     *
+     * @param str the str to parse
+     * @param allowPercentages true if this comparison should allow percentage comparisons
+     * @return a new NumericComparison object
+     * @throws FilterException if the input is any way invalid
+     */
     public static NumericComparison fromString(String str, boolean allowPercentages) throws FilterException {
         boolean pct = false;
         if (str.endsWith("%")) {
@@ -64,18 +73,6 @@ public class NumericComparison implements IntPredicate {
         return op.test(toCheck, value);
     }
 
-    public boolean isPercentage() {
-        return percentage;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public ComparisonOp getOp() {
-        return op;
-    }
-
     public enum ComparisonOp {
         EQ("=", (v1, v2) -> v1 == v2),
         NE("!=", (v1, v2) -> v1 != v2),
@@ -87,7 +84,7 @@ public class NumericComparison implements IntPredicate {
         private final String str;
         private final ValuePredicate predicate;
 
-        private static final Map<String,ComparisonOp> map = Util.make(new HashMap<>(),
+        private static final Map<String, ComparisonOp> map = Util.make(new HashMap<>(),
                 map -> Arrays.stream(values()).forEach(op -> map.put(op.str, op))
         );
 

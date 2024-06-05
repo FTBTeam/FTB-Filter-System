@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbfiltersystem.client.gui.widget;
+package dev.ftb.mods.ftbfiltersystem.api.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;

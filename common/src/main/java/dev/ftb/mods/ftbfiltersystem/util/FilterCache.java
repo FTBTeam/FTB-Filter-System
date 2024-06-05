@@ -30,4 +30,8 @@ public enum FilterCache {
             return filter;
         }
     }
+
+    public void clear() {
+        cache.clear();
+    }
 }

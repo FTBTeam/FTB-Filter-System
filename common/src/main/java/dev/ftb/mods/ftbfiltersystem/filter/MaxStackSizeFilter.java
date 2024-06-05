@@ -1,9 +1,8 @@
 package dev.ftb.mods.ftbfiltersystem.filter;
 
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
-import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
-import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
+import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
+import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;

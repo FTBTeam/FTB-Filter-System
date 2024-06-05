@@ -113,6 +113,12 @@ public class FTBFilterSystemAPI {
         boolean isFilterItem(ItemStack stack);
 
         /**
+         * {@return the Smart Filter item} May be useful for mods which wish to add capabilities and/or components
+         * to the Smart Filter. Do not call this before registration has completed.
+         */
+        Item filterItem();
+
+        /**
          * Check if the given filter stack matches the given item stack
          * .
          * @param filterStack the filter stack, which should be a FTB Filter System filter

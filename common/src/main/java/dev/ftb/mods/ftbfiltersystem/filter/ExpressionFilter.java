@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.filter;
 
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
+import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
@@ -15,11 +16,11 @@ public class ExpressionFilter extends AbstractSmartFilter {
     private final String customName;
     private final SmartFilter parsedExpression;
 
-    public ExpressionFilter(SmartFilter.Compound parent) {
+    public ExpressionFilter(SmartFilter.Compound parent) throws FilterException {
         this(parent, "");
     }
 
-    public ExpressionFilter(SmartFilter.Compound parent, String expression) {
+    public ExpressionFilter(SmartFilter.Compound parent, String expression) throws FilterException {
         super(parent);
 
         String[] parts = expression.split("/", 2);
@@ -52,7 +53,7 @@ public class ExpressionFilter extends AbstractSmartFilter {
         return customName.isEmpty() ? super.getDisplayArg() : Component.literal(customName);
     }
 
-    public static ExpressionFilter fromString(SmartFilter.Compound parent, String str) {
+    public static ExpressionFilter fromString(SmartFilter.Compound parent, String str) throws FilterException {
         return new ExpressionFilter(parent, str);
     }
 

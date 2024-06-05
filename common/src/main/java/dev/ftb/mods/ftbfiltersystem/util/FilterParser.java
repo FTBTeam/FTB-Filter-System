@@ -6,15 +6,22 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.RootFilter;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilterParser {
+    @NotNull
     public static SmartFilter parse(String str) throws FilterException {
-        return FilterCache.INSTANCE.getOrCreateFilter(str);
+        SmartFilter filter = FilterCache.INSTANCE.getOrCreateFilter(str);
+        if (filter == null) {
+            throw new FilterException("invalid filter: " + str);
+        }
+        return filter;
     }
 
+    @NotNull
     static SmartFilter parseRaw(String str) throws FilterException {
         RootFilter root = new RootFilter();
         root.getChildren().addAll(parseFilterList(root, str));
