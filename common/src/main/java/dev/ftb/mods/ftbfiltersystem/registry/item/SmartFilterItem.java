@@ -23,8 +23,9 @@ import java.util.List;
 
 public class SmartFilterItem extends Item {
     public SmartFilterItem() {
-        super(ModItems.defaultProps());
-//                .component(ModDataComponents.FILTER_STRING.get(), ""));
+        super(ModItems.defaultProps()
+                .component(ModDataComponents.FILTER_STRING.get(), "")
+        );
     }
 
     public static String getFilterString(ItemStack filterStack) {
