@@ -9,12 +9,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class FTBFilterSystemAPI {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FTBFilterSystemAPI.class);
+
     public static final String MOD_ID = "ftbfiltersystem";
 
     private static API instance;
@@ -49,7 +53,7 @@ public class FTBFilterSystemAPI {
      * @return a new resource location
      */
     public static ResourceLocation rl(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**
@@ -59,7 +63,17 @@ public class FTBFilterSystemAPI {
      * @return a resource location
      */
     public static ResourceLocation modDefaultedRL(String str) {
-        return str.indexOf(':') > 0 ? new ResourceLocation(str) : new ResourceLocation(FTBFilterSystemAPI.MOD_ID, str);
+        if (str.indexOf(":") > 0) {
+            var result = ResourceLocation.tryParse(str);
+            if (result == null) {
+                LOGGER.warn("Invalid resource location: {}, falling back to ftbfiltersystem:", str);
+                return rl(str);
+            }
+
+            return result;
+        }
+
+        return rl(str);
     }
 
     /**

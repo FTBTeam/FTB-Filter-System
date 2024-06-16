@@ -45,7 +45,7 @@ public class FilterParser {
             String type = str.substring(0, start).trim();
             String arg = unescape(str.substring(start + 1, matchingParen).trim());
 
-            if (!ResourceLocation.isValidResourceLocation(type)) {
+            if (ResourceLocation.tryParse(type) == null) {
                 throw new FilterException("invalid filter ID: " + type);
             }
 
