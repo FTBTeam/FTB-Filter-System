@@ -37,9 +37,9 @@ public class FTBFilterSystem {
         CommandRegistrationEvent.EVENT.register(FilterSystemCommands::registerCommands);
 
         FilterRegistrationEvent.REGISTER.register(this::registerBuiltinFilters);
+        ModDataComponents.COMPONENT_TYPES.register();
         ModItems.TABS.register();
         ModItems.ITEMS.register();
-        ModDataComponents.COMPONENT_TYPES.register();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> FTBFilterSystemClient.INSTANCE::init);
 

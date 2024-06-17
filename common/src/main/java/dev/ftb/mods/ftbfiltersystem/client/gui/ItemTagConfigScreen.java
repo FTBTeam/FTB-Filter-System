@@ -60,10 +60,11 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
 
     @Override
     protected @Nullable ItemTagFilter makeNewFilter() {
+        ResourceLocation location;
         if (itemTagList.getSelected() != null) {
             return new ItemTagFilter(filter.getParent(), itemTagList.getSelected().tagKey);
-        } else if (itemTagList.children().isEmpty() && ResourceLocation.isValidResourceLocation(searchField.getValue())) {
-            return new ItemTagFilter(filter.getParent(), TagKey.create(Registries.ITEM, new ResourceLocation(searchField.getValue())));
+        } else if (itemTagList.children().isEmpty() && (location = ResourceLocation.tryParse(searchField.getValue())) != null) {
+            return new ItemTagFilter(filter.getParent(), TagKey.create(Registries.ITEM, location));
         } else {
             return null;
         }

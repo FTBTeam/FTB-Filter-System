@@ -43,7 +43,7 @@ public class ItemFilter extends AbstractSmartFilter {
 
     public static ItemFilter fromString(SmartFilter.Compound parent, String str) {
         try {
-            Item item = BuiltInRegistries.ITEM.getOrThrow(ResourceKey.create(Registries.ITEM, new ResourceLocation(str)));
+            Item item = BuiltInRegistries.ITEM.getOrThrow(ResourceKey.create(Registries.ITEM, ResourceLocation.tryParse(str)));
             return new ItemFilter(parent, item);
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new FilterException(e.getMessage(), e);

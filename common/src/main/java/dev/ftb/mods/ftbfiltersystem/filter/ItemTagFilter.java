@@ -47,7 +47,7 @@ public class ItemTagFilter extends AbstractSmartFilter {
 
     public static ItemTagFilter fromString(SmartFilter.Compound parent, String str) {
         try {
-            return new ItemTagFilter(parent, TagKey.create(Registries.ITEM, new ResourceLocation(str)));
+            return new ItemTagFilter(parent, TagKey.create(Registries.ITEM, ResourceLocation.tryParse(str)));
         } catch (ResourceLocationException e) {
             throw new FilterException("invalid tag key " + str, e);
         }

@@ -20,7 +20,7 @@ public class ModItems {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(FTBFilterSystemAPI.MOD_ID, Registries.CREATIVE_MODE_TAB);
     public static final RegistrySupplier<CreativeModeTab> CREATIVE_TAB = RegistrarManager.get(FTBFilterSystemAPI.MOD_ID)
             .get(Registries.CREATIVE_MODE_TAB)
-            .register(new ResourceLocation(FTBFilterSystemAPI.MOD_ID, "default"), ModItems::buildDefaultTab);
+            .register(FTBFilterSystemAPI.rl("default"), ModItems::buildDefaultTab);
 
     public static Item.Properties defaultProps() {
         return new Item.Properties();
