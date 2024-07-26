@@ -33,3 +33,10 @@ type = "required"
 versionRange = "[${archversion},)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.5.0.40,)"
+ordering = "AFTER"
+side = "BOTH"

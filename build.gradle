@@ -2,7 +2,7 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
     id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
 
@@ -84,24 +84,27 @@ subprojects {
     }
 }
 
-
-// TODO: Move this to a common location?
-Closure<ReleaseType> releaseTypeToPublishType = { type ->
-    switch(type) {
-        case "release": return ReleaseType.STABLE
-        case "beta": return ReleaseType.BETA
-        case "alpha": return ReleaseType.ALPHA
-        default: return ReleaseType.STABLE
-    }
-}
-
 publishMods {
     dryRun = providers.environmentVariable("CURSEFORGE_KEY").getOrNull() == null
     changelog = providers.environmentVariable("CHANGELOG").orElse("")
     version = mod_version
-    type = releaseTypeToPublishType(ftbPublishing.relType)
 
-    def curseOptions = curseforgeOptions {
+    def tag = providers.environmentVariable("TAG").getOrElse("release")
+    type = tag.endsWith("-beta") ? BETA : (tag.endsWith("-alpha") ? ALPHA : STABLE)
+
+    def createOptions = (String projectName) -> {
+        publishOptions {
+            file = project.provider { project(":$projectName").tasks.remapJar }.flatMap { it.archiveFile }
+            displayName = "[${projectName.toUpperCase()}][${minecraft_version}] ${readable_name} ${mod_version}"
+            modLoaders.add(projectName.toLowerCase())
+        }
+    }
+
+    def fabricOptions = createOptions("fabric")
+    def neoForgeOptions = createOptions("neoforge")
+//	def forgeOptions = createOptions("forge")
+
+    def curseForgeOptions = curseforgeOptions {
         accessToken = providers.environmentVariable("CURSEFORGE_KEY")
         projectId = project.curseforge_id
         minecraftVersions.add(rootProject.minecraft_version)
@@ -112,31 +115,21 @@ publishMods {
     }
 
 //    curseforge("forge") {
-//        from curseOptions
-//        modLoaders.add("forge")
-//        file = project(":forge").tasks.remapJar.archiveFile
-//        displayName = "[FORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
+//        from (curseForgeOptions, forgeOptions)
 //    }
 
     curseforge("neoforge") {
-        from curseOptions
-        modLoaders.add("neoforge")
-        file = project(":neoforge").tasks.remapJar.archiveFile
-        displayName = "[NEOFORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
+        from (curseForgeOptions, neoForgeOptions)
     }
 
     curseforge("fabric") {
-        from curseOptions
-        modLoaders.add("fabric")
-        file = project(":fabric").tasks.remapJar.archiveFile
-        displayName = "[FABRIC] FTB Filter System ${mod_version} MC ${minecraft_version}"
-
+        from (curseForgeOptions, fabricOptions)
         requires {
             slug = "fabric-api"
         }
     }
 
-    // TODO uncomment this one day but will need to redo how our publishing workflow happens
+    // TODO uncomment this one day but we need to redo how our publishing workflow happens
 //    github {
 //        repository = "ftbteam/ftb-filter-system"
 //        accessToken = providers.environmentVariable("GITHUB_TOKEN")

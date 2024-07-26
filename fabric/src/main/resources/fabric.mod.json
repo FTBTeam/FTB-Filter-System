@@ -25,5 +25,8 @@
     "fabric": "*",
     "minecraft": ">=1.20.1",
     "architectury": ">=9.1.12"
+  },
+  "breaks": {
+    "jei": "<19.5.0.40"
   }
 }
