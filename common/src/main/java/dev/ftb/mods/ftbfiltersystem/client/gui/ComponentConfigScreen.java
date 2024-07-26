@@ -82,7 +82,6 @@ public class ComponentConfigScreen extends AbstractItemEditorConfigScreen<Compon
         return new Rect2i(editBox.getX(), editBox.getY(), editBox.getWidth(), editBox.getHeight());
     }
 
-    @SuppressWarnings("UnreachableCode")
     @Override
     public void receiveGhostDrop(ItemStack stack) {
         if (PlatformUtil.hasComponentPatch(stack)) {
