@@ -26,8 +26,30 @@ allprojects {
 
     // needs to be done AFTER version is set
     apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"
+//    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
 
     repositories {
+        mavenLocal()
+        maven {
+            url "https://maven.architectury.dev/"
+        }
+
+        maven {
+            url "https://maven.saps.dev/releases"
+            content {
+                includeGroup "dev.latvian.mods"
+                includeGroup "dev.ftb.mods"
+            }
+        }
+
+        maven {
+            url "https://maven.saps.dev/snapshots"
+            content {
+                includeGroup "dev.latvian.mods"
+                includeGroup "dev.ftb.mods"
+            }
+        }
+
         maven {
             url "https://maven.blamejared.com"
             content {

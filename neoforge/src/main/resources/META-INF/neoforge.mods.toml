@@ -35,6 +35,13 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.ftbfiltersystem]]
+modId = "ftblibrary"
+type = "required"
+versionRange = "[${ftb_library_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
 modId = "jei"
 type = "optional"
 versionRange = "[19.5.0.40,)"

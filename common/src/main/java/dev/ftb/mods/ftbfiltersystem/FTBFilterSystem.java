@@ -17,6 +17,7 @@ import dev.ftb.mods.ftbfiltersystem.network.FTBFilterSystemNet;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
+import dev.ftb.mods.ftblibrary.FTBLibrary;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +39,8 @@ public class FTBFilterSystem {
 
         FilterRegistrationEvent.REGISTER.register(this::registerBuiltinFilters);
         ModDataComponents.COMPONENT_TYPES.register();
-        ModItems.TABS.register();
         ModItems.ITEMS.register();
+        ModItems.init();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> FTBFilterSystemClient.INSTANCE::init);
 

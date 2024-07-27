@@ -24,7 +24,8 @@
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.20.1",
-    "architectury": ">=9.1.12"
+    "architectury": ">=9.1.12",
+    "ftblibrary": ">=2100.1.4"
   },
   "breaks": {
     "jei": "<19.5.0.40"
