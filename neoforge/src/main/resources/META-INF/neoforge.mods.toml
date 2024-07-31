@@ -16,7 +16,7 @@ Smart and highly configurable item filtering system with useful GUI configuratio
 [[dependencies.ftbfiltersystem]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${neoforgeversion},)"
+versionRange = "${neoforgeversionrange}"
 ordering = "NONE"
 side = "BOTH"
 
@@ -37,7 +37,7 @@ side = "BOTH"
 [[dependencies.ftbfiltersystem]]
 modId = "ftblibrary"
 type = "required"
-versionRange = "[${ftb_library_version},)"
+versionRange = "[${ftblibraryversion},)"
 ordering = "AFTER"
 side = "BOTH"
 

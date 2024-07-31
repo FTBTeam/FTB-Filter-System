@@ -22,10 +22,10 @@
     "ftbfiltersystem.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "minecraft": ">=1.20.1",
-    "architectury": ">=9.1.12",
-    "ftblibrary": ">=2100.1.4"
+    "fabric": "${fabricapiversionrange}",
+    "minecraft": "~${mcversion}",
+    "architectury": ">=${archversion}",
+    "ftblibrary": ">=${ftb_library_version}"
   },
   "breaks": {
     "jei": "<19.5.0.40"
