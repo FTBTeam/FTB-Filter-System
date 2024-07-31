@@ -40,7 +40,8 @@ processResources {
         expand "version": project.version,
                 "archversion": project.architectury_version,
                 "fabricapiversionrange": project.fabric_api_version_range,
-                "mcversion": project.minecraft_version
+                "mcversion": project.minecraft_version,
+                "ftblibraryversion": project.ftb_library_version
     }
 }
 

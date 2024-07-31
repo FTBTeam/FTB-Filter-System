@@ -25,7 +25,7 @@
     "fabric": "${fabricapiversionrange}",
     "minecraft": "~${mcversion}",
     "architectury": ">=${archversion}",
-    "ftblibrary": ">=${ftb_library_version}"
+    "ftblibrary": ">=${ftblibraryversion}"
   },
   "breaks": {
     "jei": "<19.5.0.40"
