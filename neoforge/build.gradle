@@ -33,11 +33,11 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${rootProject.minecraft_version}-neoforge-api:${rootProject.jei_version}")
     modRuntimeOnly("mezz.jei:jei-${rootProject.minecraft_version}-neoforge:${rootProject.jei_version}")
 
+    modApi ("dev.ftb.mods:ftb-library-neoforge:${rootProject.ftb_library_version}") { transitive false }
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 }
-
-apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
 
 processResources {
     inputs.property "version", project.version
@@ -45,9 +45,10 @@ processResources {
     filesMatching("META-INF/neoforge.mods.toml") {
         expand "version": project.version,
                 "archversion": project.architectury_version,
-                "neoforgeversion": project.neoforge_version,
+                "neoforgeversionrange": project.neoforge_version_range,
                 "neoforgeloaderversion": project.neoforge_loader_version,
-                "mcversion": project.minecraft_version
+                "mcversion": project.minecraft_version,
+                "ftblibraryversion": project.ftb_library_version
     }
 }
 

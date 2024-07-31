@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [21.0.0]
+
+### Changed
+* Filter items are now registered to the `FTB Suite` creative tab instead of its own tab
+* FTB Filter System now requires FTB Library to be installed
+* Version bump from 3.0.0 to 21.0.0 reflects new version numbering scheme based on Minecraft major/minor release
+
+### Fixed
+* Fixed recipe for Smart Filter not working
+
 ## [3.0.0]
 
 ### Changed
