@@ -6,6 +6,8 @@ plugins {
     id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
 
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/changelog.gradle'
+
 architectury {
     minecraft = rootProject.minecraft_version
 }
@@ -108,7 +110,7 @@ subprojects {
 
 publishMods {
     dryRun = providers.environmentVariable("CURSEFORGE_KEY").getOrNull() == null
-    changelog = providers.environmentVariable("CHANGELOG").orElse("")
+    changelog = createChangelog(project)
     version = mod_version
 
     def tag = providers.environmentVariable("TAG").getOrElse("release")
