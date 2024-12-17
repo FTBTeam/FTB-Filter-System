@@ -22,7 +22,7 @@ public class FilterParser {
     }
 
     @NotNull
-    static SmartFilter parseRaw(String str) throws FilterException {
+    public static SmartFilter parseRaw(String str) throws FilterException {
         RootFilter root = new RootFilter();
         root.getChildren().addAll(parseFilterList(root, str));
         return root;
