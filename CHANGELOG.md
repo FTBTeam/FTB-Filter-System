@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [21.0.1]
 
+### Added
+* Added tr_tr translation (thanks @RuyaSavascisi)
+
 ### Fixed
 * Fixed an issue where editing an existing filter via GUI could lead to bad filter data being cached
 
