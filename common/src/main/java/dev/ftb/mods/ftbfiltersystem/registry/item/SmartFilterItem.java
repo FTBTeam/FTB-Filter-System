@@ -34,7 +34,9 @@ public class SmartFilterItem extends Item {
 
     @NotNull
     public static SmartFilter getFilter(ItemStack filterStack) throws FilterException {
-        return FilterParser.parse(getFilterString(filterStack));
+        // don't pull from cache here; we could be editing this filter,
+        //   and don't want to edit something in the cache already
+        return FilterParser.parseRaw(getFilterString(filterStack));
     }
 
     public static void setFilter(ItemStack filterStack, String string) {
