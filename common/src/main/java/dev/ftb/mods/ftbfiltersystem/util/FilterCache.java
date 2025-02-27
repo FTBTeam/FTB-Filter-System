@@ -2,7 +2,6 @@ package dev.ftb.mods.ftbfiltersystem.util;
 
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
  * An LRU cache to store known filter strings and the SmartFilter objects created from them.
@@ -11,24 +10,19 @@ public enum FilterCache {
     INSTANCE;
 
     private static final int MAX_SIZE = 1000;
-    private final Object2ObjectLinkedOpenHashMap<String,SmartFilter> cache = new Object2ObjectLinkedOpenHashMap<>();
+    private final LRUCache<String,SmartFilter> cache = new LRUCache<>(MAX_SIZE);
 
     public SmartFilter getOrCreateFilter(String filterStr) throws FilterException {
-        if (cache.containsKey(filterStr)) {
-            return cache.getAndMoveToFirst(filterStr);
-        } else {
-            SmartFilter filter;
+        SmartFilter res = cache.get(filterStr);
+        if (res == null) {
             try {
-                filter = FilterParser.parseRaw(filterStr);
-            } catch (FilterException e) {
-                filter = null;
+                res = FilterParser.parseRaw(filterStr);
+            } catch (FilterException ignored) {
+                // res stays null, which is fine
             }
-            if (cache.size() >= MAX_SIZE) {
-                cache.removeLast();
-            }
-            cache.put(filterStr, filter);
-            return filter;
+            cache.put(filterStr, res);
         }
+        return res;
     }
 
     public void clear() {
