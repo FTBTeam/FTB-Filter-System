@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbfiltersystem.util;
 
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.filter.InvalidFilter;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 /**
@@ -21,7 +22,7 @@ public enum FilterCache {
             try {
                 filter = FilterParser.parseRaw(filterStr);
             } catch (FilterException e) {
-                filter = null;
+                filter = new InvalidFilter(e.getMessage());
             }
             if (cache.size() >= MAX_SIZE) {
                 cache.removeLast();
