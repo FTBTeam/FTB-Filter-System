@@ -48,11 +48,11 @@ public class SelectionPanel {
 
     private void createButtons(Font font, Consumer<ResourceLocation> onClicked) {
         int widestButton = Math.max(font.width(BASIC), font.width(COMPOUND));
-        for (SmartFilter filter : FilterRegistry.INSTANCE.defaultFilterInstances()) {
+        for (SmartFilter filter : FilterRegistry.getInstance().defaultFilterInstances()) {
             widestButton = Math.max(widestButton, font.width(filter.getDisplayName()) + 10);
         }
 
-        for (SmartFilter filter : FilterRegistry.INSTANCE.defaultFilterInstances().stream()
+        for (SmartFilter filter : FilterRegistry.getInstance().defaultFilterInstances().stream()
                 .sorted(Comparator.comparing(filter -> filter.getDisplayName().getString()))
                 .toList())
         {

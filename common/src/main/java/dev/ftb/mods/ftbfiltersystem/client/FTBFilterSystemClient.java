@@ -56,7 +56,7 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     }
 
     public void onClientSetup(Minecraft minecraft) {
-        FilterRegistry.INSTANCE.freeze();
+        FilterRegistry.getInstance().freeze();
     }
 
     public void openFilterScreen(InteractionHand interactionHand) {

@@ -25,7 +25,7 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
 
     @Override
     public FTBFilterSystemRegistry getRegistry() {
-        return FilterRegistry.INSTANCE;
+        return FilterRegistry.getInstance();
     }
 
     @Override
@@ -55,7 +55,7 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
 
     @Override
     public Optional<SmartFilter> createDefaultFilter(SmartFilter.Compound parent, ResourceLocation filterId) {
-        return FilterRegistry.INSTANCE.createDefaultFilter(parent, filterId);
+        return FilterRegistry.getInstance().createDefaultFilter(parent, filterId);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class FTBFilterSystem {
     }
 
     private void serverStarted(MinecraftServer minecraftServer) {
-        FilterRegistry.INSTANCE.freeze();
+        FilterRegistry.getInstance().freeze();
     }
 
     private void registerBuiltinFilters(FTBFilterSystemRegistry reg) {

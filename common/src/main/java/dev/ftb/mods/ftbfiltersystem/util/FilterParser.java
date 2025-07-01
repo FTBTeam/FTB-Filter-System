@@ -49,7 +49,7 @@ public class FilterParser {
                 throw new FilterException("invalid filter ID: " + type);
             }
 
-            res.add(FilterRegistry.INSTANCE.getDetails(FTBFilterSystemAPI.modDefaultedRL(type))
+            res.add(FilterRegistry.getInstance().getDetails(FTBFilterSystemAPI.modDefaultedRL(type))
                     .map(FilterRegistry.FilterDetails::factory)
                     .orElseThrow(() -> new FilterException("unknown filter ID: " + type))
                     .create(parent, arg));

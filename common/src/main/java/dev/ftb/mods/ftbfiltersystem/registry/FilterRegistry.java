@@ -1,7 +1,9 @@
 package dev.ftb.mods.ftbfiltersystem.registry;
 
+import dev.architectury.platform.Platform;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.fabricmc.api.EnvType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -10,12 +12,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public enum FilterRegistry implements FTBFilterSystemRegistry {
-    INSTANCE;
+public class FilterRegistry implements FTBFilterSystemRegistry {
+    private static final FilterRegistry SERVER_INSTANCE = new FilterRegistry();
+    private static final FilterRegistry CLIENT_INSTANCE = new FilterRegistry();
 
     private final Map<ResourceLocation, FilterDetails<?>> filterMap = new ConcurrentHashMap<>();
     private final Map<ResourceLocation, SmartFilter> defaultInstances = new ConcurrentHashMap<>();
     private boolean frozen = false;
+
+    public static FilterRegistry getInstance() {
+        return Platform.getEnv() == EnvType.CLIENT ? CLIENT_INSTANCE : SERVER_INSTANCE;
+    }
 
     @Override
     public <T extends SmartFilter> void register(ResourceLocation id, SmartFilter.Factory<T> factory, SmartFilter.DefaultFactory<T> defaultFactory) {
