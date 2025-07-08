@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [21.1.1]
 
+### Added
+* Added pt_br translation (thanks @Xlr11)
+* Added ru_ru translation (thanks @BazZziliuS)
+
 ### Fixed
 * Hopefully fix a crash on init ("frozen registry")
 
