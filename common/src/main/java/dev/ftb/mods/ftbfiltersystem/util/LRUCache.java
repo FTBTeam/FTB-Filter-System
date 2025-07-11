@@ -1,79 +1,58 @@
 package dev.ftb.mods.ftbfiltersystem.util;
 
-import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LRUCache<K,V> {
-    private final Lock lock = new ReentrantLock();
-    private final Map<K,LruNode<K,V>> map = new ConcurrentHashMap<>();
-    private final Deque<LruNode<K,V>> deque = new ConcurrentLinkedDeque<>();
     private final int capacity;
+    private final Map<K, V> map;
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
+        this.map = new LinkedHashMap<>(capacity, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                return size() > LRUCache.this.capacity;
+            }
+        };
     }
 
     public V get(K key) {
+        lock.readLock().lock();
         try {
-            lock.lockInterruptibly();
-            if (map.containsKey(key)) {
-                LruNode<K,V> node = map.get(key);
-                deque.removeFirstOccurrence(node);
-                deque.offerLast(node);
-                return node.value;
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            return map.get(key);
         } finally {
-            lock.unlock();
+            lock.readLock().unlock();
         }
-        return null;
     }
 
     public void put(K key, V value) {
+        lock.writeLock().lock();
         try {
-            lock.lockInterruptibly();
-            if (map.containsKey(key)) {
-                LruNode<K,V> toRemove = map.remove(key);
-                deque.removeFirstOccurrence(toRemove);
-            } else if (map.size() == capacity) {
-                LruNode<K,V> nodeToBeRemoved = deque.removeFirst();
-                map.remove(nodeToBeRemoved.key);
-            }
-            LruNode<K,V> node = new LruNode<>(key, value);
-            map.put(key, node);
-            deque.offerLast(node);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            map.put(key, value);
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     public void clear() {
+        lock.writeLock().lock();
         try {
-            lock.lockInterruptibly();
             map.clear();
-            deque.clear();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         } finally {
-            lock.unlock();
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<K, LruNode<K,V>> entry : this.map.entrySet()) {
-            stringBuilder.append(entry.getKey()).append(" : ").append(entry.getValue().value).append("\n");
+        lock.readLock().lock();
+        try {
+            return map.toString();
+        } finally {
+            lock.readLock().unlock();
         }
-        return stringBuilder.toString();
     }
-
-    private record LruNode<K,V>(K key, V value) {}
 }
