@@ -33,8 +33,7 @@ public class ComponentConfigScreen extends AbstractItemEditorConfigScreen<Compon
         fuzzyCB = addRenderableWidget(new CustomCheckbox(leftPos + 180, topPos + 110, font.width(str), 20, str, filter.isFuzzyMatch()));
 
         try {
-            Tag tag = DataComponentMap.CODEC.encodeStart(NbtOps.INSTANCE, filter.getComponentMap()).getOrThrow();
-            editBox.setValue(tag.toString());
+            editBox.setValue(filter.getStringArgWithoutPrefix());
         } catch (IllegalStateException ignored) {
         }
     }
