@@ -1,5 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.api.filter;
 
+import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -40,14 +42,27 @@ public interface SmartFilter extends Predicate<ItemStack> {
     Component getDisplayName();
 
     /**
+     * Return the serialized filter in full, in the form {@code id(argdata)}, where {@code argdata} is returned by
+     * calling {@link #getStringArg(HolderLookup.Provider)}. All such returned strings may be parsed into an
+     * equivalent filter via
+     * {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI.API#parseFilter(String, HolderLookup.Provider)}.
+     *
+     * @param registryAccess registry access, required for serializing some filters
+     * @return the filter serialized as a string
+     */
+    default String asString(HolderLookup.Provider registryAccess) {
+        return FTBFilterSystemAPI.modDefaultedString(getId()) + "(" + getStringArg(registryAccess) + ")";
+    }
+
+    /**
      * Return the filter's string argument data, which is the serialized form of the filter's properties.
      *
      * @return the filter's properties, serialized into a string
      */
-    String getStringArg();
+    String getStringArg(HolderLookup.Provider registryAccess);
 
-    default Component getDisplayArg() {
-        return Component.literal(getStringArg());
+    default Component getDisplayArg(HolderLookup.Provider registryAccess) {
+        return Component.literal(getStringArg(registryAccess));
     }
 
     /**
@@ -91,7 +106,7 @@ public interface SmartFilter extends Predicate<ItemStack> {
      */
     @FunctionalInterface
     interface Factory<T extends SmartFilter> {
-        T create(SmartFilter.Compound parent, String arg);
+        T create(SmartFilter.Compound parent, String arg, HolderLookup.Provider registryAccess);
     }
 
     /**

@@ -4,7 +4,9 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.filter.compound.RootFilter;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -17,17 +19,19 @@ public class ExpressionFilter extends AbstractSmartFilter {
     private final SmartFilter parsedExpression;
 
     public ExpressionFilter(SmartFilter.Compound parent) throws FilterException {
-        this(parent, "");
+        this(parent, "", null);
     }
 
-    public ExpressionFilter(SmartFilter.Compound parent, String expression) throws FilterException {
+    public ExpressionFilter(SmartFilter.Compound parent, String expression, HolderLookup.Provider registryAccess) throws FilterException {
         super(parent);
 
         String[] parts = expression.split("/", 2);
         this.expression = parts[0];
         this.customName = parts.length > 1 ? parts[1] : "";
 
-        this.parsedExpression = FilterParser.parse(this.expression);
+        this.parsedExpression = this.expression.isEmpty() ?
+                new RootFilter() :
+                FilterParser.parse(this.expression, registryAccess);
     }
 
     public String getExpression() {
@@ -44,17 +48,17 @@ public class ExpressionFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         return customName.isEmpty() ? expression : expression + "/" + customName;
     }
 
     @Override
-    public Component getDisplayArg() {
-        return customName.isEmpty() ? super.getDisplayArg() : Component.literal(customName);
+    public Component getDisplayArg(HolderLookup.Provider registryAccess) {
+        return customName.isEmpty() ? super.getDisplayArg(registryAccess) : Component.literal(customName);
     }
 
-    public static ExpressionFilter fromString(SmartFilter.Compound parent, String str) throws FilterException {
-        return new ExpressionFilter(parent, str);
+    public static ExpressionFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) throws FilterException {
+        return new ExpressionFilter(parent, str, registryAccess);
     }
 
     @Override

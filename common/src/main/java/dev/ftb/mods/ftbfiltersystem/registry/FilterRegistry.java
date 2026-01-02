@@ -58,6 +58,9 @@ public class FilterRegistry implements FTBFilterSystemRegistry {
         return Optional.empty();
     }
 
-    public record FilterDetails<T extends SmartFilter>(ResourceLocation id, SmartFilter.Factory<T> factory, SmartFilter.DefaultFactory<T> defaultSupplier) {
-    }
+    public record FilterDetails<T extends SmartFilter> (
+            ResourceLocation id,
+            SmartFilter.Factory<T> factory,
+            SmartFilter.DefaultFactory<T> defaultSupplier
+    ) { }
 }

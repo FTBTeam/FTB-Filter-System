@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.RootFilter;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class FilterParser {
     @NotNull
-    public static SmartFilter parse(String str) throws FilterException {
-        SmartFilter filter = FilterCache.INSTANCE.getOrCreateFilter(str);
+    public static SmartFilter parse(String str, HolderLookup.Provider registryAccess) throws FilterException {
+        SmartFilter filter = FilterCache.INSTANCE.getOrCreateFilter(str, registryAccess);
         if (filter == null) {
             throw new FilterException("invalid filter: " + str);
         }
@@ -22,13 +23,13 @@ public class FilterParser {
     }
 
     @NotNull
-    public static SmartFilter parseRaw(String str) throws FilterException {
+    public static SmartFilter parseRaw(String str, HolderLookup.Provider registryAccess) throws FilterException {
         RootFilter root = new RootFilter();
-        root.getChildren().addAll(parseFilterList(root, str));
+        root.getChildren().addAll(parseFilterList(root, str, registryAccess));
         return root;
     }
 
-    public static List<SmartFilter> parseFilterList(SmartFilter.Compound parent, String str) throws FilterException {
+    public static List<SmartFilter> parseFilterList(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) throws FilterException {
         List<SmartFilter> res = new ArrayList<>();
 
         str = str.trim();
@@ -52,7 +53,7 @@ public class FilterParser {
             res.add(FilterRegistry.getInstance().getDetails(FTBFilterSystemAPI.modDefaultedRL(type))
                     .map(FilterRegistry.FilterDetails::factory)
                     .orElseThrow(() -> new FilterException("unknown filter ID: " + type))
-                    .create(parent, arg));
+                    .create(parent, arg, registryAccess));
 
             str = str.substring(matchingParen + 1);
         }

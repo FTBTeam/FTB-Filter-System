@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -40,7 +41,7 @@ public class DurabilityFilter extends AbstractComparisonFilter {
         return true;
     }
 
-    public static DurabilityFilter fromString(SmartFilter.Compound parent, String str) {
+    public static DurabilityFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         return new DurabilityFilter(parent, NumericComparison.fromString(str, true));
     }
 }

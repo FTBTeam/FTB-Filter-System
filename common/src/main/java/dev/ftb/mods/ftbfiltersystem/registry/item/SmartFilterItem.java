@@ -9,6 +9,7 @@ import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -33,10 +34,10 @@ public class SmartFilterItem extends Item {
     }
 
     @NotNull
-    public static SmartFilter getFilter(ItemStack filterStack) throws FilterException {
+    public static SmartFilter getFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException {
         // don't pull from cache here; we could be editing this filter,
         //   and don't want to edit something in the cache already
-        return FilterParser.parseRaw(getFilterString(filterStack));
+        return FilterParser.parseRaw(getFilterString(filterStack), registryAccess);
     }
 
     public static void setFilter(ItemStack filterStack, String string) {

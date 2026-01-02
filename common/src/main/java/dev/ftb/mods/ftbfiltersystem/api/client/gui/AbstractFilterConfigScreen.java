@@ -58,8 +58,8 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     }
 
     /**
-     * This method is automatically a set number of ticks after {@link #scheduleUpdate(int)} is called. Most commonly
-     * use to do something after the player has typed into an EditBox widget.
+     * This method is automatically called a set number of ticks after {@link #scheduleUpdate(int)} is called. Most
+     * commonly use to do something after the player has typed into an EditBox widget.
      */
     protected void doScheduledUpdate() {
     }

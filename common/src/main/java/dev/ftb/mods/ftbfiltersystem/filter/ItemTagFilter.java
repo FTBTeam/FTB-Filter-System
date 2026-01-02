@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -41,11 +42,11 @@ public class ItemTagFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         return tagKey.location().toString();
     }
 
-    public static ItemTagFilter fromString(SmartFilter.Compound parent, String str) {
+    public static ItemTagFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         try {
             return new ItemTagFilter(parent, TagKey.create(Registries.ITEM, ResourceLocation.tryParse(str)));
         } catch (ResourceLocationException e) {

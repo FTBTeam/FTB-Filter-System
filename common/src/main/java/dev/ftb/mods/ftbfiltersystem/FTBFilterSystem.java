@@ -17,7 +17,6 @@ import dev.ftb.mods.ftbfiltersystem.network.FTBFilterSystemNet;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
-import dev.ftb.mods.ftblibrary.FTBLibrary;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
