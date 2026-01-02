@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [21.1.4]
+
+### Changed
+* API Breakage: several API methods now take a `HolderLookup.Provider` parameter
+  * This is required for (de)serialization of some filter objects
+
+### Fixed
+* Fixed some dangerous registry access usage which could lead to unexpected crashes (see above change)
+
 ## [21.1.3]
 
 ### Fixed
