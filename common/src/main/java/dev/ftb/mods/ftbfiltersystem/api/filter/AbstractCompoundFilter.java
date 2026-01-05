@@ -3,7 +3,6 @@ package dev.ftb.mods.ftbfiltersystem.api.filter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 
