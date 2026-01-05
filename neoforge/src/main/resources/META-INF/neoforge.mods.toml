@@ -47,3 +47,9 @@ type = "optional"
 versionRange = "[19.5.0.40,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "ftbxmodcompat"
+type = "optional"
+versionRange = "[21.1.7,)"
+side = "BOTH"
