@@ -7,6 +7,7 @@ license = "All Rights Reserved"
 modId = "ftbfiltersystem"
 version = "${version}"
 displayName = "FTB Filter System"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/ftb-filter-system"
 authors = "FTB Team"
 description = '''
 Smart and highly configurable item filtering system with useful GUI configuration
