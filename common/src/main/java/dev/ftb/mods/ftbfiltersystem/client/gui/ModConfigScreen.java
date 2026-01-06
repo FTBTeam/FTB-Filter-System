@@ -44,7 +44,7 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
         addWidget(modList);
 
         modList.children().stream()
-                .filter(child -> child.modData.modId().equals(filter.getStringArg()))
+                .filter(child -> child.modData.modId().equals(filter.getStringArg(minecraft.level.registryAccess())))
                 .findFirst()
                 .ifPresent(entry -> modList.selectAndCenter(entry));
     }

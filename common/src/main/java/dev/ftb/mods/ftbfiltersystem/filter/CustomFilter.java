@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.event.CustomFilterEvent;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -43,11 +44,11 @@ public class CustomFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         return extraData.isEmpty() ? eventId : eventId + "/" + extraData;
     }
 
-    public static CustomFilter fromString(SmartFilter.Compound parent, String str) {
+    public static CustomFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         String[] parts = str.split("/");
 
         return new CustomFilter(parent, parts[0], parts.length > 1 ? parts[1] : "");

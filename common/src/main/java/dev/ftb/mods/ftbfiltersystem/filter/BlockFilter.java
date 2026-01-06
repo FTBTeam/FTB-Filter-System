@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbfiltersystem.filter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -31,11 +32,11 @@ public class BlockFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         return "";
     }
 
-    public static BlockFilter fromString(SmartFilter.Compound parent, String ignored) {
+    public static BlockFilter fromString(SmartFilter.Compound parent, String ignored, HolderLookup.Provider ignored2) {
         return new BlockFilter(parent);
     }
 }

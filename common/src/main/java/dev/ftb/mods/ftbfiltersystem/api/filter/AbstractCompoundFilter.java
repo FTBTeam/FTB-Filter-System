@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbfiltersystem.api.filter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -36,13 +37,8 @@ public abstract class AbstractCompoundFilter extends AbstractSmartFilter impleme
     }
 
     @Override
-    public String toString() {
-        return FTBFilterSystemAPI.modDefaultedString(getId()) + "(" + getStringArg() + ")";
-    }
-
-    @Override
-    public String getStringArg() {
-        return String.join("", children.stream().map(SmartFilter::toString).toList());
+    public String getStringArg(HolderLookup.Provider registryAccess) {
+        return String.join("", children.stream().map(sf -> sf.asString(registryAccess)).toList());
     }
 
     @Override
@@ -58,10 +54,11 @@ public abstract class AbstractCompoundFilter extends AbstractSmartFilter impleme
     public static <F extends AbstractCompoundFilter> F createCompoundFilter(
             BiFunction<SmartFilter.Compound, List<SmartFilter>, F> creator,
             SmartFilter.Compound parent,
-            String str)
+            String str,
+            HolderLookup.Provider registryAccess)
     {
         F filter = creator.apply(parent, new ArrayList<>());
-        List<SmartFilter> children = FTBFilterSystemAPI.api().parseFilterList(filter, str);
+        List<SmartFilter> children = FTBFilterSystemAPI.api().parseFilterList(filter, str, registryAccess);
         if (children.size() > filter.maxChildren()) {
             throw new FilterException("Too many children for " + filter.getId() + " - expected " + filter.maxChildren() + ", got " + children.size());
         }

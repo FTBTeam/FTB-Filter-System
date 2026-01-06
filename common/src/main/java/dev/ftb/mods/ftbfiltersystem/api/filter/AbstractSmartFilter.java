@@ -1,6 +1,5 @@
 package dev.ftb.mods.ftbfiltersystem.api.filter;
 
-import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -29,15 +28,6 @@ public abstract class AbstractSmartFilter implements SmartFilter {
             displayName = getDisplayName(this.getId());
         }
         return displayName;
-    }
-
-    protected String stringify(String data) {
-        return FTBFilterSystemAPI.modDefaultedString(getId()) + "(" + data + ")";
-    }
-
-    @Override
-    public String toString() {
-        return stringify(getStringArg());
     }
 
     @NotNull

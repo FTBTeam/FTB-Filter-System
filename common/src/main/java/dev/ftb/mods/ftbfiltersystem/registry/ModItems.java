@@ -2,15 +2,11 @@ package dev.ftb.mods.ftbfiltersystem.registry;
 
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftblibrary.FTBLibrary;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 

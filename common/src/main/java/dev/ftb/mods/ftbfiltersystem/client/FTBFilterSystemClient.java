@@ -15,6 +15,7 @@ import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -22,12 +23,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     INSTANCE;
 
     private final Map<ResourceLocation, FilterScreenFactory<?>> screenFactories = new ConcurrentHashMap<>();
+
+    public static HolderLookup.Provider registryAccess() {
+        return Objects.requireNonNull(Minecraft.getInstance().level).registryAccess();
+    }
 
     public void init() {
         FTBFilterSystemAPI._initClient(this);
@@ -61,11 +67,14 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
 
     public void openFilterScreen(InteractionHand interactionHand) {
         Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
         ItemStack stack = player.getItemInHand(interactionHand);
 
         if (stack.getItem() instanceof SmartFilterItem) {
             try {
-                Minecraft.getInstance().setScreen(new FilterScreen(stack.getHoverName(), SmartFilterItem.getFilter(stack), interactionHand));
+                Minecraft.getInstance().setScreen(new FilterScreen(stack.getHoverName(), SmartFilterItem.getFilter(stack, player.registryAccess()), interactionHand));
             } catch (FilterException e) {
                 player.displayClientMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
             }

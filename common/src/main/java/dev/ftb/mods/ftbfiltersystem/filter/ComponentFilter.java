@@ -1,19 +1,18 @@
 package dev.ftb.mods.ftbfiltersystem.filter;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.GameInstance;
 import dev.ftb.mods.ftbfiltersystem.FTBFilterSystem;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.util.PlatformUtil;
-import dev.ftb.mods.ftblibrary.util.client.ClientUtils;
-import net.fabricmc.api.EnvType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +39,8 @@ public class ComponentFilter extends AbstractSmartFilter {
         return fuzzy ? "fuzzy:" : "strict:";
     }
 
-    public String getStringArgWithoutPrefix() {
-        return getStringArg().replaceAll("(fuzzy|strict):", "");
+    public String getStringArgWithoutPrefix(HolderLookup.Provider registryAccess) {
+        return getStringArg(registryAccess).replaceAll("(fuzzy|strict):", "");
     }
 
     @Override
@@ -62,10 +61,9 @@ public class ComponentFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         try {
-            HolderLookup.Provider p = registryAccess();
-            Tag tag = DataComponentMap.CODEC.encodeStart(p.createSerializationContext(NbtOps.INSTANCE), map).getOrThrow();
+            Tag tag = DataComponentMap.CODEC.encodeStart(registryAccess.createSerializationContext(NbtOps.INSTANCE), map).getOrThrow();
             return getPrefixStr(fuzzyMatch) + tag.toString();
         } catch (IllegalStateException e) {
             FTBFilterSystem.LOGGER.error("can't encode component filter: {}", e.getMessage());
@@ -81,15 +79,14 @@ public class ComponentFilter extends AbstractSmartFilter {
         return fuzzyMatch;
     }
 
-    public static ComponentFilter fromString(SmartFilter.Compound parent, String str) {
+    public static ComponentFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) {
         try {
             boolean fuzzy = true;
             if (str.startsWith("strict:") || str.startsWith("fuzzy:")) {
                 fuzzy = str.startsWith("fuzzy:");
                 str = str.substring(str.indexOf(':') + 1);
             }
-            HolderLookup.Provider p = registryAccess();
-            DataComponentMap map = DataComponentMap.CODEC.parse(p.createSerializationContext(NbtOps.INSTANCE), parseNBT(str)).getOrThrow(FilterException::new);
+            DataComponentMap map = DataComponentMap.CODEC.parse(registryAccess.createSerializationContext(NbtOps.INSTANCE), parseNBT(str)).getOrThrow(FilterException::new);
             return new ComponentFilter(parent, fuzzy, map);
         } catch (CommandSyntaxException e) {
             throw new FilterException("invalid NBT tag: " + str, e);
@@ -101,14 +98,5 @@ public class ComponentFilter extends AbstractSmartFilter {
             str = "{" + str + "}";  // just a convenience; we'll still emit strings with enclosing braces
         }
         return TagParser.parseTag(str);
-    }
-
-    private static HolderLookup.Provider registryAccess() {
-        // not ideal, but have a level context everywhere isn't really feasible
-        if (Platform.getEnv() == EnvType.SERVER) {
-            return GameInstance.getServer().registryAccess();
-        } else {
-            return ClientUtils.registryAccess();
-        }
     }
 }

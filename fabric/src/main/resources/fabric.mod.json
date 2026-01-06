@@ -8,14 +8,18 @@
     "FTB Team"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/ftb-filter-system",
+    "sources": "https://github.com/FTBTeam/FTB-Filter-System",
+    "issues": "https://go.ftb.team/support-mod-issues"
   },
   "license": "All Rights Reserved",
   "environment": "*",
   "entrypoints": {
     "main": [
       "dev.ftb.mods.ftbfiltersystem.fabric.FTBFilterSystemFabric"
+    ],
+    "jei_mod_plugin": [
+      "dev.ftb.mods.ftbfiltersystem.integration.jei.JEIIntegration"
     ]
   },
   "mixins": [
@@ -28,6 +32,7 @@
     "ftblibrary": ">=${ftblibraryversion}"
   },
   "breaks": {
-    "jei": "<19.5.0.40"
+    "jei": "<19.5.0.40",
+    "ftbxmodcompat": "<21.1.7"
   }
 }

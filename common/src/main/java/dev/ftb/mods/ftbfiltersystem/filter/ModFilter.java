@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbfiltersystem.filter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -32,11 +33,11 @@ public class ModFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         return modId;
     }
 
-    public static ModFilter fromString(SmartFilter.Compound parent, String str) {
+    public static ModFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         return new ModFilter(parent, str);
     }
 }
