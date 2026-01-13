@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbfiltersystem.filter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.util.RegExParser;
 import net.minecraft.core.HolderLookup;
 import java.util.regex.Pattern;
 import net.minecraft.resources.ResourceLocation;
@@ -54,24 +55,10 @@ public class ModFilter extends AbstractSmartFilter {
     }
 
     public static ModFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
-        if (str.indexOf('*') >= 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append('^');
-            for (int i = 0; i < str.length(); i++) {
-                char c = str.charAt(i);
-                if (c == '*') {
-                    sb.append(".*");
-                } else if (".\\+?^${}()|[]".indexOf(c) >= 0) {
-                    sb.append('\\').append(c);
-                } else {
-                    sb.append(c);
-                }
-            }
-            sb.append('$');
-            Pattern p = Pattern.compile(sb.toString());
+        Pattern p = RegExParser.parseRegex(str);
+        if (p != null) {
             return new ModFilter(parent, str, p);
         }
-
         return new ModFilter(parent, str);
     }
 }

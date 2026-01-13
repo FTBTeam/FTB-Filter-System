@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.util.RegExParser;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -66,24 +67,10 @@ public class ItemTagFilter extends AbstractSmartFilter {
 
     public static ItemTagFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         try {
-            if (str.indexOf('*') >= 0) {
-                StringBuilder sb = new StringBuilder();
-                sb.append('^');
-                for (int i = 0; i < str.length(); i++) {
-                    char c = str.charAt(i);
-                    if (c == '*') {
-                        sb.append(".*");
-                    } else if (".\\+?^${}()|[]".indexOf(c) >= 0) {
-                        sb.append('\\').append(c);
-                    } else {
-                        sb.append(c);
-                    }
-                }
-                sb.append('$');
-                Pattern p = Pattern.compile(sb.toString());
+            Pattern p = RegExParser.parseRegex(str);
+            if (p != null) {
                 return new ItemTagFilter(parent, str, p);
             }
-
             return new ItemTagFilter(parent, TagKey.create(Registries.ITEM, ResourceLocation.tryParse(str)));
         } catch (ResourceLocationException e) {
             throw new FilterException("invalid tag key " + str, e);

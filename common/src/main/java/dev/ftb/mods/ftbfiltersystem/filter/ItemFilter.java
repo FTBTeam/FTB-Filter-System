@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import dev.ftb.mods.ftbfiltersystem.util.RegExParser;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -63,25 +64,10 @@ public class ItemFilter extends AbstractSmartFilter {
 
     public static ItemFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) {
         try {
-            // check for wildcard in string, parsing as regex if found
-            if (str.indexOf('*') >= 0) {
-                StringBuilder sb = new StringBuilder();
-                sb.append('^');
-                for (int i = 0; i < str.length(); i++) {
-                    char c = str.charAt(i);
-                    if (c == '*') { // convert wildcard to regex equivalent
-                        sb.append(".*");
-                    } else if (".\\+?^${}()|[]".indexOf(c) >= 0) { // escape regex special chars when parsing
-                        sb.append('\\').append(c);
-                    } else { // not wildcard or regex character
-                        sb.append(c);
-                    }
-                }
-                sb.append('$');
-                Pattern p = Pattern.compile(sb.toString());
+            Pattern p = RegExParser.parseRegex(str);
+            if (p != null) {
                 return new ItemFilter(parent, str, p);
             }
-
             var item = registryAccess.lookup(Registries.ITEM).orElseThrow()
                     .getOrThrow(ResourceKey.create(Registries.ITEM, ResourceLocation.tryParse(str)));
             return new ItemFilter(parent, item.value());
