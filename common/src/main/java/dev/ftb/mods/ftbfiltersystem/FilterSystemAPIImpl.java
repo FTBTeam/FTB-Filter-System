@@ -11,7 +11,7 @@ import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +55,7 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
     }
 
     @Override
-    public Optional<SmartFilter> createDefaultFilter(SmartFilter.Compound parent, ResourceLocation filterId) {
+    public Optional<SmartFilter> createDefaultFilter(SmartFilter.Compound parent, Identifier filterId) {
         return FilterRegistry.getInstance().createDefaultFilter(parent, filterId);
     }
 

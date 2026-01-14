@@ -13,10 +13,10 @@ public class GuiUtil {
 
         graphics.fill(area.getX(), area.getY(), xMax, yMax, bgColor);
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         // yeah I really want integer division here.  float division would look all mixely
         //noinspection IntegerDivisionInFloatingPointContext
-        graphics.pose().translate(-borderWidth / 2, -borderWidth / 2, 0);
+        graphics.pose().translate(-borderWidth / 2, -borderWidth / 2);
 
         int brCol = borderStyle.bottomRight(bgColor, borderColor);
         graphics.fill(area.getX() + 1, yMax, xMax, yMax + borderWidth, brCol); // bottom
@@ -26,7 +26,7 @@ public class GuiUtil {
         graphics.fill(area.getX(), area.getY(), xMax, area.getY() + borderWidth, tlCol); // top
         graphics.fill(area.getX(), area.getY(), area.getX() + borderWidth, yMax, tlCol); // left
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     public static int brighten(int color, float factor) {

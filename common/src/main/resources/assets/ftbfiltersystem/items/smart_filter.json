@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "ftbfiltersystem:item/smart_filter"
+  }
+}

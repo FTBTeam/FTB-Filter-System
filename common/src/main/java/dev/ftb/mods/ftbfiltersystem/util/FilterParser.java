@@ -6,7 +6,7 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.RootFilter;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class FilterParser {
             String type = str.substring(0, start).trim();
             String arg = unescape(str.substring(start + 1, matchingParen).trim());
 
-            if (ResourceLocation.tryParse(type) == null) {
+            if (Identifier.tryParse(type) == null) {
                 throw new FilterException("invalid filter ID: " + type);
             }
 

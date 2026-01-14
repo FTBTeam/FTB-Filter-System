@@ -13,13 +13,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentFilter extends AbstractSmartFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("component");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("component");
     protected final DataComponentMap map;
     private final boolean fuzzyMatch;
 
@@ -44,7 +44,7 @@ public class ComponentFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 
@@ -97,6 +97,6 @@ public class ComponentFilter extends AbstractSmartFilter {
         if (!str.startsWith("{") && !str.endsWith("}")) {
             str = "{" + str + "}";  // just a convenience; we'll still emit strings with enclosing braces
         }
-        return TagParser.parseTag(str);
+        return TagParser.parseCompoundFully(str);
     }
 }

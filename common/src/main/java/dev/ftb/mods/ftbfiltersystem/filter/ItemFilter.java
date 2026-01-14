@@ -9,7 +9,7 @@ import dev.ftb.mods.ftbfiltersystem.util.GlobRegexMatcher;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
 import java.util.NoSuchElementException;
 
 public class ItemFilter extends AbstractSmartFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("item");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("item");
 
     private final Either<Item, GlobRegexMatcher> either;
 
@@ -55,7 +55,7 @@ public class ItemFilter extends AbstractSmartFilter {
         try {
             return new ItemFilter(parent, GlobRegexMatcher.parseWithFallback(str, () ->
                     registryAccess.lookup(Registries.ITEM).orElseThrow()
-                            .getOrThrow(ResourceKey.create(Registries.ITEM, ResourceLocation.tryParse(str))).value())
+                            .getOrThrow(ResourceKey.create(Registries.ITEM, Identifier.tryParse(str))).value())
             );
         } catch (IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
             throw new FilterException(e.getMessage(), e);
@@ -63,7 +63,7 @@ public class ItemFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 }

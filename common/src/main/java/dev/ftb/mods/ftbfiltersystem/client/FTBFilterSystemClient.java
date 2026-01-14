@@ -14,10 +14,10 @@ import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     INSTANCE;
 
-    private final Map<ResourceLocation, FilterScreenFactory<?>> screenFactories = new ConcurrentHashMap<>();
+    private final Map<Identifier, FilterScreenFactory<?>> screenFactories = new ConcurrentHashMap<>();
 
     public static HolderLookup.Provider registryAccess() {
         return Objects.requireNonNull(Minecraft.getInstance().level).registryAccess();
@@ -97,14 +97,14 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     }
 
     public static boolean shouldShowItemTooltip() {
-        return Minecraft.getInstance().screen instanceof EffectRenderingInventoryScreen<?>;
+        return Minecraft.getInstance().screen instanceof InventoryScreen;
     }
 
     //------------------------------------------------------------
     // API implementation below here
 
     @Override
-    public <T extends SmartFilter> void registerFilterScreenFactory(ResourceLocation filterId, FilterScreenFactory<T> factory) {
+    public <T extends SmartFilter> void registerFilterScreenFactory(Identifier filterId, FilterScreenFactory<T> factory) {
         screenFactories.put(filterId, factory);
     }
 }

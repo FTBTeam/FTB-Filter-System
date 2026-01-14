@@ -20,6 +20,7 @@ import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.item.ItemStack;
 
 import static net.minecraft.commands.Commands.argument;
@@ -60,14 +61,14 @@ public class FilterSystemCommands {
                         .executes(ctx -> tryMatch(ctx.getSource()))
                 )
                 .then(literal("dump_components")
-                        .requires(ctx -> ctx.hasPermission(2))
+                        .requires(ctx -> ctx.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                         .executes(ctx -> dumpComponents(ctx.getSource(), false))
                         .then(literal("all")
                                 .executes(ctx -> dumpComponents(ctx.getSource(), true))
                         )
                 )
                 .then(literal("cache")
-                        .requires(ctx -> ctx.hasPermission(2))
+                        .requires(ctx -> ctx.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                         .then(literal("clear")
                                 .executes(ctx -> clearCache(ctx.getSource()))
                         )
@@ -143,7 +144,7 @@ public class FilterSystemCommands {
 
         if (!stack.getComponents().isEmpty()) {
             int amount = stack.getComponents().size();
-            source.sendSuccess(() -> Component.translatable("ftbfiltersystem.message.components_header", amount, stack.getItem().getDescription())
+            source.sendSuccess(() -> Component.translatable("ftbfiltersystem.message.components_header", amount, stack.getItem().getName(stack))
                     .withStyle(ChatFormatting.YELLOW), false);
             if (!all) {
                 source.sendSuccess(() -> Component.translatable("ftbfiltersystem.message.non_default_components")

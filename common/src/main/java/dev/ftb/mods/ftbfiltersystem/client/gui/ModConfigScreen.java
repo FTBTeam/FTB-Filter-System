@@ -8,6 +8,8 @@ import dev.ftb.mods.ftbfiltersystem.filter.ModFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -126,7 +128,7 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
             return matchingModData.stream().map(ModEntry::new).toList();
         }
 
-        private class ModEntry extends Entry<ModEntry> {
+        private class ModEntry extends ObjectSelectionList.Entry<ModEntry> {
             private final ModData modData;
 
             private ModEntry(ModData modData) {
@@ -134,18 +136,18 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
             }
 
             @Override
-            public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-                Component txt = Component.literal(modData.modId()).withStyle(Style.EMPTY.withColor(0x202060))
+            public void renderContent(GuiGraphics guiGraphics, int x, int y, boolean mouseOver, float partialTick) {
+                Component txt = Component.literal(modData.modId()).withStyle(Style.EMPTY.withColor(0xFF202060))
                         .append(Component.literal(" ["))
-                        .append(Component.literal(modData.modName()).withStyle(Style.EMPTY.withColor(0x804020)))
+                        .append(Component.literal(modData.modName()).withStyle(Style.EMPTY.withColor(0xFF804020)))
                         .append(Component.literal("]"));
-                guiGraphics.drawString(font, txt, left + 1, top + 1, 0x404040, false);
+                guiGraphics.drawString(font, txt, getContentX() + 1, getContentY() + 1, 0xFF404040, false);
             }
 
             @Override
-            protected boolean onMouseClick(double x, double y, int button, boolean isDoubleClick) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 ModList.this.setSelected(this);
-                if (isDoubleClick) {
+                if (doubleClick) {
                     applyChanges();
                 }
                 return true;

@@ -7,14 +7,14 @@ import dev.ftb.mods.ftbfiltersystem.client.gui.ModConfigScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @JeiPlugin
 public class JEIIntegration implements IModPlugin {
-    private final ResourceLocation ID = FTBFilterSystemAPI.rl("default");
+    private final Identifier ID = FTBFilterSystemAPI.rl("default");
 
     @Override
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return ID;
     }
 

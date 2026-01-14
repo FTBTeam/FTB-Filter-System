@@ -7,11 +7,13 @@ import dev.ftb.mods.ftbfiltersystem.filter.ItemTagFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
@@ -60,10 +62,10 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
 
     @Override
     protected @Nullable ItemTagFilter makeNewFilter() {
-        ResourceLocation location;
+        Identifier location;
         if (itemTagList.getSelected() != null) {
             return new ItemTagFilter(filter.getParent(), itemTagList.getSelected().tagKey);
-        } else if (itemTagList.children().isEmpty() && (location = ResourceLocation.tryParse(searchField.getValue())) != null) {
+        } else if (itemTagList.children().isEmpty() && (location = Identifier.tryParse(searchField.getValue())) != null) {
             return new ItemTagFilter(filter.getParent(), TagKey.create(Registries.ITEM, location));
         } else {
             return null;
@@ -89,7 +91,7 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
         String srch = searchField.getValue().toLowerCase(Locale.ROOT);
 
         matchingTags.clear();
-        matchingTags.addAll(BuiltInRegistries.ITEM.getTagNames()
+        matchingTags.addAll(BuiltInRegistries.ITEM.listTagIds()
                 .filter(tagKey -> srch.isEmpty() || tagKey.location().toString().toLowerCase(Locale.ROOT).contains(srch))
                 .sorted(Comparator.comparing(TagKey::location))
                 .toList());
@@ -111,7 +113,7 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
             return matchingTags.stream().map(ItemTagEntry::new).toList();
         }
 
-        private class ItemTagEntry extends Entry<ItemTagEntry> {
+        private class ItemTagEntry extends ObjectSelectionList.Entry<ItemTagEntry> {
             private final TagKey<Item> tagKey;
 
             private ItemTagEntry(TagKey<Item> tagKey) {
@@ -119,17 +121,17 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
             }
 
             @Override
-            public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
                 Component txt = Component.literal(tagKey.location().getNamespace()).withStyle(Style.EMPTY.withColor(0x202060))
                         .append(Component.literal(":"))
                         .append(Component.literal(tagKey.location().getPath()).withStyle(Style.EMPTY.withColor(0x804020)));
-                guiGraphics.drawString(font, txt, left + 1, top + 1, 0x404040, false);
+                guiGraphics.drawString(font, txt, getContentX() + 1, getContentY() + 1, 0xFF404040, false);
             }
 
             @Override
-            protected boolean onMouseClick(double x, double y, int button, boolean isDoubleClick) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 ItemTagList.this.setSelected(this);
-                if (isDoubleClick) {
+                if (doubleClick) {
                     applyChanges();
                 }
                 return true;

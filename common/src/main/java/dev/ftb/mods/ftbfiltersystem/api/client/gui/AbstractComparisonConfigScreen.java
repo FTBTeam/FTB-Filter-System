@@ -6,11 +6,13 @@ import dev.ftb.mods.ftbfiltersystem.api.client.gui.widget.CustomCheckbox;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.SpacerElement;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -28,7 +30,7 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
     private final BiFunction<SmartFilter.Compound, NumericComparison, T> comparisonFactory;
     protected CycleButton<NumericComparison.ComparisonOp> opBtn;
     protected EditBox numBox;
-    protected CustomCheckbox pctCheckBox;
+    protected Checkbox pctCheckBox;
 
     public AbstractComparisonConfigScreen(T filter, AbstractFilterScreen parentScreen,
                                           BiFunction<SmartFilter.Compound, NumericComparison, T> comparisonFactory)
@@ -44,9 +46,8 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
         GridLayout layout = new GridLayout(leftPos + 8, topPos + 20);
         GridLayout.RowHelper rowHelper = layout.createRowHelper(5);
 
-        opBtn = rowHelper.addChild(CycleButton.builder(NumericComparison.ComparisonOp::getDisplayName)
+        opBtn = rowHelper.addChild(CycleButton.builder(NumericComparison.ComparisonOp::getDisplayName, filter.getComparison().op())
                 .withValues(NumericComparison.ComparisonOp.values())
-                .withInitialValue(filter.getComparison().op())
                 .displayOnlyValue()
                 .create(0, 0, 20, font.lineHeight + 8,
                         Component.empty(), (btn, val) -> {}));
@@ -64,9 +65,8 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
 
         if (filter.allowsPercentage()) {
             rowHelper.addChild(SpacerElement.height(5), 5);
-            MutableComponent txt = Component.translatable("ftbfiltersystem.gui.percentage");
-            pctCheckBox = rowHelper.addChild(new CustomCheckbox(0, 0, font.width(txt), 20,
-                    txt, filter.getComparison().percentage()), 5);
+            MutableComponent txt = Component.translatable("ftbfiltersystem.gui.percentage").withoutShadow();
+            pctCheckBox = rowHelper.addChild(Checkbox.builder(txt, font).maxWidth(font.width(txt)).selected(filter.getComparison().percentage()).build(), 5);
         }
 
         layout.arrangeElements();
@@ -74,13 +74,11 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
     }
 
     @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if (pKeyCode == InputConstants.KEY_RETURN || pKeyCode == InputConstants.KEY_NUMPADENTER) {
-            if (numBox.canConsumeInput()) {
-                applyChanges();
-            }
+    public boolean keyPressed(KeyEvent keyEvent) {
+        if ((keyEvent.key() == InputConstants.KEY_RETURN || keyEvent.key() == InputConstants.KEY_NUMPADENTER) && numBox.canConsumeInput()) {
+            applyChanges();
         }
-        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+        return super.keyPressed(keyEvent);
     }
 
     @Override

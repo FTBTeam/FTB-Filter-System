@@ -4,12 +4,13 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
-import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomStringWidget;
 import dev.ftb.mods.ftbfiltersystem.filter.ExpressionFilter;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +29,9 @@ public class ExpressionConfigScreen extends AbstractItemEditorConfigScreen<Expre
 
         editBox.setValue(filter.getExpression());
 
-        Component text = Component.translatable("ftbfiltersystem.gui.custom_name");
-        addRenderableWidget(CustomStringWidget.withText(leftPos + 180, topPos + 110, text, font).setColor(0x404040));
+        Component text = Component.translatable("ftbfiltersystem.gui.custom_name").withStyle(Style.EMPTY.withColor(0x404040).withoutShadow());
+        StringWidget stringWidget = addRenderableWidget(new StringWidget(text, font));
+        stringWidget.setPosition(leftPos + 180, topPos + 110);
         customEditBox = addRenderableWidget(new EditBox(font, leftPos + 180, topPos + 110 + font.lineHeight + 4, guiWidth - 190, font.lineHeight + 6, Component.empty()));
         customEditBox.setValue(filter.getCustomName());
     }

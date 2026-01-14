@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.api;
 
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 
@@ -17,14 +17,14 @@ public interface FTBFilterSystemRegistry {
      * @param defaultFactory a factory to produce an instance with default properties
      * @param <T> the implementation type
      */
-    <T extends SmartFilter> void register(ResourceLocation id, SmartFilter.Factory<T> factory, SmartFilter.DefaultFactory<T> defaultFactory);
+    <T extends SmartFilter> void register(Identifier id, SmartFilter.Factory<T> factory, SmartFilter.DefaultFactory<T> defaultFactory);
 
     /**
      * Return all the known registered filter type ID's.
      *
      * @return known type ID's
      */
-    Collection<ResourceLocation> allFilterKeys();
+    Collection<Identifier> allFilterKeys();
 
     /**
      * Return a collection of default instances for every registered filter type.

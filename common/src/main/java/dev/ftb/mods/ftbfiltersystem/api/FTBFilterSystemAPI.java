@@ -4,7 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -53,8 +53,8 @@ public class FTBFilterSystemAPI {
      * @param path the resource location path component
      * @return a new resource location
      */
-    public static ResourceLocation rl(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier rl(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**
@@ -63,9 +63,9 @@ public class FTBFilterSystemAPI {
      * @param str a string
      * @return a resource location
      */
-    public static ResourceLocation modDefaultedRL(String str) {
+    public static Identifier modDefaultedRL(String str) {
         if (str.indexOf(":") > 0) {
-            var result = ResourceLocation.tryParse(str);
+            var result = Identifier.tryParse(str);
             if (result == null) {
                 LOGGER.warn("Invalid resource location: {}, falling back to ftbfiltersystem:", str);
                 return rl(str);
@@ -83,7 +83,7 @@ public class FTBFilterSystemAPI {
      * @param rl a resource location
      * @return stringified resource location
      */
-    public static String modDefaultedString(ResourceLocation rl) {
+    public static String modDefaultedString(Identifier rl) {
         return rl.getNamespace().equals(FTBFilterSystemAPI.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
@@ -160,7 +160,7 @@ public class FTBFilterSystemAPI {
          * @param filterId the filter type ID
          * @return a new filter of the given type, appended to the given parent, or {@code Optional.empty()} if the ID is unknown
          */
-        Optional<SmartFilter> createDefaultFilter(@NotNull SmartFilter.Compound parent, ResourceLocation filterId);
+        Optional<SmartFilter> createDefaultFilter(@NotNull SmartFilter.Compound parent, Identifier filterId);
 
         /**
          * Create a new filter, parsed from the given serialized string. Such strings are produced by calling

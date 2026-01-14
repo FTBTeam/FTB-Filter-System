@@ -3,14 +3,15 @@ package dev.ftb.mods.ftbfiltersystem.client.gui;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomStringWidget;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.ItemWidget;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +28,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     private static final int SEARCH_COLS = 9;
 
     protected MultiLineEditBox editBox;
-    private CustomStringWidget statusLine;
+    private StringWidget statusLine;
     private final List<SearchItemWidget> itemWidgets = new ArrayList<>();
     protected Component customHoverName = null;
 
@@ -35,22 +36,25 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     protected void init() {
         super.init();
 
-        editBox = addRenderableWidget(new MultiLineEditBox(font, leftPos + 8, topPos + 20, 304, 75,
-                Component.empty(), Component.empty()) {
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                // this is a dirty hack, but default vanilla mouse-clicked behaviour is really stupid
-                this.visible = false;
-                boolean res =  super.mouseClicked(mouseX, mouseY, button);
-                this.visible = true;
-                return res;
-            }
-        });
+        editBox = addRenderableWidget(MultiLineEditBox.builder().setX(leftPos + 8).setY(topPos + 20).build(font, 304, 75, Component.empty()));
+
+//        editBox = addRenderableWidget(new MultiLineEditBox(font, leftPos + 8, topPos + 20, 304, 75,
+//                Component.empty(), Component.empty()) {
+//            @Override
+//            public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
+//                // this is a dirty hack, but default vanilla mouse-clicked behaviour is really stupid
+//                this.visible = false;
+//                boolean res =  super.mouseClicked(mouseButtonEvent, bl);
+//                this.visible = true;
+//                return res;
+//            }
+//        });
         setFocused(editBox);
         editBox.setValueListener(s -> scheduleUpdate(5));
 
-        statusLine = addRenderableWidget(new CustomStringWidget(leftPos + 8, topPos + 98, guiWidth - 16, font.lineHeight, Component.empty(), font));
-        statusLine.alignRight();
+
+        statusLine = addRenderableWidget(new StringWidget(leftPos + 8, topPos + 98, guiWidth - 16, font.lineHeight, Component.empty(), font));
+//        statusLine.alignRight();
 
         itemWidgets.clear();
         for (int row = 0; row < SEARCH_ROWS; ++row) {
@@ -64,7 +68,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         Inventory inv = Minecraft.getInstance().player.getInventory();
         for (int i = 0; i < 36; i++) {
             int idx = i < 9 ? i + 27 : i - 9;
-            itemWidgets.get(idx).setStack(inv.items.get(i));
+            itemWidgets.get(idx).setStack(inv.getNonEquipmentItems().get(i));
         }
     }
 
@@ -95,7 +99,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
 
         @Override
         protected void handleClick(boolean doubleClick) {
-            if (inventoryChecker().test(getStack()) && minecraft.player.hasPermissions(2)) {
+            if (inventoryChecker().test(getStack()) && minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
                 editBox.setValue(serialize(getStack()));
                 customHoverName = getStack().getHoverName();
                 AbstractItemEditorConfigScreen.this.setFocused(editBox);
@@ -106,10 +110,10 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         protected void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             super.renderWidget(guiGraphics, pMouseX, pMouseY, pPartialTick);
             if (!inventoryChecker().test(getStack())) {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(0, 0, 200);
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(0, 0);
                 guiGraphics.fill(getX(), getY(), getX() + getWidth(), getY() + getWidth(), 0xA0FFFFFF);
-                guiGraphics.pose().popPose();
+                guiGraphics.pose().popMatrix();
             }
         }
 

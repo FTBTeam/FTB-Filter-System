@@ -2,7 +2,7 @@ package dev.ftb.mods.ftbfiltersystem.api.filter;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,12 +31,12 @@ public abstract class AbstractSmartFilter implements SmartFilter {
     }
 
     @NotNull
-    public static MutableComponent getDisplayName(ResourceLocation id) {
+    public static MutableComponent getDisplayName(Identifier id) {
         return Component.translatable("filter." + id.toString().replace(':', '.') + ".name");
     }
 
     @NotNull
-    public static MutableComponent getTooltip(ResourceLocation id) {
+    public static MutableComponent getTooltip(Identifier id) {
         return Component.translatable("filter." + id.toString().replace(':', '.') + ".tooltip");
     }
 }

@@ -5,14 +5,14 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.List;
 
 public class OnlyOneFilter extends AbstractCompoundFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("only_one");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("only_one");
 
     public OnlyOneFilter(SmartFilter.Compound parent) {
         super(parent);
@@ -33,7 +33,7 @@ public class OnlyOneFilter extends AbstractCompoundFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 }

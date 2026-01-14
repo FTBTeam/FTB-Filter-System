@@ -31,7 +31,7 @@
   "ftbfiltersystem.gui.changes_made.question": "Close the editor without saving?",
   "ftbfiltersystem.gui.compound": "Compound Filters",
   "ftbfiltersystem.gui.basic": "Basic Filters",
-  "ftbfiltersystem.gui.fuzzy_match": "Fuzzy Component Match?",
+  "ftbfiltersystem.gui.fuzzy_match": "Fuzzy Match",
   "ftbfiltersystem.gui.custom_name": "Custom Name",
   "filter.ftbfiltersystem.and.name": "All Of",
   "filter.ftbfiltersystem.and.tooltip": "Compound filter: this filter matches if ALL of its child filters match.",

@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.api;
 
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 
 import java.util.Arrays;
 import java.util.HashMap;

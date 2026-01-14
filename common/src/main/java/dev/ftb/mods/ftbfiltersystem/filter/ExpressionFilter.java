@@ -8,11 +8,11 @@ import dev.ftb.mods.ftbfiltersystem.filter.compound.RootFilter;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class ExpressionFilter extends AbstractSmartFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("expression");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("expression");
 
     private final String expression;
     private final String customName;
@@ -62,7 +62,7 @@ public class ExpressionFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 }

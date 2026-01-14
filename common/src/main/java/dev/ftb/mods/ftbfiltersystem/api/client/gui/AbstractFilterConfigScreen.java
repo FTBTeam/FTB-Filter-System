@@ -13,8 +13,9 @@ import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -22,7 +23,7 @@ import java.util.function.Supplier;
 
 /**
  * Common base class for all GUIs which edit the state of a filter object. You can extend this class and register
- * implementations via {@link dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI#registerFilterScreenFactory(ResourceLocation, FilterScreenFactory)}
+ * implementations via {@link dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI#registerFilterScreenFactory(Identifier, FilterScreenFactory)}
  *
  * @param <T> the filter implementation type
  */
@@ -117,14 +118,14 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
         guiGraphics.hLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 29, 0x80404040);
         guiGraphics.hLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 28, 0x80FFFFFF);
 
-        guiGraphics.drawString(font, title, leftPos + 8, topPos + 6, 0x404040, false);
+        guiGraphics.drawString(font, title, leftPos + 8, topPos + 6, 0xFF404040, false);
     }
 
     @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
-        guiGraphics.blitSprite(Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
     }
 
     protected final EditBox makeSearchEditBox(int x, int y, Supplier<String> prevStrSupplier, Consumer<String> prevStrConsumer) {
@@ -132,7 +133,7 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
         editBox.setMaxLength(15);
         editBox.setBordered(true);
         editBox.setVisible(true);
-        editBox.setTextColor(0xFFFFFF);
+        editBox.setTextColor(0xFFFFFFFF);
         editBox.setValue(prevStrSupplier.get());
         editBox.setResponder(s -> {
             if (!s.equals(prevStrSupplier.get())) {
