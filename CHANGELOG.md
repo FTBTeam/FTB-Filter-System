@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [21.1.5]
+
+### Added
+* Added some glob/regex functionality to the item, item tag, and mod filters (thanks @Furglitch)
+  * Not available via the GUI, but can be set via CLI, e.g.: `/ftbfiltersystem set_filter item(minecraft:iron_*)`
+  * Glob strings must contain a '*' or '?' character and are implictly anchor to start and of text being testd
+  * Full regex strings must start and end with a '/' character, e.g. `/ftbfiltersystem set_filter item(/:iron_/)`
+
 ## [21.1.4]
 
 ### Changed
