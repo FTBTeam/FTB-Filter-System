@@ -1,10 +1,11 @@
 package dev.ftb.mods.ftbfiltersystem.filter;
 
+import com.mojang.datafixers.util.Either;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import dev.ftb.mods.ftbfiltersystem.util.RegExParser;
+import dev.ftb.mods.ftbfiltersystem.util.GlobRegexMatcher;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -14,63 +15,48 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.NoSuchElementException;
-import java.util.regex.Pattern;
 
 public class ItemFilter extends AbstractSmartFilter {
     public static final ResourceLocation ID = FTBFilterSystemAPI.rl("item");
 
-    private final Item matchItem;
-    private final String patternArg;
-    private final Pattern patternRegex;
+    private final Either<Item, GlobRegexMatcher> either;
 
     public ItemFilter(SmartFilter.Compound parent) {
         this(parent, Items.STONE);
     }
 
     public ItemFilter(SmartFilter.Compound parent, Item matchItem) {
-        super(parent);
-
-        this.matchItem = matchItem;
-        this.patternArg = null;
-        this.patternRegex = null;
+        this(parent, Either.left(matchItem));
     }
 
-    private ItemFilter(SmartFilter.Compound parent, String patternArg, Pattern patternRegex) {
+    public ItemFilter(SmartFilter.Compound parent, Either<Item, GlobRegexMatcher> either) {
         super(parent);
-
-        this.matchItem = Items.AIR;
-        this.patternArg = patternArg;
-        this.patternRegex = patternRegex;
+        this.either = either;
     }
 
     public Item getMatchItem() {
-        return matchItem;
+        return either.left().orElse(Items.AIR);
     }
 
     @Override
     public boolean test(ItemStack stack) {
-        if (patternRegex != null) {
-            var name = stack.getItem().arch$registryName().toString();
-            return patternRegex.matcher(name).matches();
-        }
-
-        return stack.is(matchItem);
+        return either.map(
+                stack::is,
+                compiled -> compiled.match(stack.getItem().arch$registryName().toString())
+        );
     }
 
     @Override
     public String getStringArg(HolderLookup.Provider registryAccess) {
-        return patternArg == null ? matchItem.arch$registryName().toString() : patternArg;
+        return either.map(item -> item.arch$registryName().toString(), GlobRegexMatcher::raw);
     }
 
     public static ItemFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) {
         try {
-            Pattern p = RegExParser.parseRegex(str);
-            if (p != null) {
-                return new ItemFilter(parent, str, p);
-            }
-            var item = registryAccess.lookup(Registries.ITEM).orElseThrow()
-                    .getOrThrow(ResourceKey.create(Registries.ITEM, ResourceLocation.tryParse(str)));
-            return new ItemFilter(parent, item.value());
+            return new ItemFilter(parent, GlobRegexMatcher.parseWithFallback(str, () ->
+                    registryAccess.lookup(Registries.ITEM).orElseThrow()
+                            .getOrThrow(ResourceKey.create(Registries.ITEM, ResourceLocation.tryParse(str))).value())
+            );
         } catch (IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
             throw new FilterException(e.getMessage(), e);
         }
