@@ -7,8 +7,6 @@ import net.neoforged.fml.common.Mod;
 @Mod(FTBFilterSystemAPI.MOD_ID)
 public class FTBFilterSystemNeoForge {
     public FTBFilterSystemNeoForge() {
-        // Submit our event bus to let architectury register our content on the right time
-//        EventBuses.registerModEventBus(FTBFilterSystemAPI.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         new FTBFilterSystem();
     }
 }

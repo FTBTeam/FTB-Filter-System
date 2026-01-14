@@ -37,24 +37,10 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         super.init();
 
         editBox = addRenderableWidget(MultiLineEditBox.builder().setX(leftPos + 8).setY(topPos + 20).build(font, 304, 75, Component.empty()));
-
-//        editBox = addRenderableWidget(new MultiLineEditBox(font, leftPos + 8, topPos + 20, 304, 75,
-//                Component.empty(), Component.empty()) {
-//            @Override
-//            public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-//                // this is a dirty hack, but default vanilla mouse-clicked behaviour is really stupid
-//                this.visible = false;
-//                boolean res =  super.mouseClicked(mouseButtonEvent, bl);
-//                this.visible = true;
-//                return res;
-//            }
-//        });
         setFocused(editBox);
         editBox.setValueListener(s -> scheduleUpdate(5));
 
-
         statusLine = addRenderableWidget(new StringWidget(leftPos + 8, topPos + 98, guiWidth - 16, font.lineHeight, Component.empty(), font));
-//        statusLine.alignRight();
 
         itemWidgets.clear();
         for (int row = 0; row < SEARCH_ROWS; ++row) {
@@ -85,7 +71,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     }
 
     protected void setStatus(boolean ok, Component message, String detail) {
-        statusLine.setMessage(message.copy().withStyle(ok ? ChatFormatting.DARK_GREEN : ChatFormatting.DARK_RED));
+        statusLine.setMessage(message.copy().withStyle(ok ? ChatFormatting.DARK_GREEN : ChatFormatting.DARK_RED).withoutShadow());
         statusLine.setTooltip(detail == null || detail.isEmpty() ? null : Tooltip.create(Component.literal(detail)));
     }
 

@@ -119,7 +119,6 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
 
         guiGraphics.fill(scrollArea.getX() - 2, scrollArea.getY() - 2, scrollArea.getX() + scrollArea.getWidth(), scrollArea.getY() + scrollArea.getHeight(), 0xFF808080);
         guiGraphics.fill(scrollArea.getX() - 1, scrollArea.getY() - 1, scrollArea.getX() + scrollArea.getWidth() - 1, scrollArea.getY() + scrollArea.getHeight() - 1, 0xFFA0A0A0);
-//        guiGraphics.blit(SCROLL_TEXTURE, sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace("container/creative_inventory/scroller"), sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 12, 15);
     }
 
