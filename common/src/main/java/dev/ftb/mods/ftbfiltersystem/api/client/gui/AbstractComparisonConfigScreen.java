@@ -2,7 +2,6 @@ package dev.ftb.mods.ftbfiltersystem.api.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
-import dev.ftb.mods.ftbfiltersystem.api.client.gui.widget.CustomCheckbox;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.client.gui.components.Button;
