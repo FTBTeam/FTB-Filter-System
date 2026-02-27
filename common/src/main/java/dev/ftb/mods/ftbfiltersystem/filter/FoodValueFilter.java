@@ -6,11 +6,11 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class FoodValueFilter extends AbstractComparisonFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("food_value");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("food_value");
 
     public FoodValueFilter(SmartFilter.Compound parent) {
         this(parent, new NumericComparison(NumericComparison.ComparisonOp.GT, 0, false));
@@ -21,7 +21,7 @@ public class FoodValueFilter extends AbstractComparisonFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

@@ -15,7 +15,6 @@ import dev.ftb.mods.ftbfiltersystem.network.SyncFilterMessage;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -23,11 +22,13 @@ import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.ConfirmScreen;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,9 +75,7 @@ public class FilterScreen extends AbstractFilterScreen {
         // add these early; they will render above other widgets so need to get mouse clicks first
         getSelectionPanel().visitWidgets(this::addWidget);
 
-        filterList = new FilterList(minecraft, topPos + 20, getListWidth(), getListHeight());
-        filterList.setX(leftPos + 8);
-        addWidget(filterList);
+        addWidget(filterList = new FilterList(minecraft, leftPos + 8, topPos + 20, getListWidth(), getListHeight()));
 
         titleEditBtn = addRenderableWidget(new ImageButton(leftPos, topPos + 3, 16, 16,
                 new WidgetSprites(Textures.EDIT_BUTTON, Textures.EDIT_BUTTON_HI),
@@ -157,7 +156,7 @@ public class FilterScreen extends AbstractFilterScreen {
         return !filter.asString(FTBFilterSystemClient.registryAccess()).equals(origFilterStr) || newTitle != null;
     }
 
-    private void createNewFilter(ResourceLocation filterId) {
+    private void createNewFilter(Identifier filterId) {
         getSelectionPanel().setVisible(false);
 
         if (filterList.getSelected() != null) {
@@ -217,7 +216,7 @@ public class FilterScreen extends AbstractFilterScreen {
             if (showingTitleEdit && !titleEditBox.isVisible()) {
                 titleEditBox.visible = true;
                 titleEditBtn.visible = false;
-                if (Screen.hasShiftDown()) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     titleEditBox.moveCursorToEnd(false);
                     titleEditBox.setHighlightPos(0);
                 }
@@ -240,16 +239,18 @@ public class FilterScreen extends AbstractFilterScreen {
             filterList.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
 
             Component displayTitle = newTitle == null ? title : newTitle;
-            guiGraphics.drawString(font, displayTitle,leftPos + 8, topPos + 7, 0x404040, false);
+            if (!titleEditBox.isVisible()) {
+                guiGraphics.drawString(font, displayTitle, leftPos + 8, topPos + 7, 0xFF404040, false);
+            }
             titleEditBtn.setX(leftPos + font.width(displayTitle) + 8);
         }
 
         if (getSelectionPanel().isVisible()) {
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, 200);
+            guiGraphics.pose().pushMatrix();
+            guiGraphics.pose().translate(0, 0);
             guiGraphics.fill(leftPos, topPos, leftPos + guiWidth, topPos + guiHeight, 0xA0202020);
             getSelectionPanel().positionAndRender(guiGraphics, addFilterBtn.getY(), addFilterBtn.getX() - 10, mouseX, mouseY, partialTick);
-            guiGraphics.pose().popPose();
+            guiGraphics.pose().popMatrix();
         }
     }
 
@@ -257,7 +258,7 @@ public class FilterScreen extends AbstractFilterScreen {
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
-        guiGraphics.blitSprite(Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
     }
 
     @Override
@@ -268,8 +269,9 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifier) {
-        if (keyCode == InputConstants.KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+    public boolean keyPressed(KeyEvent keyEvent) {
+        int keyCode = keyEvent.key();
+        if (keyCode == InputConstants.KEY_ESCAPE || minecraft.options.keyInventory.matches(keyEvent)) {
             if (getSelectionPanel().isVisible()) {
                 getSelectionPanel().setVisible(false);
                 return true;
@@ -278,7 +280,7 @@ public class FilterScreen extends AbstractFilterScreen {
                     titleEditBox.setValue(newTitle == null ? title.getString() : newTitle.getString());
                     showingTitleEdit = false;
                 } else {
-                    titleEditBox.keyPressed(keyCode, scanCode, modifier);
+                    titleEditBox.keyPressed(keyEvent);
                 }
                 return true;
             } else {
@@ -289,12 +291,12 @@ public class FilterScreen extends AbstractFilterScreen {
             if (titleEditBox.canConsumeInput()) {
                 applyNewTitle();
                 return true;
-            } else if (Screen.hasShiftDown()) {
+            } else if (Minecraft.getInstance().hasShiftDown()) {
                 applyChanges();
                 return true;
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifier);
+        return super.keyPressed(keyEvent);
     }
 
     private void closeWithConfirmation() {
@@ -319,12 +321,12 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (getSelectionPanel().isVisible() && !getSelectionPanel().isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClicked) {
+        if (getSelectionPanel().isVisible() && !getSelectionPanel().isMouseOver(event.x(), event.y())) {
             getSelectionPanel().setVisible(false);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClicked);
     }
 
     private int getListWidth() {
@@ -336,7 +338,7 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -369,9 +371,10 @@ public class FilterScreen extends AbstractFilterScreen {
         private FilterEntry dragging = null;
         private SmartFilter.Compound dragTarget = null;
 
-        public FilterList(Minecraft minecraft, int y, int width, int height) {
+        public FilterList(Minecraft minecraft, int x, int y, int width, int height) {
             super(minecraft, width, height, y, ELEMENT_HEIGHT);
 
+            setX(x);
             addChildren();
         }
 
@@ -383,10 +386,12 @@ public class FilterScreen extends AbstractFilterScreen {
             List<FilterEntry> entries = new ArrayList<>();
 
             List<DumpedFilter> dumped = FTBFilterSystemAPI.api().dump(filter);
-            dumped.forEach(entry -> entries.add(new FilterEntry(entry)));
+            int idx = 0;
+            for (DumpedFilter entry : dumped) {
+                entries.add(new FilterEntry(entry, idx++));
+            }
 
-            children().clear();
-            children().addAll(entries);
+            replaceEntries(entries);
 
             if (newSelection != null) {
                 findAndSelect(newSelection);
@@ -404,7 +409,7 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        protected int getScrollbarPosition() {
+        protected int scrollBarX() {
             return leftPos + width + 8;
         }
 
@@ -420,7 +425,7 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        public boolean mouseReleased(double mouseX, double mouseY, int btn) {
+        public boolean mouseReleased(MouseButtonEvent event) {
             if (dragging != null && dragTarget != null) {
                 FilterParser.parseFilterList(dragTarget, dragging.dumpedFilter.filter().asString(FTBFilterSystemClient.registryAccess()), FTBFilterSystemClient.registryAccess()).stream()
                         .findFirst()
@@ -434,13 +439,13 @@ public class FilterScreen extends AbstractFilterScreen {
             dragging = null;
             dragTarget = null;
 
-            return super.mouseReleased(mouseX, mouseY, btn);
+            return super.mouseReleased(event);
         }
 
         @Override
-        public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        public boolean mouseDragged(MouseButtonEvent event, double pDragX, double pDragY) {
             if (dragging != null) {
-                FilterEntry entry = getEntryAtPosition(pMouseX, pMouseY);
+                FilterEntry entry = getEntryAtPosition(event.x(), event.y());
                 if (entry != null && entry.dumpedFilter.filter() instanceof SmartFilter.Compound compound
                         && (!(dragging.dumpedFilter.filter() instanceof SmartFilter.Compound) || entry.dumpedFilter.indent() <= dragging.dumpedFilter.indent())
                         && compound != dragging.dumpedFilter.filter()
@@ -453,21 +458,23 @@ public class FilterScreen extends AbstractFilterScreen {
                 }
                 return true;
             } else {
-                return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+                return super.mouseDragged(event, pDragX, pDragY);
             }
         }
 
         @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if (keyCode == InputConstants.KEY_SPACE || keyCode == InputConstants.KEY_RETURN) {
+        public boolean keyPressed(KeyEvent event) {
+            if (event.key() == InputConstants.KEY_SPACE || event.key() == InputConstants.KEY_RETURN) {
                 configureSelectedFilter(false);
                 return true;
             }
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return super.keyPressed(event);
         }
 
         @Override
-        protected void renderDecorations(GuiGraphics guiGraphics, int pMouseX, int pMouseY) {
+        public void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float partialTick) {
+            super.renderWidget(guiGraphics, pMouseX, pMouseY, partialTick);
+
             if (dragging != null) {
                 FilterEntry entry = getEntryAtPosition(pMouseX, pMouseY);
                 if (entry != null && entry.dumpedFilter.filter() != dragging.dumpedFilter.filter()) {
@@ -480,11 +487,11 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        protected void renderSelection(GuiGraphics guiGraphics, int pTop, int pWidth, int pHeight, int pOuterColor, int pInnerColor) {
-            int minX = this.getX() + (this.width - pWidth) / 2;
-            int maxX = this.getX() + (this.width + pWidth) / 2;
+        protected void renderSelection(GuiGraphics guiGraphics, FilterEntry entry, int color) {
+            int minX = this.getX() + (this.width - entry.getWidth()) / 2;
+            int maxX = this.getX() + (this.width + entry.getWidth()) / 2;
             int col = isFocused() ? 0xFFE1F1FD : 0xFFA6B4C4;
-            GuiUtil.drawPanel(guiGraphics, new Rect2i(minX + 1, pTop - 2, maxX - minX - 2, pHeight + 3), col,
+            GuiUtil.drawPanel(guiGraphics, new Rect2i(minX + 1, entry.getY() - 2, maxX - minX - 2, entry.getHeight()), col,
                     0xFF4663AC, GuiUtil.BorderStyle.PLAIN, 1);
         }
 
@@ -500,22 +507,24 @@ public class FilterScreen extends AbstractFilterScreen {
 
         private class FilterEntry extends ObjectSelectionList.Entry<FilterEntry> {
             private final DumpedFilter dumpedFilter;
+            private final int index;
             private long lastClickTime;
 
-            public FilterEntry(DumpedFilter dumpedFilter) {
+            public FilterEntry(DumpedFilter dumpedFilter, int index) {
                 this.dumpedFilter = dumpedFilter;
+                this.index = index;
             }
 
             @Override
-            public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-                int labelLeft = left + dumpedFilter.indent() * 10;
-                int yBase = top + height / 2;
+            public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean isMouseOver, float partialTick) {
+                int labelLeft = getContentX() + dumpedFilter.indent() * 10;
                 if (dumpedFilter.filter() == dragTarget && dragging.dumpedFilter.filter() != dragTarget) {
-                    guiGraphics.fill(labelLeft - 2, top - 3, labelLeft + font.width(getLabel()) + 2, top + font.lineHeight, 0xFFCAE9BE);
-                    guiGraphics.renderOutline(labelLeft - 2, top - 3, font.width(getLabel()) + 4, font.lineHeight + 4, 0xFF306844);
+                    guiGraphics.fill(labelLeft - 2, getY() - 3, labelLeft + font.width(getLabel()) + 2, getY() + font.lineHeight, 0xFFCAE9BE);
+                    guiGraphics.renderOutline(labelLeft - 2, getY() - 3, font.width(getLabel()) + 4, font.lineHeight + 4, 0xFF306844);
                 }
-                guiGraphics.drawString(font, getLabel(), labelLeft, top,  0x404040, false);
+                guiGraphics.drawString(font, getLabel(), labelLeft, getY(),  0xFF404040, false);
                 if (index > 0) {
+                    int yBase = getY() + getContentHeight() / 2;
                     guiGraphics.hLine(labelLeft - 8, labelLeft - 2, yBase, 0xFF505080);
                     int yOff = calcYoffset(index);
                     guiGraphics.vLine(labelLeft - 8, yBase, yBase - yOff, 0xFF505080);
@@ -525,25 +534,27 @@ public class FilterScreen extends AbstractFilterScreen {
             private int calcYoffset(int index) {
                 int res = 0;
                 for (int i = index - 1; i >= 0; i--) {
-                    res += itemHeight;
+                    res += getHeight();
                     if (children().get(i).dumpedFilter.indent() < dumpedFilter.indent()) break;
                 }
                 return res - 4;
             }
 
             @Override
-            public boolean mouseClicked(double x, double y, int button) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClicked) {
                 FilterList.this.setSelected(this);
 
-                if (dumpedFilter.filter().getParent() != null) {
+                if (doubleClicked) {
+                    FilterScreen.this.configureSelectedFilter(false);
+                } else if (dumpedFilter.filter().getParent() != null) {
                     dragging = this;
                 }
 
-                if (Util.getMillis() - this.lastClickTime < 250L) {
-                    FilterScreen.this.configureSelectedFilter(false);
-                } else {
-                    this.lastClickTime = Util.getMillis();
-                }
+//                if (Util.getMillis() - this.lastClickTime < 250L) {
+//                    FilterScreen.this.configureSelectedFilter(false);
+//                } else {
+//                    this.lastClickTime = Util.getMillis();
+//                }
                 return true;
             }
 

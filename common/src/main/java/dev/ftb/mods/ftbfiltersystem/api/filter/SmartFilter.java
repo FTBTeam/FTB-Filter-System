@@ -3,7 +3,7 @@ package dev.ftb.mods.ftbfiltersystem.api.filter;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public interface SmartFilter extends Predicate<ItemStack> {
      * Get the unique ID for this filter type.
      * @return the filter type ID
      */
-    ResourceLocation getId();
+    Identifier getId();
 
     /**
      * Get the parent for this filter. Only the top-level filter in the hierarchy has a null parent.
@@ -100,7 +100,7 @@ public interface SmartFilter extends Predicate<ItemStack> {
 
     /**
      * Factory to create a new smart filter from a serialized string. An implementation of this is registered
-     * via {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(ResourceLocation, Factory, DefaultFactory)}.
+     * via {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(Identifier, Factory, DefaultFactory)}.
      *
      * @param <T> the filter type
      */
@@ -111,7 +111,7 @@ public interface SmartFilter extends Predicate<ItemStack> {
 
     /**
      * Factory to create a new smart filter with default properties. An implementation of this is registered
-     * via {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(ResourceLocation, Factory, DefaultFactory)}.
+     * via {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(Identifier, Factory, DefaultFactory)}.
      *
      * @param <T> the filter type
      */

@@ -41,7 +41,7 @@ public record SyncFilterMessage(String filterStr, Optional<String> newTitle, Int
                 });
             } catch (FilterException e) {
                 FTBFilterSystem.LOGGER.error("received filter sync message with bad filter data from client {}: {}",
-                        context.getPlayer().getGameProfile().getName(), e.getMessage());
+                        context.getPlayer().getGameProfile().name(), e.getMessage());
             }
         }
     }

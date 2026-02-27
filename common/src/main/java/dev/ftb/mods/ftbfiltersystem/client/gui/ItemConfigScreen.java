@@ -9,12 +9,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
@@ -22,7 +23,6 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,10 +74,9 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
                 .max(Integer::compareTo)
                 .orElse(50) + 10;
 
-        addRenderableWidget(CycleButton.builder(ItemSource::getDisplayName)
+        addRenderableWidget(CycleButton.builder(ItemSource::getDisplayName, itemSource)
                 .withValues(ItemSource.values())
                 .displayOnlyValue()
-                .withInitialValue(itemSource)
                 .create(leftPos + guiWidth - btnWidth - 21, topPos + 5, btnWidth, 16, Component.empty(),
                         (btn, val) -> { itemSource = val; updateSearchEntries(); }
                 ));
@@ -115,13 +114,12 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
         int sy1 = scrollArea.getY();
         int sy2 = sy1 + scrollArea.getHeight();
 
-        FormattedText txt = GuiUtil.ellipsize(font, selectedWidget.getStack().getItem().getDescription(), leftPos + guiWidth - (selectedWidget.getX() + selectedWidget.getWidth() + 6));
-        guiGraphics.drawString(font, Language.getInstance().getVisualOrder(txt), selectedWidget.getX() + selectedWidget.getWidth() + 3, selectedWidget.getY() + 8, 0x404040, false);
+        FormattedText txt = GuiUtil.ellipsize(font, selectedWidget.getStack().getItem().getName(selectedWidget.getStack()), leftPos + guiWidth - (selectedWidget.getX() + selectedWidget.getWidth() + 6));
+        guiGraphics.drawString(font, Language.getInstance().getVisualOrder(txt), selectedWidget.getX() + selectedWidget.getWidth() + 3, selectedWidget.getY() + 8, 0xFF404040, false);
 
         guiGraphics.fill(scrollArea.getX() - 2, scrollArea.getY() - 2, scrollArea.getX() + scrollArea.getWidth(), scrollArea.getY() + scrollArea.getHeight(), 0xFF808080);
         guiGraphics.fill(scrollArea.getX() - 1, scrollArea.getY() - 1, scrollArea.getX() + scrollArea.getWidth() - 1, scrollArea.getY() + scrollArea.getHeight() - 1, 0xFFA0A0A0);
-//        guiGraphics.blit(SCROLL_TEXTURE, sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
-        guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller"), sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 12, 15);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace("container/creative_inventory/scroller"), sx, sy1 + (int) ((sy2 - sy1 - 17) * currentScroll), 12, 15);
     }
 
     @Override
@@ -136,29 +134,29 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        isScrolling = button == 0 && needsScrollBars() && scrollArea.contains((int) mouseX, (int) mouseY);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClicked) {
+        isScrolling = event.button() == 0 && needsScrollBars() && scrollArea.contains((int) event.x(), (int) event.y());
         if (isScrolling) {
-            scrollToMouse(mouseY);
+            scrollToMouse(event.y());
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClicked);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double dragX, double dragY) {
         if (isScrolling) {
-            scrollToMouse(mouseY);
+            scrollToMouse(mouseButtonEvent.y());
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(mouseButtonEvent, dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         isScrolling = false;
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
@@ -249,10 +247,10 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
                 Inventory inv = Minecraft.getInstance().player.getInventory();
                 cachedInventoryEntries = new ArrayList<>();
                 for (int i = 9; i < 36; i++) {
-                    cachedInventoryEntries.add(new SearchEntry(inv.items.get(i)));
+                    cachedInventoryEntries.add(new SearchEntry(inv.getNonEquipmentItems().get(i)));
                 }
                 for (int i = 0; i < 9; i++) {
-                    cachedInventoryEntries.add(new SearchEntry(inv.items.get(i)));
+                    cachedInventoryEntries.add(new SearchEntry(inv.getNonEquipmentItems().get(i)));
                 }
             }
             return cachedInventoryEntries;
@@ -297,12 +295,6 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
             } else {
                 setSelectedStack(getStack());
             }
-        }
-
-        @Nullable
-        @Override
-        public Tooltip getTooltip() {
-            return super.getTooltip();
         }
     }
 }

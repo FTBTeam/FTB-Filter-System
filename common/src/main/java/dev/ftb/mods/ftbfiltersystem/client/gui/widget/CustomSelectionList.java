@@ -1,7 +1,6 @@
 package dev.ftb.mods.ftbfiltersystem.client.gui.widget;
 
 import dev.ftb.mods.ftbfiltersystem.client.GuiUtil;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -20,8 +19,7 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
     protected abstract List<T> buildChildrenList();
 
     public final void addChildren() {
-        children().clear();
-        children().addAll(buildChildrenList());
+        replaceEntries(buildChildrenList());
         setScrollAmount(0.0);
     }
 
@@ -32,11 +30,11 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
 
     @Override
     public int getRowWidth() {
-        return width - 8;
+        return width - 4;
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int scrollBarX() {
         return getX() + width - 6;
     }
 
@@ -46,34 +44,18 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
 
     @Override
     protected void renderListItems(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        int w = getMaxScroll() > 0 ? width - 6 : width;
-        GuiUtil.drawPanel(guiGraphics, new Rect2i(getX(), getY(), w, height + 4),
+        int w = maxScrollAmount() > 0 ? width - 6 : width;
+        GuiUtil.drawPanel(guiGraphics, new Rect2i(getX(), getY() - 1, w, height + 4),
                 0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
 
         super.renderListItems(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void renderSelection(GuiGraphics guiGraphics, int pTop, int pWidth, int pHeight, int pOuterColor, int pInnerColor) {
-        int minX = getX() + (this.width - pWidth) / 2;
-        int maxX = getX() + (this.width + pWidth) / 2 + (getMaxScroll() > 0 ? -3 : 3);
+    protected void renderSelection(GuiGraphics guiGraphics, T entry, int i) {
+        int minX = getX() + (this.width - entry.getWidth()) / 2;
+        int maxX = getX() + (this.width + entry.getWidth()) / 2 + (maxScrollAmount() > 0 ? -3 : 3);
         int col = isFocused() ? 0xFFE1F1FD : 0xFFC8D9ED;
-        GuiUtil.drawPanel(guiGraphics, new Rect2i(minX + 1, pTop - 2, maxX - minX - 2, pHeight + 4), col, 0xFF4663AC, GuiUtil.BorderStyle.PLAIN, 1);
-    }
-
-    public abstract static class Entry<E extends CustomSelectionList.Entry<E>> extends ObjectSelectionList.Entry<E> {
-        private long lastClickTime;
-
-        protected abstract boolean onMouseClick(double x, double y, int button, boolean isDoubleClick);
-
-        @Override
-        public boolean mouseClicked(double x, double y, int button) {
-            if (Util.getMillis() - lastClickTime < 250L) {
-                return onMouseClick(x, y, button, true);
-            } else {
-                lastClickTime = Util.getMillis();
-                return onMouseClick(x, y, button, false);
-            }
-        }
+        GuiUtil.drawPanel(guiGraphics, new Rect2i(minX - 1, entry.getY(), maxX - minX - 1, entry.getHeight()), col, 0xFF4663AC, GuiUtil.BorderStyle.PLAIN, 1);
     }
 }

@@ -5,11 +5,11 @@ import dev.ftb.mods.ftbfiltersystem.api.event.CustomFilterEvent;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class CustomFilter extends AbstractSmartFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("custom");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("custom");
 
     private final String eventId;
     private final String extraData;
@@ -34,7 +34,7 @@ public class CustomFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

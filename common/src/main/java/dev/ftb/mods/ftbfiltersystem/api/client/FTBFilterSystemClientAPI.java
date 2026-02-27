@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.api.client;
 
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface FTBFilterSystemClientAPI {
     /**
@@ -12,5 +12,5 @@ public interface FTBFilterSystemClientAPI {
      * @param factory the factory to create an instance of the config screen
      * @param <T> the filter implementation type
      */
-    <T extends SmartFilter> void registerFilterScreenFactory(ResourceLocation filterId, FilterScreenFactory<T> factory);
+    <T extends SmartFilter> void registerFilterScreenFactory(Identifier filterId, FilterScreenFactory<T> factory);
 }

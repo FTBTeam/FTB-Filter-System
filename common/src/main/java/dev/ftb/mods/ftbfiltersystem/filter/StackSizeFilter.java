@@ -5,11 +5,11 @@ import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public class StackSizeFilter extends AbstractComparisonFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("stack_size");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("stack_size");
 
     public StackSizeFilter(SmartFilter.Compound parent) {
         this(parent, new NumericComparison(NumericComparison.ComparisonOp.GT, 1, false));
@@ -20,7 +20,7 @@ public class StackSizeFilter extends AbstractComparisonFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

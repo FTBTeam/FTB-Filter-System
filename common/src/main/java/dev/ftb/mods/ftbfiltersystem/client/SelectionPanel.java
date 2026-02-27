@@ -2,18 +2,19 @@ package dev.ftb.mods.ftbfiltersystem.client;
 
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomStringWidget;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,7 +33,7 @@ public class SelectionPanel {
     private final List<Button> compoundButtons = new ArrayList<>();
     private final List<Button> basicButtons = new ArrayList<>();
 
-    public SelectionPanel(Font font, Consumer<ResourceLocation> onClicked, int availableHeight) {
+    public SelectionPanel(Font font, Consumer<Identifier> onClicked, int availableHeight) {
         this.font = font;
 
         createButtons(font, onClicked);
@@ -46,7 +47,7 @@ public class SelectionPanel {
         arrangeButtons(maxPerColumn);
     }
 
-    private void createButtons(Font font, Consumer<ResourceLocation> onClicked) {
+    private void createButtons(Font font, Consumer<Identifier> onClicked) {
         int widestButton = Math.max(font.width(BASIC), font.width(COMPOUND));
         for (SmartFilter filter : FilterRegistry.getInstance().defaultFilterInstances()) {
             widestButton = Math.max(widestButton, font.width(filter.getDisplayName()) + 10);
@@ -56,7 +57,7 @@ public class SelectionPanel {
                 .sorted(Comparator.comparing(filter -> filter.getDisplayName().getString()))
                 .toList())
         {
-            ResourceLocation id = filter.getId();
+            Identifier id = filter.getId();
             Button button = Button.builder(filter.getDisplayName(), b -> onClicked.accept(id))
                     .size(widestButton, BUTTON_HEIGHT)
                     .tooltip(Tooltip.create(AbstractSmartFilter.getTooltip(id)))
@@ -89,8 +90,8 @@ public class SelectionPanel {
         layout = new GridLayout();
         LayoutSettings padding = LayoutSettings.defaults().padding(1);
         LayoutSettings paddingR = LayoutSettings.defaults().padding(1).paddingRight(10);
-        layout.addChild(new CustomStringWidget(COMPOUND, font).alignCenter().setColor(0xFF202080), 0, 0, paddingR);
-        layout.addChild(new CustomStringWidget(BASIC, font).alignCenter().setColor(0xFF202080), 0, 1, padding);
+        layout.addChild(new StringWidget(COMPOUND.copy().withStyle(Style.EMPTY.withColor(0xFF202080).withoutShadow()), font), 0, 0, paddingR);
+        layout.addChild(new StringWidget(BASIC.copy().withStyle(Style.EMPTY.withColor(0xFF202080).withoutShadow()), font), 0, 1, padding);
         for (int col = 0; col < buttons.size(); col++) {
             for (int row = 0; row < buttons.get(col).size(); row++) {
                 layout.addChild(buttons.get(col).get(row), row + 1, col, col == 0 ? paddingR : padding);

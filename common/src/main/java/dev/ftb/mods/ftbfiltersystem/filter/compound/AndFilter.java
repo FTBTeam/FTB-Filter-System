@@ -4,13 +4,13 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractCompoundFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
 public class AndFilter extends AbstractCompoundFilter {
-    public static final ResourceLocation ID = FTBFilterSystemAPI.rl("and");
+    public static final Identifier ID = FTBFilterSystemAPI.rl("and");
 
     public AndFilter(SmartFilter.Compound parent) {
         super(parent);
@@ -26,7 +26,7 @@ public class AndFilter extends AbstractCompoundFilter {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

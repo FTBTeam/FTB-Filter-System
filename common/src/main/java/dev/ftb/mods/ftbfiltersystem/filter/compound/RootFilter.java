@@ -2,7 +2,7 @@ package dev.ftb.mods.ftbfiltersystem.filter.compound;
 
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 
@@ -13,14 +13,14 @@ import java.util.ArrayList;
  * It acts otherwise just like an AND filter.
  */
 public class RootFilter extends AndFilter {
-    private static final ResourceLocation ID = FTBFilterSystemAPI.rl("root");
+    private static final Identifier ID = FTBFilterSystemAPI.rl("root");
 
     public RootFilter() {
         super(null, new ArrayList<>());
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 
