@@ -6,11 +6,14 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.event.CustomFilterEvent;
 import dev.ftb.mods.ftbfiltersystem.api.event.FilterRegistrationEvent;
 import dev.ftb.mods.ftbfiltersystem.api.neoforge.FTBFilterSystemEvent;
+import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
+import dev.ftb.mods.ftblibrary.FTBLibrary;
 import dev.ftb.mods.ftblibrary.platform.event.NativeEventPosting;
 import dev.ftb.mods.ftblibrary.util.neoforge.NeoEventHelper;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
@@ -26,6 +29,12 @@ public class FTBFilterSystemNeoForge {
                 FilterSystemCommands.registerCommands(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection()));
 
         bus.addListener(FTBFilterSystemEvent.RegisterFilter.class, event -> ffs.registerBuiltinFilters(event.getEventData().registry()));
+
+        modBus.addListener(BuildCreativeModeTabContentsEvent.class, event -> {
+            if (event.getTab() == FTBLibrary.getCreativeModeTab().get()) {
+                event.accept(ModItems.SMART_FILTER.get());
+            }
+        });
 
         NeoDataComponents.COMPONENTS.register(modBus);
 

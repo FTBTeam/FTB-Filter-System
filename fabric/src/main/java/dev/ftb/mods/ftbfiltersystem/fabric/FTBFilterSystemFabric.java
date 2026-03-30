@@ -5,10 +5,13 @@ import dev.ftb.mods.ftbfiltersystem.FilterSystemCommands;
 import dev.ftb.mods.ftbfiltersystem.api.event.CustomFilterEvent;
 import dev.ftb.mods.ftbfiltersystem.api.event.FilterRegistrationEvent;
 import dev.ftb.mods.ftbfiltersystem.api.fabric.FTBFilterSystemEvents;
+import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
+import dev.ftb.mods.ftblibrary.FTBLibrary;
 import dev.ftb.mods.ftblibrary.platform.event.NativeEventPosting;
 import dev.ftb.mods.ftblibrary.util.fabric.FabricEventHelper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 public class FTBFilterSystemFabric implements ModInitializer {
@@ -20,6 +23,12 @@ public class FTBFilterSystemFabric implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(FilterSystemCommands::registerCommands);
 
         FTBFilterSystemEvents.FILTER_REGISTRATION.register(event -> ffs.registerBuiltinFilters(event.registry()));
+
+        CreativeModeTabEvents.MODIFY_OUTPUT_ALL.register((tab, output) -> {
+            if (tab == FTBLibrary.getCreativeModeTab().get()) {
+                output.accept(ModItems.SMART_FILTER.get());
+            }
+        });
 
         FabricDataComponents.init();
 
