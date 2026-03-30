@@ -4,7 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory;
 import dev.ftb.mods.ftbfiltersystem.api.client.Textures;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageWidget;
@@ -21,12 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/**
- * Common base class for all GUIs which edit the state of a filter object. You can extend this class and register
- * implementations via {@link dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI#registerFilterScreenFactory(Identifier, FilterScreenFactory)}
- *
- * @param <T> the filter implementation type
- */
+/// Common base class for all GUIs which edit the state of a filter object. You can extend this class and register
+/// implementations via [dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI#registerFilterScreenFactory(Identifier, FilterScreenFactory)]
+///
+/// @param <T> the filter implementation type
 public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends Screen {
     protected final T filter;
     protected final AbstractFilterScreen parentScreen;
@@ -48,29 +46,23 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
         this.guiHeight = guiHeight + 40;  // space for title and Done/Cancel button panels
     }
 
-    /**
-     * Schedule the {@link #doScheduledUpdate()} method to run a given number of ticks from now. Calling this
-     * method will reset an existing countdown.
-     *
-     * @param ticks the number of ticks after which to call {@code doScheduledUpdate()}
-     */
+    /// Schedule the [#doScheduledUpdate()] method to run a given number of ticks from now. Calling this
+    /// method will reset an existing countdown.
+    ///
+    /// @param ticks the number of ticks after which to call `doScheduledUpdate()`
     protected final void scheduleUpdate(int ticks) {
         updateCounter = ticks;
     }
 
-    /**
-     * This method is automatically called a set number of ticks after {@link #scheduleUpdate(int)} is called. Most
-     * commonly use to do something after the player has typed into an EditBox widget.
-     */
+    /// This method is automatically called a set number of ticks after [#scheduleUpdate(int)] is called. Most
+    /// commonly used to do something after the player has typed into an EditBox widget.
     protected void doScheduledUpdate() {
     }
 
-    /**
-     * This method is called when the "Done" button is clicked in the editing GUI; it should create a new filter of
-     * this type, using the existing filter's parent, with data constructed from the current widget state of this GUI.
-     *
-     * @return a new filter object, used to replace the filter object that was passed in to the GUI
-     */
+    /// This method is called when the "Done" button is clicked in the editing GUI; it should create a new filter of
+    /// this type, using the existing filter's parent, with data constructed from the current widget state of this GUI.
+    ///
+    /// @return a new filter object, used to replace the filter object that was passed in to the GUI
     @Nullable
     protected abstract T makeNewFilter();
 
@@ -84,9 +76,9 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
 
         LinearLayout bottomPanel = new LinearLayout(leftPos, topPos + guiHeight - 25, LinearLayout.Orientation.HORIZONTAL);
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
-                .addChild(Button.builder(Component.translatable("gui.done"), b -> applyChanges()).width(70).build());
+                .addChild(Button.builder(Component.translatable("gui.done"), _ -> applyChanges()).width(70).build());
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
-                .addChild(Button.builder(Component.translatable("gui.cancel"), b -> onClose()).width(70).build());
+                .addChild(Button.builder(Component.translatable("gui.cancel"), _ -> onClose()).width(70).build());
         bottomPanel.arrangeElements();
         bottomPanel.visitWidgets(this::addRenderableWidget);
 
@@ -112,18 +104,18 @@ public abstract class AbstractFilterConfigScreen<T extends SmartFilter> extends 
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        guiGraphics.hLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 29, 0x80404040);
-        guiGraphics.hLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 28, 0x80FFFFFF);
+        guiGraphics.horizontalLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 29, 0x80404040);
+        guiGraphics.horizontalLine(leftPos + 3, leftPos + guiWidth - 4, topPos + guiHeight - 28, 0x80FFFFFF);
 
-        guiGraphics.drawString(font, title, leftPos + 8, topPos + 6, 0xFF404040, false);
+        guiGraphics.text(font, title, leftPos + 8, topPos + 6, 0xFF404040, false);
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
     }

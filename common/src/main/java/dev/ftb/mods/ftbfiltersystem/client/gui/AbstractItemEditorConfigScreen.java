@@ -6,7 +6,7 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.ItemWidget;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     protected MultiLineEditBox editBox;
     private StringWidget statusLine;
     private final List<SearchItemWidget> itemWidgets = new ArrayList<>();
+    @Nullable
     protected Component customHoverName = null;
 
     @Override
@@ -59,10 +61,10 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        guiGraphics.renderOutline(leftPos + 7, topPos + 109, 164, 74, 0xFFA0A0A0);
+        guiGraphics.outline(leftPos + 7, topPos + 109, 164, 74, 0xFFA0A0A0);
     }
 
     protected abstract Predicate<ItemStack> inventoryChecker();
@@ -70,7 +72,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     protected void onItemWidgetClicked() {
     }
 
-    protected void setStatus(boolean ok, Component message, String detail) {
+    protected void setStatus(boolean ok, Component message, @Nullable String detail) {
         statusLine.setMessage(message.copy().withStyle(ok ? ChatFormatting.DARK_GREEN : ChatFormatting.DARK_RED).withoutShadow());
         statusLine.setTooltip(detail == null || detail.isEmpty() ? null : Tooltip.create(Component.literal(detail)));
     }
@@ -93,8 +95,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
             }
         }
         @Override
-        protected void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-            super.renderWidget(guiGraphics, pMouseX, pMouseY, pPartialTick);
+        protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             if (!inventoryChecker().test(getStack())) {
                 guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(0, 0);

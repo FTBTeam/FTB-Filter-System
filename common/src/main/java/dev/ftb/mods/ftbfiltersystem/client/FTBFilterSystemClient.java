@@ -1,17 +1,17 @@
 package dev.ftb.mods.ftbfiltersystem.client;
 
-import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
+import dev.ftb.mods.ftbfiltersystem.api.event.FilterRegistrationEvent;
 import dev.ftb.mods.ftbfiltersystem.api.event.client.ClientFilterRegistrationEvent;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.gui.*;
 import dev.ftb.mods.ftbfiltersystem.filter.*;
-import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
+import dev.ftb.mods.ftblibrary.platform.event.NativeEventPosting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -21,30 +21,32 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
-    INSTANCE;
-
+public class FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     private final Map<Identifier, FilterScreenFactory<?>> screenFactories = new ConcurrentHashMap<>();
+    @Nullable
+    private static FTBFilterSystemClient instance = null;
 
     public static HolderLookup.Provider registryAccess() {
         return Objects.requireNonNull(Minecraft.getInstance().level).registryAccess();
     }
 
-    public void init() {
+    public FTBFilterSystemClient() {
+        instance = this;
+
         FTBFilterSystemAPI._initClient(this);
-
-        ClientLifecycleEvent.CLIENT_SETUP.register(this::onClientSetup);
-        ClientLifecycleEvent.CLIENT_STARTED.register(this::onClientStarted);
-
-        ClientFilterRegistrationEvent.REGISTER.register(this::registerClientFilters);
     }
 
-    private void registerClientFilters(FTBFilterSystemClientAPI api) {
+    public static FTBFilterSystemClient getInstance() {
+        return Objects.requireNonNull(instance);
+    }
+
+    public void registerClientFilters(FTBFilterSystemClientAPI api) {
         api.registerFilterScreenFactory(ItemFilter.ID, ItemConfigScreen::new);
         api.registerFilterScreenFactory(DurabilityFilter.ID, DurabilityConfigScreen::new);
         api.registerFilterScreenFactory(MaxStackSizeFilter.ID, MaxCountConfigScreen::new);
@@ -57,12 +59,9 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         api.registerFilterScreenFactory(ExpressionFilter.ID, ExpressionConfigScreen::new);
     }
 
-    private void onClientStarted(Minecraft minecraft) {
-        ClientFilterRegistrationEvent.REGISTER.invoker().registerFilters(FTBFilterSystemAPI.clientApi());
-    }
-
-    public void onClientSetup(Minecraft minecraft) {
-        FilterRegistry.getInstance().freeze();
+    public void onClientStarted(Minecraft ignored) {
+        NativeEventPosting.get().postEvent(new FilterRegistrationEvent.Data(FTBFilterSystemAPI.api().getRegistry()));
+        NativeEventPosting.get().postEvent(new ClientFilterRegistrationEvent.Data(FTBFilterSystemAPI.clientApi()));
     }
 
     public void openFilterScreen(InteractionHand interactionHand) {
@@ -76,7 +75,7 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
             try {
                 Minecraft.getInstance().setScreen(new FilterScreen(stack.getHoverName(), SmartFilterItem.getFilter(stack, player.registryAccess()), interactionHand));
             } catch (FilterException e) {
-                player.displayClientMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
+                player.sendSystemMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
             }
         }
     }

@@ -1,12 +1,12 @@
 package dev.ftb.mods.ftbfiltersystem.registry.item;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.ftb.mods.ftbfiltersystem.FFSPlatform;
 import dev.ftb.mods.ftbfiltersystem.FilterSystemCommands;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
-import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.ChatFormatting;
@@ -30,12 +30,12 @@ import java.util.function.Consumer;
 public class SmartFilterItem extends Item {
     public SmartFilterItem() {
         super(ModItems.defaultProps().setId(ResourceKey.create(Registries.ITEM, FTBFilterSystemAPI.rl("smart_filter")))
-                .component(ModDataComponents.FILTER_STRING.get(), "")
+                .component(FFSPlatform.get().filterComponent(), "")
         );
     }
 
     public static String getFilterString(ItemStack filterStack) {
-        return filterStack.getOrDefault(ModDataComponents.FILTER_STRING.get(), "");
+        return filterStack.getOrDefault(FFSPlatform.get().filterComponent(), "");
     }
 
     @NotNull
@@ -46,19 +46,18 @@ public class SmartFilterItem extends Item {
     }
 
     public static void setFilter(ItemStack filterStack, String string) {
-        filterStack.set(ModDataComponents.FILTER_STRING.get(), string);
+        filterStack.set(FFSPlatform.get().filterComponent(), string);
     }
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand interactionHand) {
-        ItemStack stack = player.getItemInHand(interactionHand);
         if (level.isClientSide() && !player.isCrouching()) {
-            FTBFilterSystemClient.INSTANCE.openFilterScreen(interactionHand);
+            FTBFilterSystemClient.getInstance().openFilterScreen(interactionHand);
         } else if (player instanceof ServerPlayer sp && player.isCrouching()) {
             try {
                 FilterSystemCommands.tryMatch(sp.createCommandSourceStack());
             } catch (CommandSyntaxException | FilterException e) {
-                player.displayClientMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
+                player.sendSystemMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
             }
         }
         return InteractionResult.SUCCESS;

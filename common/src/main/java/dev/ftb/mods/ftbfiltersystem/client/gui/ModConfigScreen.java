@@ -1,16 +1,17 @@
 package dev.ftb.mods.ftbfiltersystem.client.gui;
 
-import dev.architectury.platform.Platform;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomSelectionList;
 import dev.ftb.mods.ftbfiltersystem.filter.ModFilter;
+import dev.ftb.mods.ftblibrary.platform.Platform;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
@@ -52,10 +53,10 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        modList.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+        modList.extractWidgetRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
     @Override
@@ -84,9 +85,9 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
         String srch = searchField.getValue().toLowerCase(Locale.ROOT);
 
         matchingModData.clear();
-        matchingModData.addAll(Platform.getMods().stream()
-                .filter(mod -> srch.isEmpty() || mod.getModId().toLowerCase(Locale.ROOT).contains(srch))
-                .map(mod -> new ModData(mod.getModId(), mod.getName()))
+        matchingModData.addAll(Platform.get().getMods().stream()
+                .filter(mod -> srch.isEmpty() || mod.modId().toLowerCase(Locale.ROOT).contains(srch))
+                .map(mod -> new ModData(mod.modId(), mod.name()))
                 .sorted()
                 .toList());
     }
@@ -98,7 +99,7 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
 
     @Override
     public void receiveGhostDrop(ItemStack stack) {
-        String modId = stack.getItem().arch$registryName().getNamespace();
+        String modId = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
         modList.children().stream()
                 .filter(entry -> entry.modData.modId.equals(modId))
                 .findFirst()
@@ -120,7 +121,7 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
         }
 
         @Override
-        protected void renderListBackground(GuiGraphics guiGraphics) {
+        protected void extractListBackground(GuiGraphicsExtractor graphics) {
         }
 
         @Override
@@ -136,12 +137,12 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
             }
 
             @Override
-            public void renderContent(GuiGraphics guiGraphics, int x, int y, boolean mouseOver, float partialTick) {
+            public void extractContent(GuiGraphicsExtractor guiGraphics, int x, int y, boolean mouseOver, float partialTick) {
                 Component txt = Component.literal(modData.modId()).withStyle(Style.EMPTY.withColor(0xFF202060))
                         .append(Component.literal(" ["))
                         .append(Component.literal(modData.modName()).withStyle(Style.EMPTY.withColor(0xFF804020)))
                         .append(Component.literal("]"));
-                guiGraphics.drawString(font, txt, getContentX() + 1, getContentY() + 1, 0xFF404040, false);
+                guiGraphics.text(font, txt, getContentX() + 1, getContentY() + 1, 0xFF404040, false);
             }
 
             @Override

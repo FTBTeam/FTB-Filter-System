@@ -5,10 +5,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 
-/**
- * Base class for the top-level editor GUI, passed as a parameter when constructing a
- * {@link AbstractFilterConfigScreen}. Do not extend this class yourself.
- */
+/// Base class for the top-level editor GUI, passed as a parameter when constructing a
+/// [AbstractFilterConfigScreen]. Do not extend this class yourself.
 @ApiStatus.NonExtendable
 public abstract class AbstractFilterScreen extends Screen {
     protected AbstractFilterScreen(Component component) {

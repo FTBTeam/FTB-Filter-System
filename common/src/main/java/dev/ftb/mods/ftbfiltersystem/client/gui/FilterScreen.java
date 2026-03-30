@@ -1,7 +1,6 @@
 package dev.ftb.mods.ftbfiltersystem.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.architectury.networking.NetworkManager;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.client.Textures;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
@@ -14,9 +13,11 @@ import dev.ftb.mods.ftbfiltersystem.client.SelectionPanel;
 import dev.ftb.mods.ftbfiltersystem.network.SyncFilterMessage;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
+import dev.ftb.mods.ftblibrary.client.util.ClientUtils;
+import dev.ftb.mods.ftblibrary.platform.network.Play2ServerNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -139,16 +140,14 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     private void applyChanges() {
-        NetworkManager.sendToServer(new SyncFilterMessage(
+        Play2ServerNetworking.send(new SyncFilterMessage(
                 filter.asString(FTBFilterSystemClient.registryAccess()), newTitle == null ? Optional.empty() : Optional.of(newTitle.getString()), interactionHand)
         );
 
         onClose();
 
         if (changesHaveBeenMade()) {
-            Minecraft.getInstance().player.displayClientMessage(
-                    Component.translatable("ftbfiltersystem.message.changes_saved").withStyle(ChatFormatting.GREEN),
-                    true);
+            ClientUtils.getClientPlayer().sendOverlayMessage(Component.translatable("ftbfiltersystem.message.changes_saved").withStyle(ChatFormatting.GREEN));
         }
     }
 
@@ -192,7 +191,7 @@ public class FilterScreen extends AbstractFilterScreen {
     private void configureSelectedFilter(boolean deleteOnCancel) {
         FilterList.FilterEntry selected = filterList.getSelected();
         if (selected != null) {
-            FTBFilterSystemClient.INSTANCE.openFilterConfigScreen(selected.dumpedFilter.filter(), this, deleteOnCancel);
+            FTBFilterSystemClient.getInstance().openFilterConfigScreen(selected.dumpedFilter.filter(), this, deleteOnCancel);
         }
     }
 
@@ -230,17 +229,17 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
         if (guiHeight > 0) {
             GuiUtil.drawPanel(guiGraphics, new Rect2i(leftPos + 7, topPos + 19, getListWidth() + 2, getListHeight() + 1),
                     0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
-            filterList.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+            filterList.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
             Component displayTitle = newTitle == null ? title : newTitle;
             if (!titleEditBox.isVisible()) {
-                guiGraphics.drawString(font, displayTitle, leftPos + 8, topPos + 7, 0xFF404040, false);
+                guiGraphics.text(font, displayTitle, leftPos + 8, topPos + 7, 0xFF404040, false);
             }
             titleEditBtn.setX(leftPos + font.width(displayTitle) + 8);
         }
@@ -255,8 +254,8 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, Textures.BACKGROUND, leftPos, topPos, guiWidth, guiHeight);
     }
@@ -379,7 +378,7 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        protected void renderListBackground(GuiGraphics guiGraphics) {
+        protected void extractListBackground(GuiGraphicsExtractor guiGraphics) {
         }
 
         private void addChildren() {
@@ -472,22 +471,22 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        public void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float partialTick) {
-            super.renderWidget(guiGraphics, pMouseX, pMouseY, partialTick);
+        public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float partialTick) {
+            super.extractWidgetRenderState(guiGraphics, pMouseX, pMouseY, partialTick);
 
             if (dragging != null) {
                 FilterEntry entry = getEntryAtPosition(pMouseX, pMouseY);
                 if (entry != null && entry.dumpedFilter.filter() != dragging.dumpedFilter.filter()) {
                     int w = font.width(dragging.dumpedFilter.filter().getDisplayName());
                     guiGraphics.fill(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, pMouseX + w + 10, pMouseY + ELEMENT_HEIGHT / 2, 0xC0E1F1FD);
-                    guiGraphics.renderOutline(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, w + 10, ELEMENT_HEIGHT, 0xC0404040);
-                    guiGraphics.drawString(font, dragging.dumpedFilter.filter().getDisplayName(), pMouseX + 5, pMouseY - ELEMENT_HEIGHT / 2 + 3, 0xC0404040, false);
+                    guiGraphics.outline(pMouseX, pMouseY - ELEMENT_HEIGHT / 2 + 1, w + 10, ELEMENT_HEIGHT, 0xC0404040);
+                    guiGraphics.text(font, dragging.dumpedFilter.filter().getDisplayName(), pMouseX + 5, pMouseY - ELEMENT_HEIGHT / 2 + 3, 0xC0404040, false);
                 }
             }
         }
 
         @Override
-        protected void renderSelection(GuiGraphics guiGraphics, FilterEntry entry, int color) {
+        protected void extractSelection(GuiGraphicsExtractor guiGraphics, FilterEntry entry, int outlineColor) {
             int minX = this.getX() + (this.width - entry.getWidth()) / 2;
             int maxX = this.getX() + (this.width + entry.getWidth()) / 2;
             int col = isFocused() ? 0xFFE1F1FD : 0xFFA6B4C4;
@@ -496,7 +495,8 @@ public class FilterScreen extends AbstractFilterScreen {
         }
 
         @Override
-        protected void renderListSeparators(GuiGraphics guiGraphics) {
+        protected void extractListSeparators(GuiGraphicsExtractor graphics) {
+            super.extractListSeparators(graphics);
         }
 
         private void findAndSelect(SmartFilter filter) {
@@ -516,18 +516,18 @@ public class FilterScreen extends AbstractFilterScreen {
             }
 
             @Override
-            public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean isMouseOver, float partialTick) {
+            public void extractContent(GuiGraphicsExtractor guiGraphics, int i, int j, boolean isMouseOver, float partialTick) {
                 int labelLeft = getContentX() + dumpedFilter.indent() * 10;
                 if (dumpedFilter.filter() == dragTarget && dragging.dumpedFilter.filter() != dragTarget) {
                     guiGraphics.fill(labelLeft - 2, getY() - 3, labelLeft + font.width(getLabel()) + 2, getY() + font.lineHeight, 0xFFCAE9BE);
-                    guiGraphics.renderOutline(labelLeft - 2, getY() - 3, font.width(getLabel()) + 4, font.lineHeight + 4, 0xFF306844);
+                    guiGraphics.outline(labelLeft - 2, getY() - 3, font.width(getLabel()) + 4, font.lineHeight + 4, 0xFF306844);
                 }
-                guiGraphics.drawString(font, getLabel(), labelLeft, getY(),  0xFF404040, false);
+                guiGraphics.text(font, getLabel(), labelLeft, getY(),  0xFF404040, false);
                 if (index > 0) {
                     int yBase = getY() + getContentHeight() / 2;
-                    guiGraphics.hLine(labelLeft - 8, labelLeft - 2, yBase, 0xFF505080);
+                    guiGraphics.horizontalLine(labelLeft - 8, labelLeft - 2, yBase, 0xFF505080);
                     int yOff = calcYoffset(index);
-                    guiGraphics.vLine(labelLeft - 8, yBase, yBase - yOff, 0xFF505080);
+                    guiGraphics.verticalLine(labelLeft - 8, yBase, yBase - yOff, 0xFF505080);
                 }
             }
 

@@ -1,11 +1,13 @@
 package dev.ftb.mods.ftbfiltersystem.network;
 
-import dev.architectury.networking.NetworkManager;
 import dev.ftb.mods.ftbfiltersystem.FTBFilterSystem;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
+import dev.ftb.mods.ftblibrary.platform.network.PacketContext;
+import dev.ftb.mods.ftblibrary.util.NetworkHelper;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -23,15 +25,16 @@ public record SyncFilterMessage(String filterStr, Optional<String> newTitle, Int
     public static StreamCodec<FriendlyByteBuf, SyncFilterMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, SyncFilterMessage::filterStr,
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs::optional), SyncFilterMessage::newTitle,
-            FTBFilterSystemNet.enumCodec(InteractionHand.class), SyncFilterMessage::hand,
+            NetworkHelper.enumStreamCodec(InteractionHand.class), SyncFilterMessage::hand,
             SyncFilterMessage::new
     );
 
-    public static void handle(SyncFilterMessage message, NetworkManager.PacketContext context) {
-        ItemStack stack = context.getPlayer().getItemInHand(message.hand);
+    public static void handle(SyncFilterMessage message, PacketContext context) {
+        ItemStack stack = context.player().getItemInHand(message.hand);
         if (stack.getItem() instanceof SmartFilterItem) {
             try {
-                SmartFilterItem.setFilter(stack, FilterParser.parse(message.filterStr, context.registryAccess()).asString(context.registryAccess()));
+                RegistryAccess registryAccess = context.player().registryAccess();
+                SmartFilterItem.setFilter(stack, FilterParser.parse(message.filterStr, registryAccess).asString(registryAccess));
                 message.newTitle.ifPresent(title -> {
                     if (title.isEmpty()) {
                         stack.remove(DataComponents.CUSTOM_NAME);
@@ -41,7 +44,7 @@ public record SyncFilterMessage(String filterStr, Optional<String> newTitle, Int
                 });
             } catch (FilterException e) {
                 FTBFilterSystem.LOGGER.error("received filter sync message with bad filter data from client {}: {}",
-                        context.getPlayer().getGameProfile().name(), e.getMessage());
+                        context.player().getGameProfile().name(), e.getMessage());
             }
         }
     }

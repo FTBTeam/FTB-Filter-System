@@ -6,9 +6,7 @@ import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Base class for all non-compound smart filters.
- */
+/// Base class for all non-compound smart filters.
 public abstract class AbstractSmartFilter implements SmartFilter {
     private final SmartFilter.Compound parent;
     private Component displayName = null;

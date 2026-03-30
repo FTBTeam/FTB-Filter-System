@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -36,10 +36,10 @@ public class ItemWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         guiGraphics.fill(getX(), getY(), getX() + getWidth(), getY() + getWidth(), 0xFF808080);
         guiGraphics.fill(getX() + 1, getY() + 1, getX() + getWidth() - 1, getY() + getWidth() - 1, 0xFFA0A0A0);
-        guiGraphics.renderItem(this.stack, this.getX() + 1, this.getY() + 1);
+        guiGraphics.item(this.stack, this.getX() + 1, this.getY() + 1);
     }
 
     @Override

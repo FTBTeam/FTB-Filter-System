@@ -1,9 +1,9 @@
 package dev.ftb.mods.ftbfiltersystem.registry;
 
-import dev.architectury.platform.Platform;
+import com.google.common.collect.ImmutableMap;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import net.fabricmc.api.EnvType;
+import dev.ftb.mods.ftblibrary.util.Lazy;
 import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
@@ -13,22 +13,23 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FilterRegistry implements FTBFilterSystemRegistry {
-    private static final FilterRegistry SERVER_INSTANCE = new FilterRegistry();
-    private static final FilterRegistry CLIENT_INSTANCE = new FilterRegistry();
+    private static final FilterRegistry INSTANCE = new FilterRegistry();
 
     private final Map<Identifier, FilterDetails<?>> filterMap = new ConcurrentHashMap<>();
-    private final Map<Identifier, SmartFilter> defaultInstances = new ConcurrentHashMap<>();
-    private boolean frozen = false;
+    private final Lazy<Map<Identifier, SmartFilter>> defaultInstances = Lazy.of(this::buildDefaultInstances);
 
     public static FilterRegistry getInstance() {
-        return Platform.getEnv() == EnvType.CLIENT ? CLIENT_INSTANCE : SERVER_INSTANCE;
+        return INSTANCE;
+    }
+
+    private Map<Identifier, SmartFilter> buildDefaultInstances() {
+        ImmutableMap.Builder<Identifier, SmartFilter> res = ImmutableMap.builder();
+        filterMap.forEach((id, entry) -> res.put(id, entry.defaultSupplier().create(null)));
+        return res.build();
     }
 
     @Override
     public <T extends SmartFilter> void register(Identifier id, SmartFilter.Factory<T> factory, SmartFilter.DefaultFactory<T> defaultFactory) {
-        if (frozen) {
-            throw new IllegalStateException("filter registry is now frozen!");
-        }
         filterMap.put(id, new FilterDetails<>(id, factory, defaultFactory));
     }
 
@@ -39,16 +40,11 @@ public class FilterRegistry implements FTBFilterSystemRegistry {
 
     @Override
     public Collection<SmartFilter> defaultFilterInstances() {
-        return defaultInstances.values();
+        return defaultInstances.get().values();
     }
 
     public Optional<FilterDetails<?>> getDetails(Identifier type) {
         return Optional.ofNullable(filterMap.get(type));
-    }
-
-    public void freeze() {
-        frozen = true;
-        filterMap.forEach((id, entry) -> defaultInstances.put(id, entry.defaultSupplier().create(null)));
     }
 
     public Optional<SmartFilter> createDefaultFilter(SmartFilter.Compound parent, Identifier filterId) {

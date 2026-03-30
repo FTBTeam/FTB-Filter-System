@@ -4,7 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ public class SelectionPanel {
     private static final Component COMPOUND = Component.translatable("ftbfiltersystem.gui.compound");
     private static final Component BASIC = Component.translatable("ftbfiltersystem.gui.basic");
     private final Font font;
+    @Nullable
     private Rect2i bounds;
     private final List<Button> compoundButtons = new ArrayList<>();
     private final List<Button> basicButtons = new ArrayList<>();
@@ -58,7 +60,7 @@ public class SelectionPanel {
                 .toList())
         {
             Identifier id = filter.getId();
-            Button button = Button.builder(filter.getDisplayName(), b -> onClicked.accept(id))
+            Button button = Button.builder(filter.getDisplayName(), _ -> onClicked.accept(id))
                     .size(widestButton, BUTTON_HEIGHT)
                     .tooltip(Tooltip.create(AbstractSmartFilter.getTooltip(id)))
                     .build();
@@ -113,14 +115,14 @@ public class SelectionPanel {
         layout.visitWidgets(consumer);
     }
 
-    public void positionAndRender(GuiGraphics guiGraphics, int topEdge, int rightEdge, int mouseX, int mouseY, float partialTick) {
+    public void positionAndRender(GuiGraphicsExtractor guiGraphics, int topEdge, int rightEdge, int mouseX, int mouseY, float partialTick) {
         int xBase = Math.max(5, rightEdge - layout.getWidth());
         bounds = new Rect2i(xBase, topEdge, layout.getWidth(), layout.getHeight());
         layout.setPosition(bounds.getX(), bounds.getY());
 
         GuiUtil.drawPanel(guiGraphics, GuiUtil.outsetRect(bounds, 3), 0xFFD6D6D6, 0xFF404040, GuiUtil.BorderStyle.PLAIN, 1);
-        guiGraphics.vLine(xBase + compoundButtons.getFirst().getWidth() + 5, topEdge, topEdge + layout.getHeight(), 0xFFA0A0A0);
-        visitWidgets(w -> w.render(guiGraphics, mouseX, mouseY, partialTick));
+        guiGraphics.verticalLine(xBase + compoundButtons.getFirst().getWidth() + 5, topEdge, topEdge + layout.getHeight(), 0xFFA0A0A0);
+        visitWidgets(w -> w.extractRenderState(guiGraphics, mouseX, mouseY, partialTick));
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {

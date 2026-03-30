@@ -6,12 +6,10 @@ import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 
-/**
- * Special root-level filter which isn't registered, so can't be created via parsing, but is implicitly created
- * as the top-level filter in any filter tree built by
- * {@link dev.ftb.mods.ftbfiltersystem.util.FilterParser#parse(String,HolderLookup.Provider)}
- * It acts otherwise just like an AND filter.
- */
+/// Special root-level filter which isn't registered, so can't be created via parsing, but is implicitly created
+/// as the top-level filter in any filter tree built by
+/// [dev.ftb.mods.ftbfiltersystem.util.FilterParser#parse(String,HolderLookup.Provider)]
+/// It acts otherwise just like an AND filter.
 public class RootFilter extends AndFilter {
     private static final Identifier ID = FTBFilterSystemAPI.rl("root");
 

@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.util.GlobRegexMatcher;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -42,20 +43,20 @@ public class ItemFilter extends AbstractSmartFilter {
     public boolean test(ItemStack stack) {
         return either.map(
                 stack::is,
-                compiled -> compiled.match(stack.getItem().arch$registryName().toString())
+                compiled -> compiled.match(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString())
         );
     }
 
     @Override
     public String getStringArg(HolderLookup.Provider registryAccess) {
-        return either.map(item -> item.arch$registryName().toString(), GlobRegexMatcher::raw);
+        return either.map(item -> BuiltInRegistries.ITEM.getKey(item).toString(), GlobRegexMatcher::raw);
     }
 
     public static ItemFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) {
         try {
             return new ItemFilter(parent, GlobRegexMatcher.parseWithFallback(str, () ->
                     registryAccess.lookup(Registries.ITEM).orElseThrow()
-                            .getOrThrow(ResourceKey.create(Registries.ITEM, Identifier.tryParse(str))).value())
+                            .getOrThrow(ResourceKey.create(Registries.ITEM, Identifier.parse(str))).value())
             );
         } catch (IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
             throw new FilterException(e.getMessage(), e);

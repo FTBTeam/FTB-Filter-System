@@ -1,15 +1,16 @@
 package dev.ftb.mods.ftbfiltersystem.api.event.client;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 
-/**
- * Fired when filters are being registered on the client; use this event to register configuration screens for your
- * custom filters.
- */
-public interface ClientFilterRegistrationEvent {
-    Event<ClientFilterRegistrationEvent> REGISTER = EventFactory.createLoop();
+import java.util.function.Consumer;
 
-    void registerFilters(FTBFilterSystemClientAPI api);
+/// Fired when filters are being registered on the client; use this event to register configuration screens for your
+/// custom filters.
+public interface ClientFilterRegistrationEvent extends Consumer<ClientFilterRegistrationEvent.Data> {
+//    Event<ClientFilterRegistrationEvent> REGISTER = EventFactory.createLoop();
+
+    record Data(FTBFilterSystemClientAPI api) {
+    }
+
+//    void registerFilters(FTBFilterSystemClientAPI api);
 }

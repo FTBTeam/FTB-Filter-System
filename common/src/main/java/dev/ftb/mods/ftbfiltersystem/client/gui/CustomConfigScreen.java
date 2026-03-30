@@ -4,11 +4,10 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.filter.CustomFilter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class CustomConfigScreen extends AbstractFilterConfigScreen<CustomFilter> {
@@ -29,7 +28,8 @@ public class CustomConfigScreen extends AbstractFilterConfigScreen<CustomFilter>
         idEditBox.setVisible(true);
         idEditBox.setTextColor(0xFFFFFFFF);
         idEditBox.setValue(filter.getEventId());
-        idEditBox.setFilter(s -> s.isEmpty() || StringUtils.isAlphanumeric(s));
+        // TODO filtering?
+//        idEditBox.setFilter(s -> s.isEmpty() || StringUtils.isAlphanumeric(s));
         addRenderableWidget(idEditBox);
 
         extraEditBox = new EditBox(font, leftPos + 8, topPos + 70, guiWidth - 16, font.lineHeight + 4, Component.empty());
@@ -44,11 +44,11 @@ public class CustomConfigScreen extends AbstractFilterConfigScreen<CustomFilter>
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        guiGraphics.drawString(font, Component.translatable("ftbfiltersystem.gui.custom_id"), leftPos + 8, topPos + 30, 0xFF404040, false);
-        guiGraphics.drawString(font, Component.translatable("ftbfiltersystem.gui.custom_data"), leftPos + 8, topPos + 60, 0xFF404040, false);
+        guiGraphics.text(font, Component.translatable("ftbfiltersystem.gui.custom_id"), leftPos + 8, topPos + 30, 0xFF404040, false);
+        guiGraphics.text(font, Component.translatable("ftbfiltersystem.gui.custom_data"), leftPos + 8, topPos + 60, 0xFF404040, false);
     }
 
     @Override

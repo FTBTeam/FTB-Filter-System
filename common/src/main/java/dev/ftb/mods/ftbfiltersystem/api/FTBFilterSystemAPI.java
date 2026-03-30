@@ -25,44 +25,36 @@ public class FTBFilterSystemAPI {
     private static API instance;
     private static FTBFilterSystemClientAPI clientInstance;
 
-    /**
-     * Retrieve the public API instance.
-     *
-     * @return the API handler
-     * @throws NullPointerException if called before initialised
-     */
+    /// Retrieve the public API instance.
+    ///
+    /// @return the API handler
+    /// @throws NullPointerException if called before initialised
     @NotNull
     public static FTBFilterSystemAPI.API api() {
         return Objects.requireNonNull(instance);
     }
 
-    /**
-     * Retrieve the public API instance.
-     *
-     * @return the API handler
-     * @throws NullPointerException if called before initialised
-     */
+    /// Retrieve the public API instance.
+    ///
+    /// @return the API handler
+    /// @throws NullPointerException if called before initialised
     @NotNull
     public static FTBFilterSystemClientAPI clientApi() {
         return Objects.requireNonNull(clientInstance);
     }
 
-    /**
-     * Convenience method to get a resource location in the FTB Filter System namespace
-     *
-     * @param path the resource location path component
-     * @return a new resource location
-     */
+    /// Convenience method to get a resource location in the FTB Filter System namespace
+    ///
+    /// @param path the resource location path component
+    /// @return a new resource location
     public static Identifier rl(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    /**
-     * Get a resource location from the given string, defaulting to "ftbfiltersystem:" namespace
-     *
-     * @param str a string
-     * @return a resource location
-     */
+    /// Get a resource location from the given string, defaulting to "ftbfiltersystem:" namespace
+    ///
+    /// @param str a string
+    /// @return a resource location
     public static Identifier modDefaultedRL(String str) {
         if (str.indexOf(":") > 0) {
             var result = Identifier.tryParse(str);
@@ -77,20 +69,16 @@ public class FTBFilterSystemAPI {
         return rl(str);
     }
 
-    /**
-     * Stringify a resource location, omitting the namespace if it's "ftbfiltersystem:"
-     *
-     * @param rl a resource location
-     * @return stringified resource location
-     */
+    /// Stringify a resource location, omitting the namespace if it's "ftbfiltersystem:"
+    ///
+    /// @param rl a resource location
+    /// @return stringified resource location
     public static String modDefaultedString(Identifier rl) {
         return rl.getNamespace().equals(FTBFilterSystemAPI.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
-    /**
-     * Do not call this method yourself!
-     * @param instance the API instance
-     */
+    /// Do not call this method yourself!
+    /// @param instance the API instance
     @ApiStatus.Internal
     public static void _init(API instance) {
         if (FTBFilterSystemAPI.instance != null) {
@@ -99,10 +87,8 @@ public class FTBFilterSystemAPI {
         FTBFilterSystemAPI.instance = instance;
     }
 
-    /**
-     * Do not call this method yourself!
-     * @param instance the API instance
-     */
+    /// Do not call this method yourself!
+    /// @param instance the API instance
     @ApiStatus.Internal
     public static void _initClient(FTBFilterSystemClientAPI instance) {
         if (FTBFilterSystemAPI.clientInstance != null) {
@@ -112,97 +98,77 @@ public class FTBFilterSystemAPI {
     }
 
     public interface API {
-        /**
-         * Get the filter registry.
-         *
-         * @return the filter registry
-         */
+        /// Get the filter registry.
+        ///
+        /// @return the filter registry
         FTBFilterSystemRegistry getRegistry();
 
-        /**
-         * Check if the given itemstack is an FTB Filter System filter.
-         *
-         * @param stack the stack to check
-         * @return true if it's a filter, false otherwise
-         */
+        /// Check if the given itemstack is an FTB Filter System filter.
+        ///
+        /// @param stack the stack to check
+        /// @return true if it's a filter, false otherwise
         boolean isFilterItem(ItemStack stack);
 
-        /**
-         * {@return the Smart Filter item} May be useful for mods which wish to add capabilities and/or components
-         * to the Smart Filter. Do not call this before registration has completed.
-         */
+        /// {@return the Smart Filter item} May be useful for mods which wish to add capabilities and/or components
+        /// to the Smart Filter. Do not call this before registration has completed.
         Item filterItem();
 
-        /**
-         * Check if the given filter stack matches the given item stack
-         * .
-         *
-         * @param filterStack    the filter stack, which should be a FTB Filter System filter
-         * @param toMatch        the item stack to test
-         * @param registryAccess registry access, required for parsing some filters
-         * @return true if the filter stack matches, false otherwise (the filter stack isn't a filter, or the filter NBT is bad)
-         */
+        /// Check if the given filter stack matches the given item stack
+        /// .
+        ///
+        /// @param filterStack    the filter stack, which should be a FTB Filter System filter
+        /// @param toMatch        the item stack to test
+        /// @param registryAccess registry access, required for parsing some filters
+        /// @return true if the filter stack matches, false otherwise (the filter stack isn't a filter, or the filter NBT is bad)
         boolean doesFilterMatch(ItemStack filterStack, ItemStack toMatch, HolderLookup.Provider registryAccess);
 
-        /**
-         * Get a list of dumped filter records representing all the subfilters found in this filter, in order. Generally
-         * used for display purposes, GUI or otherwise.
-         *
-         * @param filter the filter whose contents to dump
-         * @return the dumped contents, including indent information for display formatting purposes
-         */
+        /// Get a list of dumped filter records representing all the subfilters found in this filter, in order. Generally
+        /// used for display purposes, GUI or otherwise.
+        ///
+        /// @param filter the filter whose contents to dump
+        /// @return the dumped contents, including indent information for display formatting purposes
         List<DumpedFilter> dump(SmartFilter filter);
 
-        /**
-         * Create a filter with default settings
-         *
-         * @param parent the compound filter parent for the new filter
-         * @param filterId the filter type ID
-         * @return a new filter of the given type, appended to the given parent, or {@code Optional.empty()} if the ID is unknown
-         */
+        /// Create a filter with default settings
+        ///
+        /// @param parent the compound filter parent for the new filter
+        /// @param filterId the filter type ID
+        /// @return a new filter of the given type, appended to the given parent, or `Optional.empty()` if the ID is unknown
         Optional<SmartFilter> createDefaultFilter(@NotNull SmartFilter.Compound parent, Identifier filterId);
 
-        /**
-         * Create a new filter, parsed from the given serialized string. Such strings are produced by calling
-         * {@link SmartFilter#asString(HolderLookup.Provider)}.
-         *
-         * @param filterStr      the string to parse
-         * @param registryAccess registry access, required for parsing some filters
-         * @return a new filter
-         * @throws FilterException if there's a problem parsing the data
-         */
+        /// Create a new filter, parsed from the given serialized string. Such strings are produced by calling
+        /// [SmartFilter#asString(HolderLookup.Provider)].
+        ///
+        /// @param filterStr      the string to parse
+        /// @param registryAccess registry access, required for parsing some filters
+        /// @return a new filter
+        /// @throws FilterException if there's a problem parsing the data
         SmartFilter parseFilter(String filterStr, HolderLookup.Provider registryAccess) throws FilterException;
 
-        /**
-         * Create a new filter, parsed from the given serialized string. Such strings are produced by calling
-         * {@link SmartFilter#asString(HolderLookup.Provider)}.
-         *
-         * @param filterStack    the itemstack, which should be a valid filter item
-         * @param registryAccess registry access, required for parsing some filters
-         * @return a new filter
-         * @throws FilterException if the item stack doesn't have valid filter NBT, or there's a problem parsing the data
-         */
+        /// Create a new filter, parsed from the given serialized string. Such strings are produced by calling
+        /// [SmartFilter#asString(HolderLookup.Provider)].
+        ///
+        /// @param filterStack    the itemstack, which should be a valid filter item
+        /// @param registryAccess registry access, required for parsing some filters
+        /// @return a new filter
+        /// @throws FilterException if the item stack doesn't have valid filter NBT, or there's a problem parsing the data
         SmartFilter parseFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException;
 
-        /**
-         * Create a list of new filters, parsed from the given serialized string. Such strings are produced by calling
-         * {@link SmartFilter#asString(HolderLookup.Provider)}; multiples of such strings can be concatenated to act as
-         * input for this method.
-         *
-         * @param parent         the compound filter which will be the parent of all returned filters
-         * @param filterStr      the string to parse
-         * @param registryAccess registry access, required for parsing some filters
-         * @return a list of filters, parsed from the string data
-         * @throws FilterException if there's a problem parsing the data
-         */
+        /// Create a list of new filters, parsed from the given serialized string. Such strings are produced by calling
+        /// [SmartFilter#asString(HolderLookup.Provider)]; multiples of such strings can be concatenated to act as
+        /// input for this method.
+        ///
+        /// @param parent         the compound filter which will be the parent of all returned filters
+        /// @param filterStr      the string to parse
+        /// @param registryAccess registry access, required for parsing some filters
+        /// @return a list of filters, parsed from the string data
+        /// @throws FilterException if there's a problem parsing the data
         List<SmartFilter> parseFilterList(@NotNull SmartFilter.Compound parent, String filterStr, HolderLookup.Provider registryAccess) throws FilterException;
 
-        /**
-         * Create a simple filter which just filters on a specific item tag.
-         *
-         * @param tagKey the item tag to filter on
-         * @return the new filter itemstack
-         */
+        /// Create a simple filter which just filters on a specific item tag.
+        ///
+        /// @param tagKey the item tag to filter on
+        /// @return the new filter itemstack
         ItemStack makeTagFilter(TagKey<Item> tagKey);
     }
 }

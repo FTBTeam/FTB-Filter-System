@@ -18,13 +18,11 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.function.BiFunction;
 
-/**
- * Base screen class for all comparison filters - see {@link AbstractComparisonFilter}. You can extend this class;
- * typical implementations are extremely simple, needing only a constructor which satisfies the
- * {@link dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory} interface contract.
- *
- * @param <T> the filter implementation type
- */
+/// Base screen class for all comparison filters - see [AbstractComparisonFilter]. You can extend this class;
+/// typical implementations are extremely simple, needing only a constructor which satisfies the
+/// [dev.ftb.mods.ftbfiltersystem.api.client.FilterScreenFactory] interface contract.
+///
+/// @param <T> the filter implementation type
 public abstract class AbstractComparisonConfigScreen<T extends AbstractComparisonFilter> extends AbstractFilterConfigScreen<T> {
     private final BiFunction<SmartFilter.Compound, NumericComparison, T> comparisonFactory;
     protected CycleButton<NumericComparison.ComparisonOp> opBtn;
@@ -60,7 +58,9 @@ public abstract class AbstractComparisonConfigScreen<T extends AbstractCompariso
 
         numBox.setValue(Integer.toString(filter.getComparison().value()));
         numBox.setResponder(str -> adjustVal(0));
-        numBox.setFilter(str -> isValidNumber(str) || str.isEmpty());
+
+        // TODO filtering?
+//        numBox.setFilter(str -> isValidNumber(str) || str.isEmpty());
 
         if (filter.allowsPercentage()) {
             rowHelper.addChild(SpacerElement.height(5), 5);

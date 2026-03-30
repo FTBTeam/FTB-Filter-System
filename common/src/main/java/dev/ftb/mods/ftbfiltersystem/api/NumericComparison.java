@@ -9,26 +9,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntPredicate;
 
-/**
- * A comparison object, which is retrieved from a
- * {@link dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter comparison filter}. Effectively just an
- * integer predicate.
- *
- * @param op the comparison operator
- * @param value the value to compare
- * @param percentage true if this is a percentage comparison
- */
+/// A comparison object, which is retrieved from a
+/// [comparison filter][dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter]. Effectively just an
+/// integer predicate.
+///
+/// @param op the comparison operator
+/// @param value the value to compare
+/// @param percentage true if this is a percentage comparison
 public record NumericComparison(ComparisonOp op, int value, boolean percentage) implements IntPredicate {
-    /**
-     * Create a new comparison from the given string. The expected format is {@code {OP}{VAL}[%]}, where OP is a
-     * comparison operator (see {@link ComparisonOp}, and VAL is an integer quantity. See the {@link #toString()}
-     * for an illustration of the reverse process.
-     *
-     * @param str the str to parse
-     * @param allowPercentages true if this comparison should allow percentage comparisons
-     * @return a new NumericComparison object
-     * @throws FilterException if the input is any way invalid
-     */
+    /// Create a new comparison from the given string. The expected format is `{OP}{VAL}[%]`, where OP is a
+    /// comparison operator (see [ComparisonOp], and VAL is an integer quantity. See the [#toString()]
+    /// for an illustration of the reverse process.
+    ///
+    /// @param str the str to parse
+    /// @param allowPercentages true if this comparison should allow percentage comparisons
+    /// @return a new NumericComparison object
+    /// @throws FilterException if the input is any way invalid
     public static NumericComparison fromString(String str, boolean allowPercentages) throws FilterException {
         boolean pct = false;
         if (str.endsWith("%")) {

@@ -1,27 +1,23 @@
 package dev.ftb.mods.ftbfiltersystem;
 
-import dev.architectury.event.events.common.CommandRegistrationEvent;
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry;
 import dev.ftb.mods.ftbfiltersystem.api.event.FilterRegistrationEvent;
-import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
 import dev.ftb.mods.ftbfiltersystem.filter.*;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.AndFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.NotFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.OnlyOneFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.OrFilter;
 import dev.ftb.mods.ftbfiltersystem.network.FTBFilterSystemNet;
-import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
-import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
-import net.minecraft.server.MinecraftServer;
+import dev.ftb.mods.ftblibrary.platform.Platform;
+import dev.ftb.mods.ftblibrary.platform.event.NativeEventPosting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
 public class FTBFilterSystem {
+    @Nullable
     public static FTBFilterSystem instance;
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -31,30 +27,21 @@ public class FTBFilterSystem {
 
         FTBFilterSystemAPI._init(FilterSystemAPIImpl.INSTANCE);
 
-        LifecycleEvent.SETUP.register(this::onSetup);
-        LifecycleEvent.SERVER_STARTED.register(this::serverStarted);
-
-        CommandRegistrationEvent.EVENT.register(FilterSystemCommands::registerCommands);
-
-        FilterRegistrationEvent.REGISTER.register(this::registerBuiltinFilters);
-        ModDataComponents.COMPONENT_TYPES.register();
-        ModItems.ITEMS.register();
-        ModItems.init();
-
-        EnvExecutor.runInEnv(Env.CLIENT, () -> FTBFilterSystemClient.INSTANCE::init);
+//        ModDataComponents.COMPONENT_TYPES.init();
+        ModItems.ITEMS.init();
 
         FTBFilterSystemNet.init();
     }
 
-    private void onSetup() {
-        FilterRegistrationEvent.REGISTER.invoker().registerFilters(FTBFilterSystemAPI.api().getRegistry());
+    public void serverStarting() {
+        if (Platform.get().env().isServer()) {
+            // on server-side, only register filters on dedicated server
+            // for integrated server, filter registration was already done on client startup
+            NativeEventPosting.get().postEvent(new FilterRegistrationEvent.Data(FTBFilterSystemAPI.api().getRegistry()));
+        }
     }
 
-    private void serverStarted(MinecraftServer minecraftServer) {
-        FilterRegistry.getInstance().freeze();
-    }
-
-    private void registerBuiltinFilters(FTBFilterSystemRegistry reg) {
+    public void registerBuiltinFilters(FTBFilterSystemRegistry reg) {
         reg.register(BlockFilter.ID, BlockFilter::fromString, BlockFilter::new);
         reg.register(CustomFilter.ID, CustomFilter::fromString, CustomFilter::new);
         reg.register(DurabilityFilter.ID, DurabilityFilter::fromString, DurabilityFilter::new);

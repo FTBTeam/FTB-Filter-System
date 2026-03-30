@@ -18,6 +18,9 @@
     "main": [
       "dev.ftb.mods.ftbfiltersystem.fabric.FTBFilterSystemFabric"
     ],
+    "client": [
+      "dev.ftb.mods.ftbfiltersystem.fabric.FTBFilterSystemFabricClient"
+    ],
     "jei_mod_plugin": [
       "dev.ftb.mods.ftbfiltersystem.integration.jei.JEIIntegration"
     ]
@@ -26,9 +29,8 @@
     "ftbfiltersystem.mixins.json"
   ],
   "depends": {
-    "fabric": "${fabricapiversionrange}",
+    "fabric-api": "${fabricapiversionrange}",
     "minecraft": "~${mcversion}",
-    "architectury": ">=${archversion}",
     "ftblibrary": ">=${ftblibraryversion}"
   },
   "breaks": {

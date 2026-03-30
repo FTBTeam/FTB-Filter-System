@@ -5,7 +5,7 @@ import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.CustomSelectionList;
 import dev.ftb.mods.ftbfiltersystem.filter.ItemTagFilter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -54,10 +54,10 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
-        itemTagList.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+        itemTagList.extractWidgetRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
         }
 
         @Override
-        protected void renderListBackground(GuiGraphics guiGraphics) {
+        protected void extractListBackground(GuiGraphicsExtractor graphics) {
         }
 
         @Override
@@ -121,11 +121,11 @@ public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilte
             }
 
             @Override
-            public void renderContent(GuiGraphics guiGraphics, int i, int j, boolean bl, float f) {
+            public void extractContent(GuiGraphicsExtractor guiGraphics, int i, int j, boolean bl, float f) {
                 Component txt = Component.literal(tagKey.location().getNamespace()).withStyle(Style.EMPTY.withColor(0x202060))
                         .append(Component.literal(":"))
                         .append(Component.literal(tagKey.location().getPath()).withStyle(Style.EMPTY.withColor(0x804020)));
-                guiGraphics.drawString(font, txt, getContentX() + 1, getContentY() + 1, 0xFF404040, false);
+                guiGraphics.text(font, txt, getContentX() + 1, getContentY() + 1, 0xFF404040, false);
             }
 
             @Override
