@@ -36,8 +36,6 @@ public class FTBFilterSystemNeoForge {
             }
         });
 
-        NeoDataComponents.COMPONENTS.register(modBus);
-
         NeoEventHelper.registerNeoEventPoster(bus, FilterRegistrationEvent.Data.class, FTBFilterSystemEvent.RegisterFilter::new);
 
         NativeEventPosting.get().registerEventWithResult(CustomFilterEvent.TYPE, data -> {

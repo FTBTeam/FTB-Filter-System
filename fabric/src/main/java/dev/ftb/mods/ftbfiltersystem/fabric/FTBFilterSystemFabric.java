@@ -30,8 +30,6 @@ public class FTBFilterSystemFabric implements ModInitializer {
             }
         });
 
-        FabricDataComponents.init();
-
         FabricEventHelper.registerFabricEventPoster(FilterRegistrationEvent.Data.class, FTBFilterSystemEvents.FILTER_REGISTRATION);
 
         NativeEventPosting.get().registerEventWithResult(CustomFilterEvent.TYPE,

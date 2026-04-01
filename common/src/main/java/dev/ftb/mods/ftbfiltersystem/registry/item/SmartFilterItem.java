@@ -1,12 +1,12 @@
 package dev.ftb.mods.ftbfiltersystem.registry.item;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.ftb.mods.ftbfiltersystem.FFSPlatform;
 import dev.ftb.mods.ftbfiltersystem.FilterSystemCommands;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
+import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.ChatFormatting;
@@ -23,22 +23,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 public class SmartFilterItem extends Item {
     public SmartFilterItem() {
         super(ModItems.defaultProps().setId(ResourceKey.create(Registries.ITEM, FTBFilterSystemAPI.rl("smart_filter")))
-                .component(FFSPlatform.get().filterComponent(), "")
+                .component(ModDataComponents.FILTER_STRING.get(), "")
         );
     }
 
     public static String getFilterString(ItemStack filterStack) {
-        return filterStack.getOrDefault(FFSPlatform.get().filterComponent(), "");
+        return filterStack.getOrDefault(ModDataComponents.FILTER_STRING.get(), "");
     }
 
-    @NotNull
     public static SmartFilter getFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException {
         // don't pull from cache here; we could be editing this filter,
         //   and don't want to edit something in the cache already
@@ -46,7 +44,7 @@ public class SmartFilterItem extends Item {
     }
 
     public static void setFilter(ItemStack filterStack, String string) {
-        filterStack.set(FFSPlatform.get().filterComponent(), string);
+        filterStack.set(ModDataComponents.FILTER_STRING.get(), string);
     }
 
     @Override

@@ -9,6 +9,7 @@ import dev.ftb.mods.ftbfiltersystem.filter.compound.NotFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.OnlyOneFilter;
 import dev.ftb.mods.ftbfiltersystem.filter.compound.OrFilter;
 import dev.ftb.mods.ftbfiltersystem.network.FTBFilterSystemNet;
+import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftblibrary.platform.Platform;
 import dev.ftb.mods.ftblibrary.platform.event.NativeEventPosting;
@@ -27,7 +28,7 @@ public class FTBFilterSystem {
 
         FTBFilterSystemAPI._init(FilterSystemAPIImpl.INSTANCE);
 
-//        ModDataComponents.COMPONENT_TYPES.init();
+        ModDataComponents.COMPONENT_TYPES.init();
         ModItems.ITEMS.init();
 
         FTBFilterSystemNet.init();
