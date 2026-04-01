@@ -4,8 +4,8 @@ import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterScreen;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.ItemWidget;
+import dev.ftb.mods.ftblibrary.client.util.ClientUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.components.StringWidget;
@@ -31,8 +31,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
     protected MultiLineEditBox editBox;
     private StringWidget statusLine;
     private final List<SearchItemWidget> itemWidgets = new ArrayList<>();
-    @Nullable
-    protected Component customHoverName = null;
+    protected Component customHoverName = Component.empty();
 
     @Override
     protected void init() {
@@ -53,7 +52,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
             }
         }
 
-        Inventory inv = Minecraft.getInstance().player.getInventory();
+        Inventory inv = ClientUtils.getClientPlayer().getInventory();
         for (int i = 0; i < 36; i++) {
             int idx = i < 9 ? i + 27 : i - 9;
             itemWidgets.get(idx).setStack(inv.getNonEquipmentItems().get(i));
@@ -87,7 +86,7 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
 
         @Override
         protected void handleClick(boolean doubleClick) {
-            if (inventoryChecker().test(getStack()) && minecraft.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+            if (inventoryChecker().test(getStack()) && ClientUtils.getClientPlayer().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
                 editBox.setValue(serialize(getStack()));
                 customHoverName = getStack().getHoverName();
                 AbstractItemEditorConfigScreen.this.setFocused(editBox);
@@ -96,6 +95,8 @@ public abstract class AbstractItemEditorConfigScreen<T extends SmartFilter> exte
         }
         @Override
         protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+            super.extractWidgetRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
+
             if (!inventoryChecker().test(getStack())) {
                 guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(0, 0);

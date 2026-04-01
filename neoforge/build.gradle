@@ -40,6 +40,8 @@ repositories {
 
 dependencies {
 	implementation("dev.ftb.mods:ftb-library-neoforge:${rootProject.ftb_library_version}")
+
+	implementation("mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}")
 }
 
 jar {

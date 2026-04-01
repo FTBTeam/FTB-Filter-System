@@ -12,7 +12,7 @@ import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -40,7 +40,7 @@ public class ExpressionConfigScreen extends AbstractItemEditorConfigScreen<Expre
     protected @Nullable ExpressionFilter makeNewFilter() {
         try {
             String str = customEditBox.getValue().isEmpty() ? editBox.getValue() : editBox.getValue() + "/" + customEditBox.getValue();
-            return new ExpressionFilter(filter.getParent(), str, FTBFilterSystemClient.registryAccess());
+            return new ExpressionFilter(filter.requireParent(), str, FTBFilterSystemClient.registryAccess());
         } catch (FilterException e) {
             return null;
         }
@@ -48,7 +48,7 @@ public class ExpressionConfigScreen extends AbstractItemEditorConfigScreen<Expre
 
     @Override
     protected void onItemWidgetClicked() {
-        customEditBox.setValue(customHoverName == null ? "" : customHoverName.getString());
+        customEditBox.setValue(customHoverName.getString());
     }
 
     @Override

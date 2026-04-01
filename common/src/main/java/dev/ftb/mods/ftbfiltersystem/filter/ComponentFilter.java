@@ -15,18 +15,18 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ComponentFilter extends AbstractSmartFilter {
     public static final Identifier ID = FTBFilterSystemAPI.rl("component");
     protected final DataComponentMap map;
     private final boolean fuzzyMatch;
 
-    public ComponentFilter(@Nullable SmartFilter.Compound parent) {
+    public ComponentFilter(SmartFilter.@Nullable Compound parent) {
         this(parent, true, DataComponentMap.EMPTY);
     }
 
-    public ComponentFilter(@Nullable SmartFilter.Compound parent, boolean fuzzyMatch, DataComponentMap map) {
+    public ComponentFilter(SmartFilter.@Nullable Compound parent, boolean fuzzyMatch, DataComponentMap map) {
         super(parent);
 
         this.fuzzyMatch = fuzzyMatch;
@@ -54,6 +54,7 @@ public class ComponentFilter extends AbstractSmartFilter {
     }
 
     private boolean fuzzyMatch(DataComponentMap toMatch) {
+        //noinspection DataFlowIssue
         return map.stream().allMatch(tc -> toMatch.has(tc.type()) && toMatch.get(tc.type()).equals(tc.value()));
     }
 
@@ -66,10 +67,6 @@ public class ComponentFilter extends AbstractSmartFilter {
             FTBFilterSystem.LOGGER.error("can't encode component filter: {}", e.getMessage());
             return "";
         }
-    }
-
-    public DataComponentMap getComponentMap() {
-        return map;
     }
 
     public boolean isFuzzyMatch() {

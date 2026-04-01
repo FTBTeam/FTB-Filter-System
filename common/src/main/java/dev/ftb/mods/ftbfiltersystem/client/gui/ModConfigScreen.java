@@ -15,16 +15,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> implements GhostDropReceiver {
-    private static String lastSearch;
-
+    private static String lastSearch = "";
     private final List<ModData> matchingModData = new ArrayList<>();
 
     private EditBox searchField;
@@ -62,7 +60,7 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
     @Override
     protected @Nullable ModFilter makeNewFilter() {
         return modList.getSelected() != null ?
-                new ModFilter(filter.getParent(), modList.getSelected().modData.modId) :
+                new ModFilter(filter.requireParent(), modList.getSelected().modData.modId) :
                 null;
     }
 
@@ -108,7 +106,7 @@ public class ModConfigScreen extends AbstractFilterConfigScreen<ModFilter> imple
 
     private record ModData(String modId, String modName) implements Comparable<ModData> {
         @Override
-        public int compareTo(@NotNull ModConfigScreen.ModData modData) {
+        public int compareTo(ModConfigScreen.ModData modData) {
             return modId.compareTo(modData.modId);
         }
     }

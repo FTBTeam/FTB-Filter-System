@@ -161,7 +161,7 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
 
     @Override
     protected ItemFilter makeNewFilter() {
-        return new ItemFilter(filter.getParent(), selectedWidget.getStack().getItem());
+        return new ItemFilter(filter.requireParent(), selectedWidget.getStack().getItem());
     }
 
     private boolean needsScrollBars() {

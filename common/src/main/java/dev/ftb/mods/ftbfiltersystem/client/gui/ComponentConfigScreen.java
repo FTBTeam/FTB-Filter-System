@@ -13,7 +13,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -43,7 +43,7 @@ public class ComponentConfigScreen extends AbstractItemEditorConfigScreen<Compon
             setStatus(true, Component.empty(), null);
         } else {
             try {
-                ComponentFilter.fromString(filter.getParent(), editBox.getValue(), FTBFilterSystemClient.registryAccess());
+                ComponentFilter.fromString(filter.requireParent(), editBox.getValue(), FTBFilterSystemClient.registryAccess());
                 setStatus(true, Component.translatable("ftbfiltersystem.gui.nbt_ok"), null);
             } catch (FilterException e) {
                 setStatus(false, Component.translatable("ftbfiltersystem.gui.nbt_bad"), e.getMessage());
@@ -55,7 +55,7 @@ public class ComponentConfigScreen extends AbstractItemEditorConfigScreen<Compon
     protected @Nullable ComponentFilter makeNewFilter() {
         try {
             String str = ComponentFilter.getPrefixStr(fuzzyCB.selected()) + editBox.getValue();
-            return ComponentFilter.fromString(filter.getParent(), str, FTBFilterSystemClient.registryAccess());
+            return ComponentFilter.fromString(filter.requireParent(), str, FTBFilterSystemClient.registryAccess());
         } catch (FilterException e) {
             return null;
         }

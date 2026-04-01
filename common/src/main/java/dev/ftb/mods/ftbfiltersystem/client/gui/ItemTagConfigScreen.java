@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class ItemTagConfigScreen extends AbstractFilterConfigScreen<ItemTagFilter> {
-    private static String lastSearch;
+    private static String lastSearch = "";
 
     private final List<TagKey<Item>> matchingTags = new ArrayList<>();
 

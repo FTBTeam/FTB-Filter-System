@@ -4,7 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.client.gui.AbstractFilterConfigScreen;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import net.minecraft.client.gui.screens.Screen;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 class FFSScreenHandler<T extends AbstractFilterConfigScreen<?>> implements IScreenHandler<T> {
     @Override

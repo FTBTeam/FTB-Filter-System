@@ -5,7 +5,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -25,8 +25,14 @@ public interface SmartFilter extends Predicate<ItemStack> {
     /// Get the parent for this filter. Only the top-level filter in the hierarchy has a null parent.
     ///
     /// @return the filter's parent filter
-    @Nullable
-    SmartFilter.Compound getParent();
+    SmartFilter.@Nullable Compound getParent();
+
+    /**
+     * Get the parent, which is expected to be non-null.
+     * @return the filter's parent filter
+     * @throws NullPointerException if called on the root filter in the hierarchy
+     */
+    SmartFilter.Compound requireParent();
 
     /// Get the display name for this filter.
     ///

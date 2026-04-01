@@ -31,13 +31,14 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class FilterScreen extends AbstractFilterScreen {
+    @Nullable
     private static SelectionPanel selectionPanel = null;
 
     private final SmartFilter filter;
@@ -53,7 +54,9 @@ public class FilterScreen extends AbstractFilterScreen {
     private Button titleEditBtn;
     private EditBox titleEditBox;
 
+    @Nullable
     private SmartFilter newSelection = null;
+    @Nullable
     private Component newTitle = null;
     private boolean showingTitleEdit = false;
 
@@ -80,7 +83,7 @@ public class FilterScreen extends AbstractFilterScreen {
 
         titleEditBtn = addRenderableWidget(new ImageButton(leftPos, topPos + 3, 16, 16,
                 new WidgetSprites(Textures.EDIT_BUTTON, Textures.EDIT_BUTTON_HI),
-                b -> showingTitleEdit = true));
+                _ -> showingTitleEdit = true));
 
         titleEditBox = addRenderableWidget(new EditBox(font, leftPos + 5, topPos + 4, getListWidth(), font.lineHeight + 4, Component.empty()));
         titleEditBox.visible = false;
@@ -89,19 +92,19 @@ public class FilterScreen extends AbstractFilterScreen {
         int buttonWidth = guiWidth - getListWidth() - 25;
         LinearLayout buttonPanel = new LinearLayout(leftPos + getListWidth() + 15, topPos + 20, LinearLayout.Orientation.VERTICAL).spacing(2);
         addFilterBtn = buttonPanel.addChild(Button.builder(Component.translatable("ftbfiltersystem.gui.add"),
-                b -> getSelectionPanel().setVisible(true)).width(buttonWidth).build());
+                _ -> getSelectionPanel().setVisible(true)).width(buttonWidth).build());
         deleteFilterBtn = buttonPanel.addChild(Button.builder(Component.translatable("ftbfiltersystem.gui.delete"),
-                b -> deleteSelectedFilter(true)).width(buttonWidth).build());
+                _ -> deleteSelectedFilter(true)).width(buttonWidth).build());
         configFilterBtn = buttonPanel.addChild(Button.builder(Component.translatable("ftbfiltersystem.gui.configure"),
-                b -> configureSelectedFilter(false)).width(buttonWidth).build());
+                _ -> configureSelectedFilter(false)).width(buttonWidth).build());
         buttonPanel.arrangeElements();
         buttonPanel.visitWidgets(this::addRenderableWidget);
 
         LinearLayout bottomPanel = new LinearLayout(leftPos, topPos + guiHeight - 25, LinearLayout.Orientation.HORIZONTAL);
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
-                .addChild(Button.builder(CommonComponents.GUI_DONE, b -> applyChanges()).size(80, 20).build());
+                .addChild(Button.builder(CommonComponents.GUI_DONE, _ -> applyChanges()).size(80, 20).build());
         bottomPanel.addChild(new FrameLayout(guiWidth / 2, 20))
-                .addChild(Button.builder(CommonComponents.GUI_CANCEL, b -> closeWithConfirmation()).size(80, 20).build());
+                .addChild(Button.builder(CommonComponents.GUI_CANCEL, _ -> closeWithConfirmation()).size(80, 20).build());
         bottomPanel.arrangeElements();
         bottomPanel.visitWidgets(this::addRenderableWidget);
 
@@ -208,7 +211,7 @@ public class FilterScreen extends AbstractFilterScreen {
 
     @Override
     public void tick() {
-        if (!(minecraft.player.getItemInHand(interactionHand).getItem() instanceof SmartFilterItem)) {
+        if (!(ClientUtils.getClientPlayer().getItemInHand(interactionHand).getItem() instanceof SmartFilterItem)) {
             // shouldn't normally happen, but some mod could possibly modify the held item while we're in the GUI
             onClose();
         } else {
@@ -367,8 +370,9 @@ public class FilterScreen extends AbstractFilterScreen {
 
     private class FilterList extends ObjectSelectionList<FilterList.FilterEntry> {
         private static final int ELEMENT_HEIGHT = 12;
+        @Nullable
         private FilterEntry dragging = null;
-        private SmartFilter.Compound dragTarget = null;
+        private SmartFilter.@Nullable Compound dragTarget = null;
 
         public FilterList(Minecraft minecraft, int x, int y, int width, int height) {
             super(minecraft, width, height, y, ELEMENT_HEIGHT);
@@ -398,6 +402,7 @@ public class FilterScreen extends AbstractFilterScreen {
             }
         }
 
+        @Nullable
         private SmartFilter getSelectedFilter() {
             return getSelected() == null ? null : getSelected().dumpedFilter.filter();
         }
@@ -508,7 +513,6 @@ public class FilterScreen extends AbstractFilterScreen {
         private class FilterEntry extends ObjectSelectionList.Entry<FilterEntry> {
             private final DumpedFilter dumpedFilter;
             private final int index;
-            private long lastClickTime;
 
             public FilterEntry(DumpedFilter dumpedFilter, int index) {
                 this.dumpedFilter = dumpedFilter;
@@ -518,7 +522,7 @@ public class FilterScreen extends AbstractFilterScreen {
             @Override
             public void extractContent(GuiGraphicsExtractor guiGraphics, int i, int j, boolean isMouseOver, float partialTick) {
                 int labelLeft = getContentX() + dumpedFilter.indent() * 10;
-                if (dumpedFilter.filter() == dragTarget && dragging.dumpedFilter.filter() != dragTarget) {
+                if (dumpedFilter.filter() == dragTarget && (dragging == null || dragging.dumpedFilter.filter() != dragTarget)) {
                     guiGraphics.fill(labelLeft - 2, getY() - 3, labelLeft + font.width(getLabel()) + 2, getY() + font.lineHeight, 0xFFCAE9BE);
                     guiGraphics.outline(labelLeft - 2, getY() - 3, font.width(getLabel()) + 4, font.lineHeight + 4, 0xFF306844);
                 }
@@ -550,11 +554,6 @@ public class FilterScreen extends AbstractFilterScreen {
                     dragging = this;
                 }
 
-//                if (Util.getMillis() - this.lastClickTime < 250L) {
-//                    FilterScreen.this.configureSelectedFilter(false);
-//                } else {
-//                    this.lastClickTime = Util.getMillis();
-//                }
                 return true;
             }
 
@@ -563,7 +562,7 @@ public class FilterScreen extends AbstractFilterScreen {
                 if (dumpedFilter.filter() instanceof SmartFilter.Compound) {
                     return disp;
                 } else {
-                    Component text = dumpedFilter.filter().getDisplayArg(minecraft.level.registryAccess());
+                    Component text = dumpedFilter.filter().getDisplayArg(ClientUtils.getClientLevel().registryAccess());
                     return disp.copy().append(" ").append(text.copy().withStyle(ChatFormatting.DARK_BLUE));
                 }
             }
