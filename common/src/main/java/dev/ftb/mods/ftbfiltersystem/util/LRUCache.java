@@ -1,5 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.util;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -19,6 +21,7 @@ public class LRUCache<K,V> {
         };
     }
 
+    @Nullable
     public V get(K key) {
         lock.readLock().lock();
         try {
@@ -28,9 +31,11 @@ public class LRUCache<K,V> {
         }
     }
 
-    public void put(K key, V value) {
+    public void put(K key, @Nullable V value) {
         lock.writeLock().lock();
         try {
+            // LinkedHashMap permits null elements
+            //noinspection DataFlowIssue
             map.put(key, value);
         } finally {
             lock.writeLock().unlock();

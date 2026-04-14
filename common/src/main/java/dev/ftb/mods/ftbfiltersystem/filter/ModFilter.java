@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.util.GlobRegexMatcher;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -37,7 +38,7 @@ public class ModFilter extends AbstractSmartFilter {
 
     @Override
     public boolean test(ItemStack stack) {
-        String namespace = stack.getItem().arch$registryName().getNamespace();
+        String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
         return either.map(
                 namespace::equals,
                 parser -> parser.match(namespace)

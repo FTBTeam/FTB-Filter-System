@@ -1,20 +1,20 @@
 package dev.ftb.mods.ftbfiltersystem.client;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.FormattedText;
 
 public class GuiUtil {
-    public static void drawPanel(GuiGraphics graphics, Rect2i area, int bgColor, int borderColor, BorderStyle borderStyle, int borderWidth) {
+    public static void drawPanel(GuiGraphicsExtractor graphics, Rect2i area, int bgColor, int borderColor, BorderStyle borderStyle, int borderWidth) {
         int xMax = area.getX() + area.getWidth();
         int yMax = area.getY() + area.getHeight();
 
         graphics.fill(area.getX(), area.getY(), xMax, yMax, bgColor);
 
         graphics.pose().pushMatrix();
-        // yeah I really want integer division here.  float division would look all mixely
+        // yeah, I really want integer division here.  float division would look all mixely
         //noinspection IntegerDivisionInFloatingPointContext
         graphics.pose().translate(-borderWidth / 2, -borderWidth / 2);
 

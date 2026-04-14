@@ -6,7 +6,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
-import dev.ftb.mods.ftbfiltersystem.util.PlatformUtil;
+import dev.ftb.mods.ftblibrary.platform.Platform;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
@@ -15,26 +15,24 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ComponentFilter extends AbstractSmartFilter {
     public static final Identifier ID = FTBFilterSystemAPI.rl("component");
     protected final DataComponentMap map;
     private final boolean fuzzyMatch;
 
-    public ComponentFilter(@Nullable SmartFilter.Compound parent) {
+    public ComponentFilter(SmartFilter.@Nullable Compound parent) {
         this(parent, true, DataComponentMap.EMPTY);
     }
 
-    public ComponentFilter(SmartFilter.Compound parent, boolean fuzzyMatch, DataComponentMap map) {
+    public ComponentFilter(SmartFilter.@Nullable Compound parent, boolean fuzzyMatch, DataComponentMap map) {
         super(parent);
 
         this.fuzzyMatch = fuzzyMatch;
         this.map = map;
     }
 
-    @NotNull
     public static String getPrefixStr(boolean fuzzy) {
         return fuzzy ? "fuzzy:" : "strict:";
     }
@@ -50,13 +48,13 @@ public class ComponentFilter extends AbstractSmartFilter {
 
     @Override
     public boolean test(ItemStack stack) {
-        //noinspection UnreachableCode
-        return PlatformUtil.hasComponentPatch(stack) ?
+        return Platform.get().misc().hasComponentPatch(stack) ?
                 (fuzzyMatch ? fuzzyMatch(stack.getComponents()) : stack.getComponents().equals(map)) :
                 map.isEmpty();
     }
 
     private boolean fuzzyMatch(DataComponentMap toMatch) {
+        //noinspection DataFlowIssue
         return map.stream().allMatch(tc -> toMatch.has(tc.type()) && toMatch.get(tc.type()).equals(tc.value()));
     }
 
@@ -64,15 +62,11 @@ public class ComponentFilter extends AbstractSmartFilter {
     public String getStringArg(HolderLookup.Provider registryAccess) {
         try {
             Tag tag = DataComponentMap.CODEC.encodeStart(registryAccess.createSerializationContext(NbtOps.INSTANCE), map).getOrThrow();
-            return getPrefixStr(fuzzyMatch) + tag.toString();
+            return getPrefixStr(fuzzyMatch) + tag;
         } catch (IllegalStateException e) {
             FTBFilterSystem.LOGGER.error("can't encode component filter: {}", e.getMessage());
             return "";
         }
-    }
-
-    public DataComponentMap getComponentMap() {
-        return map;
     }
 
     public boolean isFuzzyMatch() {

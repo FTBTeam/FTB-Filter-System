@@ -3,16 +3,16 @@ package dev.ftb.mods.ftbfiltersystem.util;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import net.minecraft.core.HolderLookup;
+import org.jspecify.annotations.Nullable;
 
-/**
- * An LRU cache to store known filter strings and the SmartFilter objects created from them.
- */
+/// An LRU cache to store known filter strings and the SmartFilter objects created from them.
 public enum FilterCache {
     INSTANCE;
 
     private static final int MAX_SIZE = 1000;
     private final LRUCache<String,SmartFilter> cache = new LRUCache<>(MAX_SIZE);
 
+    @Nullable
     public SmartFilter getOrCreateFilter(String filterStr, HolderLookup.Provider registryAccess) throws FilterException {
         SmartFilter res = cache.get(filterStr);
         if (res == null) {

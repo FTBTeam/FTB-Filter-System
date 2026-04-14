@@ -1,43 +1,25 @@
-architectury {
-    common(rootProject.enabled_platforms.split(","))
+plugins {
+	id 'net.fabricmc.fabric-loom'
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/ftbfiltersystem.accesswidener")
+	mixin {
+		useLegacyMixinAp = false
+	}
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury:${rootProject.architectury_version}"
-    modApi("dev.ftb.mods:ftb-library:${rootProject.ftb_library_version}") { transitive false }
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    modCompileOnly("mezz.jei:jei-${rootProject.minecraft_version}-common-api:${rootProject.jei_version}")
-    modRuntimeOnly("mezz.jei:jei-${rootProject.minecraft_version}-common:${rootProject.jei_version}")
+	compileOnly "net.fabricmc:sponge-mixin:0.17.0+mixin.0.8.7"
+	compileOnly "io.github.llamalad7:mixinextras-fabric:0.5.0"
+
+	compileOnly("mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}")
+	compileOnly("mezz.jei:jei-${project.minecraft_version}-common:${project.jei_version}")
+
+	compileOnly("dev.ftb.mods:ftb-library:${rootProject.ftb_library_version}")
 }
 
-tasks.register("buildApi", Jar) {
-    group "build"
-
-    include "dev/ftb/mods/ftbfiltersystem/api/**"
-    archiveClassifier = "api"
-
-    from sourceSets.main.output
-    from sourceSets.main.allJava
-
-    manifest {
-        attributes("Fabric-Loom-Remap": true)
-    }
-}
-
-publishing {
-    publications {
-        mavenForge(MavenPublication) {
-            artifactId = "${rootProject.archives_base_name}"
-            version ftbPublishing.mavenVersion
-            from components.java
-        }
-    }
+test {
+	useJUnitPlatform()
 }

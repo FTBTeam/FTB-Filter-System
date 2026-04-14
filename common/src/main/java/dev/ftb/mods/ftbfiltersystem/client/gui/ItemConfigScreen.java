@@ -6,7 +6,7 @@ import dev.ftb.mods.ftbfiltersystem.client.GuiUtil;
 import dev.ftb.mods.ftbfiltersystem.client.gui.widget.ItemWidget;
 import dev.ftb.mods.ftbfiltersystem.filter.ItemFilter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -107,15 +107,15 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractRenderState(guiGraphics, pMouseX, pMouseY, pPartialTick);
 
         int sx = scrollArea.getX();
         int sy1 = scrollArea.getY();
         int sy2 = sy1 + scrollArea.getHeight();
 
         FormattedText txt = GuiUtil.ellipsize(font, selectedWidget.getStack().getItem().getName(selectedWidget.getStack()), leftPos + guiWidth - (selectedWidget.getX() + selectedWidget.getWidth() + 6));
-        guiGraphics.drawString(font, Language.getInstance().getVisualOrder(txt), selectedWidget.getX() + selectedWidget.getWidth() + 3, selectedWidget.getY() + 8, 0xFF404040, false);
+        guiGraphics.text(font, Language.getInstance().getVisualOrder(txt), selectedWidget.getX() + selectedWidget.getWidth() + 3, selectedWidget.getY() + 8, 0xFF404040, false);
 
         guiGraphics.fill(scrollArea.getX() - 2, scrollArea.getY() - 2, scrollArea.getX() + scrollArea.getWidth(), scrollArea.getY() + scrollArea.getHeight(), 0xFF808080);
         guiGraphics.fill(scrollArea.getX() - 1, scrollArea.getY() - 1, scrollArea.getX() + scrollArea.getWidth() - 1, scrollArea.getY() + scrollArea.getHeight() - 1, 0xFFA0A0A0);
@@ -161,7 +161,7 @@ public class ItemConfigScreen extends AbstractFilterConfigScreen<ItemFilter> imp
 
     @Override
     protected ItemFilter makeNewFilter() {
-        return new ItemFilter(filter.getParent(), selectedWidget.getStack().getItem());
+        return new ItemFilter(filter.requireParent(), selectedWidget.getStack().getItem());
     }
 
     private boolean needsScrollBars() {

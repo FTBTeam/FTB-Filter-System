@@ -40,7 +40,7 @@ public class CustomFilter extends AbstractSmartFilter {
 
     @Override
     public boolean test(ItemStack stack) {
-        return CustomFilterEvent.MATCH_ITEM.invoker().matchItem(stack, eventId, extraData).isTrue();
+        return CustomFilterEvent.TYPE.post(new CustomFilterEvent.Data(stack, eventId, extraData)).isSuccess();
     }
 
     @Override

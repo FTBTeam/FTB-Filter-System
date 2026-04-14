@@ -2,7 +2,7 @@ package dev.ftb.mods.ftbfiltersystem.client.gui.widget;
 
 import dev.ftb.mods.ftbfiltersystem.client.GuiUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
@@ -43,16 +43,16 @@ public abstract class CustomSelectionList<T extends ObjectSelectionList.Entry<T>
     }
 
     @Override
-    protected void renderListItems(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractListItems(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         int w = maxScrollAmount() > 0 ? width - 6 : width;
         GuiUtil.drawPanel(guiGraphics, new Rect2i(getX(), getY() - 1, w, height + 4),
                 0xFFA0A0A0, 0xFFA0A0A0, GuiUtil.BorderStyle.INSET, 1);
 
-        super.renderListItems(guiGraphics, mouseX, mouseY, partialTick);
+        super.extractListItems(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void renderSelection(GuiGraphics guiGraphics, T entry, int i) {
+    protected void extractSelection(GuiGraphicsExtractor guiGraphics, T entry, int i) {
         int minX = getX() + (this.width - entry.getWidth()) / 2;
         int maxX = getX() + (this.width + entry.getWidth()) / 2 + (maxScrollAmount() > 0 ? -3 : 3);
         int col = isFocused() ? 0xFFE1F1FD : 0xFFC8D9ED;

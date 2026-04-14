@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-/**
- * Base class for all compound smart filters.
- */
+/// Base class for all compound smart filters.
 public abstract class AbstractCompoundFilter extends AbstractSmartFilter implements SmartFilter.Compound {
     private final List<SmartFilter> children;
 

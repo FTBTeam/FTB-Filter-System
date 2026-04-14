@@ -14,7 +14,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -22,7 +22,7 @@ public class ItemTagFilter extends AbstractSmartFilter {
     public static final Identifier ID = FTBFilterSystemAPI.rl("item_tag");
     private final Either<TagKey<Item>, GlobRegexMatcher> either;
 
-    public ItemTagFilter(SmartFilter.Compound parent) {
+    public ItemTagFilter(@Nullable Compound parent) {
         this(parent, ItemTags.DIRT);
     }
 
@@ -30,11 +30,12 @@ public class ItemTagFilter extends AbstractSmartFilter {
         this(parent, Either.left(tagKey));
     }
 
-    public ItemTagFilter(SmartFilter.Compound parent, Either<TagKey<Item>, GlobRegexMatcher> either) {
+    public ItemTagFilter(@Nullable Compound parent, Either<TagKey<Item>, GlobRegexMatcher> either) {
         super(parent);
         this.either = either;
     }
 
+    @Nullable
     public TagKey<Item> getTagKey() {
         return either.left().orElse(null);
     }
@@ -57,9 +58,9 @@ public class ItemTagFilter extends AbstractSmartFilter {
         return either.map(tagKey -> tagKey.location().toString(), GlobRegexMatcher::raw);
     }
 
-    public static ItemTagFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
+    public static ItemTagFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored) {
         try {
-            return new ItemTagFilter(parent, GlobRegexMatcher.parseWithFallback(str, () -> TagKey.create(Registries.ITEM, Identifier.tryParse(str))));
+            return new ItemTagFilter(parent, GlobRegexMatcher.parseWithFallback(str, () -> TagKey.create(Registries.ITEM, Identifier.parse(str))));
         } catch (IdentifierException e) {
             throw new FilterException("invalid tag key " + str, e);
         } catch (PatternSyntaxException e) {

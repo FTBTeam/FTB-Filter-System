@@ -5,116 +5,98 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * Represents a filter object, which can be used to test item stacks for specific properties. Smart filters may be
- * compound (see {@link AbstractCompoundFilter}) and represent a hierarchy of filters.
- *
- * @apiNote Implementations should extend {@link AbstractSmartFilter} or {@link AbstractCompoundFilter} rather than
- * implementing this interface directly. Implementations are registered via the
- * {@link dev.ftb.mods.ftbfiltersystem.api.event.FilterRegistrationEvent} and
- * {@link dev.ftb.mods.ftbfiltersystem.api.event.client.ClientFilterRegistrationEvent} events.
- */
+/// Represents a filter object, which can be used to test item stacks for specific properties. Smart filters may be
+/// compound (see [AbstractCompoundFilter]) and represent a hierarchy of filters.
+///
+/// @apiNote Implementations should extend [AbstractSmartFilter] or [AbstractCompoundFilter] rather than
+/// implementing this interface directly. Implementations are registered via the
+/// [dev.ftb.mods.ftbfiltersystem.api.event.FilterRegistrationEvent] and
+/// [dev.ftb.mods.ftbfiltersystem.api.event.client.ClientFilterRegistrationEvent] events.
 public interface SmartFilter extends Predicate<ItemStack> {
-    /**
-     * Get the unique ID for this filter type.
-     * @return the filter type ID
-     */
+    /// Get the unique ID for this filter type.
+    /// @return the filter type ID
     Identifier getId();
 
-    /**
-     * Get the parent for this filter. Only the top-level filter in the hierarchy has a null parent.
-     *
-     * @return the filter's parent filter
-     */
-    @Nullable
-    SmartFilter.Compound getParent();
+    /// Get the parent for this filter. Only the top-level filter in the hierarchy has a null parent.
+    ///
+    /// @return the filter's parent filter
+    SmartFilter.@Nullable Compound getParent();
 
     /**
-     * Get the display name for this filter.
-     *
-     * @return the display name
+     * Get the parent, which is expected to be non-null.
+     * @return the filter's parent filter
+     * @throws NullPointerException if called on the root filter in the hierarchy
      */
+    SmartFilter.Compound requireParent();
+
+    /// Get the display name for this filter.
+    ///
+    /// @return the display name
     Component getDisplayName();
 
-    /**
-     * Return the serialized filter in full, in the form {@code id(argdata)}, where {@code argdata} is returned by
-     * calling {@link #getStringArg(HolderLookup.Provider)}. All such returned strings may be parsed into an
-     * equivalent filter via
-     * {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI.API#parseFilter(String, HolderLookup.Provider)}.
-     *
-     * @param registryAccess registry access, required for serializing some filters
-     * @return the filter serialized as a string
-     */
+    /// Return the serialized filter in full, in the form `id(argdata)`, where `argdata` is returned by
+    /// calling [#getStringArg(HolderLookup.Provider)]. All such returned strings may be parsed into an
+    /// equivalent filter via
+    /// [dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI.API#parseFilter(String, HolderLookup.Provider)].
+    ///
+    /// @param registryAccess registry access, required for serializing some filters
+    /// @return the filter serialized as a string
     default String asString(HolderLookup.Provider registryAccess) {
         return FTBFilterSystemAPI.modDefaultedString(getId()) + "(" + getStringArg(registryAccess) + ")";
     }
 
-    /**
-     * Return the filter's string argument data, which is the serialized form of the filter's properties.
-     *
-     * @return the filter's properties, serialized into a string
-     */
+    /// Return the filter's string argument data, which is the serialized form of the filter's properties.
+    ///
+    /// @return the filter's properties, serialized into a string
     String getStringArg(HolderLookup.Provider registryAccess);
 
     default Component getDisplayArg(HolderLookup.Provider registryAccess) {
         return Component.literal(getStringArg(registryAccess));
     }
 
-    /**
-     * Is this filter configurable, i.e. does it have a setup GUI? Most filters do, but some (e.g. the "Is Block"
-     * filter) don't have any configurable properties.
-     * @return true if the filter is configurable, false otherwise
-     */
+    /// Is this filter configurable, i.e. does it have a setup GUI? Most filters do, but some (e.g. the "Is Block"
+    /// filter) don't have any configurable properties.
+    /// @return true if the filter is configurable, false otherwise
     default boolean isConfigurable() {
         return true;
     }
 
-    /**
-     * Compound filters (those which have children) implement this interface.
-     *
-     * @apiNote If you want to add a custom compound filter, you should extend {@link AbstractCompoundFilter} rather than
-     * implementing this interface yourself.
-     */
+    /// Compound filters (those which have children) implement this interface.
+    ///
+    /// @apiNote If you want to add a custom compound filter, you should extend [AbstractCompoundFilter] rather than
+    /// implementing this interface yourself.
     interface Compound extends SmartFilter {
-        /**
-         * Get the child filters which have been added to this compound filter.
-         *
-         * @return the children
-         */
+        /// Get the child filters which have been added to this compound filter.
+        ///
+        /// @return the children
         List<SmartFilter> getChildren();
 
-        /**
-         * Get the maximum number of children which this compound filter can have.
-         *
-         * @return the maximum children
-         */
+        /// Get the maximum number of children which this compound filter can have.
+        ///
+        /// @return the maximum children
         default int maxChildren() {
             return Integer.MAX_VALUE;
         }
     }
 
-    /**
-     * Factory to create a new smart filter from a serialized string. An implementation of this is registered
-     * via {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(Identifier, Factory, DefaultFactory)}.
-     *
-     * @param <T> the filter type
-     */
+    /// Factory to create a new smart filter from a serialized string. An implementation of this is registered
+    /// via [dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(Identifier, Factory, DefaultFactory)].
+    ///
+    /// @param <T> the filter type
     @FunctionalInterface
     interface Factory<T extends SmartFilter> {
         T create(SmartFilter.Compound parent, String arg, HolderLookup.Provider registryAccess);
     }
 
-    /**
-     * Factory to create a new smart filter with default properties. An implementation of this is registered
-     * via {@link dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(Identifier, Factory, DefaultFactory)}.
-     *
-     * @param <T> the filter type
-     */
+    /// Factory to create a new smart filter with default properties. An implementation of this is registered
+    /// via [dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemRegistry#register(Identifier, Factory, DefaultFactory)].
+    ///
+    /// @param <T> the filter type
     @FunctionalInterface
     interface DefaultFactory<T extends SmartFilter> {
         T create(SmartFilter.Compound parent);

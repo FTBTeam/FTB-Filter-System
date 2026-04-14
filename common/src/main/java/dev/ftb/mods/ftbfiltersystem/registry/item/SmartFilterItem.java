@@ -23,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -38,7 +37,6 @@ public class SmartFilterItem extends Item {
         return filterStack.getOrDefault(ModDataComponents.FILTER_STRING.get(), "");
     }
 
-    @NotNull
     public static SmartFilter getFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException {
         // don't pull from cache here; we could be editing this filter,
         //   and don't want to edit something in the cache already
@@ -51,14 +49,13 @@ public class SmartFilterItem extends Item {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand interactionHand) {
-        ItemStack stack = player.getItemInHand(interactionHand);
         if (level.isClientSide() && !player.isCrouching()) {
-            FTBFilterSystemClient.INSTANCE.openFilterScreen(interactionHand);
+            FTBFilterSystemClient.getInstance().openFilterScreen(interactionHand);
         } else if (player instanceof ServerPlayer sp && player.isCrouching()) {
             try {
                 FilterSystemCommands.tryMatch(sp.createCommandSourceStack());
             } catch (CommandSyntaxException | FilterException e) {
-                player.displayClientMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
+                player.sendSystemMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
             }
         }
         return InteractionResult.SUCCESS;

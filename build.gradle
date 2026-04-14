@@ -1,154 +1,135 @@
-import me.modmuss50.mpp.ReleaseType
-
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
-    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
+	id 'java-library'
+	id 'net.fabricmc.fabric-loom' version '1.15.2' apply(false)
+	id 'net.neoforged.moddev' version '2.0.141' apply(false)
+	id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
-apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/changelog.gradle'
+tasks.named('wrapper', Wrapper).configure {
+	distributionType = Wrapper.DistributionType.BIN
+}
 
-architectury {
-    minecraft = rootProject.minecraft_version
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/v1/gradle/maven.gradle'
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/v1/gradle/publishing-2.gradle'
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/v1/gradle/utils.gradle'
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/v1/gradle/changelog.gradle'
+
+base {
+	archivesName = archives_base_name
 }
 
 allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/git-md-changelog.gradle"
+	apply plugin: 'idea'
+	apply plugin: 'java-library'
+	apply plugin: 'maven-publish'
 
-    base {
-        archivesName = project.archives_base_name
-    }
+	version = createModVersion(project)
+	group = project.maven_group
 
-    version = project.mod_version
-    group = project.maven_group
-    archivesBaseName = project.archives_base_name
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = 'UTF-8'
+		options.release = 25
+	}
 
-    // needs to be done AFTER version is set
-    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"
-//    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
+	dependencies {
+//        testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0-M1'
+	}
 
-    repositories {
-        mavenLocal()
-        maven {
-            url "https://maven.architectury.dev/"
-        }
-
-        maven {
-            url "https://maven.ftb.dev/releases"
-            content {
-                includeGroup "dev.ftb.mods"
-            }
-        }
-
-        maven {
-            url "https://maven.ftb.dev/snapshots"
-            content {
-                includeGroup "dev.ftb.mods"
-            }
-        }
-
-        maven {
-            url "https://maven.blamejared.com"
-            content {
-                includeGroup "mezz.jei"
-            }
-        }
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 21
-    }
-
-    java {
-        withSourcesJar()
-    }
+	java {
+		withSourcesJar()
+	}
 }
 
 subprojects {
-    apply plugin: "dev.architectury.loom"
-    apply plugin: "maven-publish"
+	base {
+		archivesName = rootProject.base.archivesName.get() + (project.name != "common" ? "-" + project.name : "")
+	}
 
-    loom {
-        silentMojangMappingsLicense()
-    }
+	if (project.name != "common") {
+		dependencies {
+			api project(":common")
+		}
 
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.officialMojangMappings()
-    }
+		jar {
+			from project(":common").sourceSets.main.output
+		}
+	}
 
-    publishing {
-        repositories {
-            if (ftbPublishing.ftbToken) {
-                maven {
-                    url ftbPublishing.ftbURL
-                    credentials {
-                        username = ftbPublishing.ftbUser
-                        password = ftbPublishing.ftbToken
-                    }
-                }
-            }
-        }
-    }
+	repositories {
+		mavenCentral()
+		commonMavenRepos(repositories)
+
+		maven {
+			name "ModMaven (JEI)"
+			url "https://modmaven.dev/"
+			content {
+				includeGroup "mezz.jei"
+			}
+		}
+	}
+
+	processResources {
+		exclude '.cache'
+
+		inputs.property "version", project.version
+
+		filesMatching(["META-INF/neoforge.mods.toml", "fabric.mod.json"]) {
+			expand "version": project.version,
+					"neoforge_version_range": neoforge_version_range,
+					"neoforge_loader_version": neoforge_loader_version,
+					"minecraft_version_range_maven": minecraft_version_range_maven,
+					"minecraft_version_range_semver": minecraft_version_range_semver,
+					"fabricapi_version_range": fabric_api_version_range,
+					"ftb_library_version_range_semver": ftb_library_version_range_semver,
+					"ftb_library_version_range_maven": ftb_library_version_range_maven
+		}
+	}
+
+	createMavenPublishingBlock(project)
+}
+
+idea {
+	module {
+		downloadSources = true
+		downloadJavadoc = true
+	}
 }
 
 publishMods {
-    dryRun = providers.environmentVariable("CURSEFORGE_KEY").getOrNull() == null
-    changelog = createChangelog(project)
-    version = mod_version
+	dryRun = providers.environmentVariable("CURSEFORGE_KEY").getOrNull() == null || providers.environmentVariable("SKIP_CURSEFORGE").getOrNull() != null
+	changelog = createChangelog(project)
+	version = project.version
+	type = createReleaseType(project)
 
-    def tag = providers.environmentVariable("TAG").getOrElse("release")
-    type = tag.endsWith("-beta") ? BETA : (tag.endsWith("-alpha") ? ALPHA : STABLE)
+	def createOptions = (String projectName) -> {
+		publishOptions {
+			file = project.provider { project(":$projectName").tasks.jar }.flatMap { it.archiveFile }
+			displayName = "${readable_name} ${projectName.capitalize()} ${project.version}"
+			modLoaders.add(projectName.toLowerCase())
+		}
+	}
 
-    def createOptions = (String projectName) -> {
-        publishOptions {
-            file = project.provider { project(":$projectName").tasks.remapJar }.flatMap { it.archiveFile }
-            displayName = "[${projectName.toUpperCase()}][${minecraft_version}] ${readable_name} ${mod_version}"
-            modLoaders.add(projectName.toLowerCase())
-        }
-    }
+	def fabricOptions = createOptions("fabric")
+	def neoForgeOptions = createOptions("neoforge")
 
-    def fabricOptions = createOptions("fabric")
-    def neoForgeOptions = createOptions("neoforge")
-//	def forgeOptions = createOptions("forge")
+	def curseForgeOptions = curseforgeOptions {
+		accessToken = providers.environmentVariable("CURSEFORGE_KEY")
+		supported_minecraft_versions.split(",").each {
+			minecraftVersions.add(it.trim())
+		}
+		javaVersions.add(JavaVersion.VERSION_25)
+	}
 
-    def curseForgeOptions = curseforgeOptions {
-        accessToken = providers.environmentVariable("CURSEFORGE_KEY")
-        projectId = project.curseforge_id
-        minecraftVersions.add(rootProject.minecraft_version)
+	curseforge("curseforgeFabric") {
+		from(curseForgeOptions, fabricOptions)
+		projectId = curseforge_id
+		requires('fabric-api')
+		requires('ftb-library-fabric')
+	}
 
-        requires {
-            slug = 'architectury-api'
-        }
-    }
-
-//    curseforge("forge") {
-//        from (curseForgeOptions, forgeOptions)
-//    }
-
-    curseforge("neoforge") {
-        from (curseForgeOptions, neoForgeOptions)
-    }
-
-    curseforge("fabric") {
-        from (curseForgeOptions, fabricOptions)
-        requires {
-            slug = "fabric-api"
-        }
-    }
-
-    // TODO uncomment this one day but we need to redo how our publishing workflow happens
-//    github {
-//        repository = "ftbteam/ftb-filter-system"
-//        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-//        commitish = providers.environmentVariable("GITHUB_SHA").orElse("dryRun")
-//        tagName = providers.environmentVariable("GITHUB_REF_NAME").orElse("dryRun")
-//
-//        // Gradle doesn't like accessing the buildApi task directly so we need to use the provider
-//        file = project.provider { project(":common").tasks.buildApi }.flatMap { it.archiveFile }
-//    }
+	curseforge("curseforgeNeoForge") {
+		from(curseForgeOptions, neoForgeOptions)
+		projectId = curseforge_id
+		requires('ftb-library-forge')
+	}
 }

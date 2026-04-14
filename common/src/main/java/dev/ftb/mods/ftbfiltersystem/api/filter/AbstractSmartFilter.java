@@ -3,23 +3,28 @@ package dev.ftb.mods.ftbfiltersystem.api.filter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-/**
- * Base class for all non-compound smart filters.
- */
+import java.util.Objects;
+
+/// Base class for all non-compound smart filters.
 public abstract class AbstractSmartFilter implements SmartFilter {
-    private final SmartFilter.Compound parent;
+    private final SmartFilter.@Nullable Compound parent;
+    @Nullable
     private Component displayName = null;
 
-    protected AbstractSmartFilter(@Nullable SmartFilter.Compound parent) {
+    protected AbstractSmartFilter(SmartFilter.@Nullable Compound parent) {
         this.parent = parent;
     }
 
     @Override
-    public @Nullable SmartFilter.Compound getParent() {
+    public SmartFilter.@Nullable Compound getParent() {
         return parent;
+    }
+
+    @Override
+    public SmartFilter.Compound requireParent() {
+        return Objects.requireNonNull(parent);
     }
 
     @Override
@@ -30,12 +35,10 @@ public abstract class AbstractSmartFilter implements SmartFilter {
         return displayName;
     }
 
-    @NotNull
     public static MutableComponent getDisplayName(Identifier id) {
         return Component.translatable("filter." + id.toString().replace(':', '.') + ".name");
     }
 
-    @NotNull
     public static MutableComponent getTooltip(Identifier id) {
         return Component.translatable("filter." + id.toString().replace(':', '.') + ".tooltip");
     }
