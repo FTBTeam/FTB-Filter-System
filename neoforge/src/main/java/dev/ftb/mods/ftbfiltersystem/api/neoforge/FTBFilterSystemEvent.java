@@ -28,7 +28,7 @@ public class FTBFilterSystemEvent {
         }
 
         public Outcome getOutcome() {
-            return null;
+            return outcome;
         }
     }
 }
