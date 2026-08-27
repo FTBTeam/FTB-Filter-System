@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Added some glob/regex functionality to the item, item tag, and mod filters (thanks @Furglitch)
   * Not available via the GUI, but can be set via CLI, e.g.: `/ftbfiltersystem set_filter item(minecraft:iron_*)`
-  * Glob strings must contain a '*' or '?' character and are implictly anchor to start and of text being testd
+  * Glob strings must contain a '*' or '?' character and are implictly anchored to start and of text being testd
   * Full regex strings must start and end with a '/' character, e.g. `/ftbfiltersystem set_filter item(/:iron_/)`
+
+### Fixed
+* Fixed Custom Filter not allow "/" characters in the "Extra Data" string
 
 ## [21.1.4]
 
