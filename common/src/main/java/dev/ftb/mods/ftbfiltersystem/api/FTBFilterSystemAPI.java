@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +23,16 @@ public class FTBFilterSystemAPI {
 
     public static final String MOD_ID = "ftbfiltersystem";
 
+    @Nullable
     private static API instance;
+
+    @Nullable
     private static FTBFilterSystemClientAPI clientInstance;
 
     /// Retrieve the public API instance.
     ///
     /// @return the API handler
     /// @throws NullPointerException if called before initialised
-    @NotNull
     public static FTBFilterSystemAPI.API api() {
         return Objects.requireNonNull(instance);
     }
@@ -38,7 +41,6 @@ public class FTBFilterSystemAPI {
     ///
     /// @return the API handler
     /// @throws NullPointerException if called before initialised
-    @NotNull
     public static FTBFilterSystemClientAPI clientApi() {
         return Objects.requireNonNull(clientInstance);
     }
@@ -134,7 +136,7 @@ public class FTBFilterSystemAPI {
         /// @param parent the compound filter parent for the new filter
         /// @param filterId the filter type ID
         /// @return a new filter of the given type, appended to the given parent, or `Optional.empty()` if the ID is unknown
-        Optional<SmartFilter> createDefaultFilter(@NotNull SmartFilter.Compound parent, Identifier filterId);
+        Optional<SmartFilter> createDefaultFilter(SmartFilter.Compound parent, Identifier filterId);
 
         /// Create a new filter, parsed from the given serialized string. Such strings are produced by calling
         /// [SmartFilter#asString(HolderLookup.Provider)].
@@ -163,7 +165,7 @@ public class FTBFilterSystemAPI {
         /// @param registryAccess registry access, required for parsing some filters
         /// @return a list of filters, parsed from the string data
         /// @throws FilterException if there's a problem parsing the data
-        List<SmartFilter> parseFilterList(@NotNull SmartFilter.Compound parent, String filterStr, HolderLookup.Provider registryAccess) throws FilterException;
+        List<SmartFilter> parseFilterList(SmartFilter.Compound parent, String filterStr, HolderLookup.Provider registryAccess) throws FilterException;
 
         /// Create a simple filter which just filters on a specific item tag.
         ///

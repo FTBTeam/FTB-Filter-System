@@ -5,5 +5,6 @@ import dev.ftb.mods.ftblibrary.util.NetworkHelper;
 public interface FTBFilterSystemNet {
     static void init() {
         NetworkHelper.registerC2S(SyncFilterMessage.TYPE, SyncFilterMessage.STREAM_CODEC, SyncFilterMessage::handle);
+        NetworkHelper.registerC2S(RequestFilterCreationMessage.TYPE, RequestFilterCreationMessage.STREAM_CODEC, RequestFilterCreationMessage::handle);
     }
 }

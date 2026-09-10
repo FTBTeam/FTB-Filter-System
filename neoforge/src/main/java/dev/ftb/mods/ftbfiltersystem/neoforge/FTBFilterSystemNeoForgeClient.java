@@ -10,6 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -24,6 +27,8 @@ public class FTBFilterSystemNeoForgeClient {
 
         bus.addListener(FTBFilterSystemClientEvent.RegisterClientFilter.class,
                 event -> ffsClient.registerClientFilters(event.getEventData().api()));
+
+        bus.addListener(ScreenEvent.KeyPressed.Post.class, event -> ffsClient.onKeyPressed(event.getKeyEvent()));
 
         NeoEventHelper.registerNeoEventPoster(bus, ClientFilterRegistrationEvent.Data.class, FTBFilterSystemClientEvent.RegisterClientFilter::new);
     }
