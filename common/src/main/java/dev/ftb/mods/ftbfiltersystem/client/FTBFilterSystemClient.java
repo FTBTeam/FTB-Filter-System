@@ -11,9 +11,11 @@ import dev.ftb.mods.ftbfiltersystem.api.event.client.ClientFilterRegistrationEve
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.gui.*;
 import dev.ftb.mods.ftbfiltersystem.filter.*;
+import dev.ftb.mods.ftbfiltersystem.integration.ftbquests.FTBQuestsIntegrationClient;
 import dev.ftb.mods.ftbfiltersystem.network.RequestFilterCreationMessage;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftblibrary.client.util.ClientUtils;
+import dev.ftb.mods.ftblibrary.platform.Platform;
 import dev.ftb.mods.ftblibrary.platform.client.PlatformClient;
 import dev.ftb.mods.ftblibrary.platform.client.input.KeyConflict;
 import dev.ftb.mods.ftblibrary.platform.client.input.KeyMappingConfig;
@@ -23,6 +25,7 @@ import dev.ftb.mods.ftblibrary.platform.network.Play2ServerNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -35,8 +38,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FTBFilterSystemClient implements FTBFilterSystemClientAPI {
@@ -77,6 +82,10 @@ public class FTBFilterSystemClient implements FTBFilterSystemClientAPI {
 
     public static FTBFilterSystemClient getInstance() {
         return Objects.requireNonNull(instance);
+    }
+
+    public static boolean isShiftHeld() {
+        return Minecraft.getInstance().hasShiftDown();
     }
 
     public void registerClientFilters(FTBFilterSystemClientAPI api) {
@@ -133,17 +142,27 @@ public class FTBFilterSystemClient implements FTBFilterSystemClientAPI {
     }
 
     public void onKeyPressed(KeyEvent keyEvent) {
-        var screen = Minecraft.getInstance().screen;
-
-        if ((screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen)
-                && ClientUtils.getClientPlayer().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)
-        ) {
-            if (PlatformClient.get().input().matches(KEY_GET_OR_FILTER_HOTBAR, keyEvent)) {
-                Play2ServerNetworking.send(new RequestFilterCreationMessage(true));
-            } else if (PlatformClient.get().input().matches(KEY_GET_OR_FILTER_INV, keyEvent)) {
-                Play2ServerNetworking.send(new RequestFilterCreationMessage(false));
+        ClientUtils.getOptionalClientPlayer().ifPresent(player -> {
+            var screen = Minecraft.getInstance().screen;
+            if (player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                getRelevantItemsForOrFilter(screen).ifPresent(items -> {
+                    if (PlatformClient.get().input().matches(KEY_GET_OR_FILTER_HOTBAR, keyEvent)) {
+                        Play2ServerNetworking.send(new RequestFilterCreationMessage(true, items));
+                    } else if (PlatformClient.get().input().matches(KEY_GET_OR_FILTER_INV, keyEvent)) {
+                        Play2ServerNetworking.send(new RequestFilterCreationMessage(false, items));
+                    }
+                });
             }
+        });
+    }
+
+    private Optional<List<ItemStack>> getRelevantItemsForOrFilter(@Nullable Screen screen) {
+        if (screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) {
+            return Optional.of(List.of());  // can be determined server-side, no need to send items across
+        } else if (Platform.get().isModLoaded("ftbquests")) {
+            return Optional.ofNullable(FTBQuestsIntegrationClient.getItemsFromViewQuestPanel());
         }
+        return Optional.empty();
     }
 
     //------------------------------------------------------------
