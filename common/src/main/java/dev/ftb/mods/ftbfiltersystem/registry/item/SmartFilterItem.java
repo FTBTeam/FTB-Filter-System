@@ -65,7 +65,7 @@ public class SmartFilterItem extends Item {
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext tooltipContext, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
         HolderLookup.Provider registries = tooltipContext.registries();
-        if (registries == null || !FTBFilterSystemClient.shouldShowItemTooltip()) {
+        if (registries == null || !FTBFilterSystemClient.getInstance().shouldShowItemTooltip()) {
             return;  // avoids spurious tooltips in places like FTB Quests where a filter could be a matching display item
         }
         consumer.accept(Component.translatable("item.ftbfiltersystem.smart_filter.tooltip.1").withStyle(ChatFormatting.GRAY));

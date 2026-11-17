@@ -132,20 +132,19 @@ public class FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         }
     }
 
-    public static boolean isPlayerHolding(ItemStack stack) {
+    public boolean isPlayerHolding(ItemStack stack) {
         Player player = Minecraft.getInstance().player;
         return player != null && (player.getMainHandItem() == stack || player.getOffhandItem() == stack);
     }
 
-    public static boolean shouldShowItemTooltip() {
-        return Minecraft.getInstance().screen instanceof InventoryScreen;
+    public boolean shouldShowItemTooltip() {
+        return isInventoryScreen(Minecraft.getInstance().screen);
     }
 
     public void onKeyPressed(KeyEvent keyEvent) {
         ClientUtils.getOptionalClientPlayer().ifPresent(player -> {
-            var screen = Minecraft.getInstance().screen;
             if (player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
-                getRelevantItemsForOrFilter(screen).ifPresent(items -> {
+                getRelevantItemsForOrFilter().ifPresent(items -> {
                     if (PlatformClient.get().input().matches(KEY_GET_OR_FILTER_HOTBAR, keyEvent)) {
                         Play2ServerNetworking.send(new RequestFilterCreationMessage(true, items));
                     } else if (PlatformClient.get().input().matches(KEY_GET_OR_FILTER_INV, keyEvent)) {
@@ -156,13 +155,17 @@ public class FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         });
     }
 
-    private Optional<List<ItemStack>> getRelevantItemsForOrFilter(@Nullable Screen screen) {
-        if (screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen) {
+    private Optional<List<ItemStack>> getRelevantItemsForOrFilter() {
+        if (isInventoryScreen(Minecraft.getInstance().screen)) {
             return Optional.of(List.of());  // can be determined server-side, no need to send items across
         } else if (Platform.get().isModLoaded("ftbquests")) {
             return Optional.ofNullable(FTBQuestsIntegrationClient.getItemsFromViewQuestPanel());
         }
         return Optional.empty();
+    }
+
+    private static boolean isInventoryScreen(@Nullable Screen screen) {
+        return screen instanceof InventoryScreen || screen instanceof CreativeModeInventoryScreen;
     }
 
     //------------------------------------------------------------

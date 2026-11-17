@@ -53,7 +53,7 @@ public class ExpressionConfigScreen extends AbstractItemEditorConfigScreen<Expre
 
     @Override
     protected Predicate<ItemStack> inventoryChecker() {
-        return stack -> FTBFilterSystemAPI.api().isFilterItem(stack) && !FTBFilterSystemClient.isPlayerHolding(stack);
+        return stack -> FTBFilterSystemAPI.api().isFilterItem(stack) && !FTBFilterSystemClient.getInstance().isPlayerHolding(stack);
     }
 
     @Override
