@@ -19,7 +19,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.item.ItemStack;
 
@@ -80,14 +79,7 @@ public class FilterSystemCommands {
         try {
             SmartFilter parsed = FilterParser.parse(string, source.registryAccess());
             for (DumpedFilter entry :  FTBFilterSystemAPI.api().dump(parsed)) {
-                source.sendSuccess(() -> {
-                            MutableComponent txt = entry.filter().getDisplayName().copy().withStyle(ChatFormatting.AQUA);
-                            if (!(entry.filter() instanceof SmartFilter.Compound)) {
-                                txt.append(" ").append(entry.filter().getDisplayArg(source.registryAccess()).copy().withStyle(ChatFormatting.YELLOW));
-                            }
-                            return Component.literal(makeDumpPrefix(entry.indent())).withStyle(ChatFormatting.YELLOW).append(txt);
-                        },
-                        false);
+                source.sendSuccess(() -> entry.display(source.registryAccess()), false);
             }
         } catch (FilterException e) {
             throw PARSE_FAILED.create(e.getMessage());
@@ -190,11 +182,5 @@ public class FilterSystemCommands {
         } else {
             throw NOT_A_FILTER.create();
         }
-    }
-
-    private static String makeDumpPrefix(int indent) {
-        if (indent == 0) return "";
-        String s1 = "┃ ".repeat(indent - 1);
-        return s1 + "┣━";
     }
 }

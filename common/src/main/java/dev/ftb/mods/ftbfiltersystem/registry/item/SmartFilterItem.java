@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.ftb.mods.ftbfiltersystem.FilterSystemCommands;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
+import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
 import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
@@ -63,10 +64,23 @@ public class SmartFilterItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext tooltipContext, TooltipDisplay tooltipDisplay, Consumer<Component> consumer, TooltipFlag tooltipFlag) {
-        if (tooltipContext.registries() == null || !FTBFilterSystemClient.shouldShowItemTooltip()) {
+        HolderLookup.Provider registries = tooltipContext.registries();
+        if (registries == null || !FTBFilterSystemClient.shouldShowItemTooltip()) {
             return;  // avoids spurious tooltips in places like FTB Quests where a filter could be a matching display item
         }
         consumer.accept(Component.translatable("item.ftbfiltersystem.smart_filter.tooltip.1").withStyle(ChatFormatting.GRAY));
         consumer.accept(Component.translatable("item.ftbfiltersystem.smart_filter.tooltip.2").withStyle(ChatFormatting.GRAY));
+
+        String filterStr = itemStack.get(ModDataComponents.FILTER_STRING.get());
+        if (filterStr != null) {
+            if (FTBFilterSystemClient.isShiftHeld()) {
+                SmartFilter parsed = FilterParser.parse(filterStr, registries);
+                for (DumpedFilter entry : FTBFilterSystemAPI.api().dump(parsed)) {
+                    consumer.accept(entry.display(registries));
+                }
+            } else {
+                consumer.accept(Component.translatable("ftbfiltersystem.message.hold_shift").withStyle(ChatFormatting.DARK_AQUA));
+            }
+        }
     }
 }

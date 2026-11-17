@@ -36,6 +36,7 @@ public class FFSUtil {
                 .filter(s -> !s.isEmpty() && !FTBFilterSystemAPI.api().isFilterItem(s))
                 .toList();
         var str = actualItems.stream().map(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).toString())
+                .sorted()
                 .map(s -> ItemFilter.ID + "(" + s + ")")
                 .collect(Collectors.joining(" "));
 
