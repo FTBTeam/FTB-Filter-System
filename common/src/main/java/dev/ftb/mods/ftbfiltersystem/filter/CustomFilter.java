@@ -49,7 +49,7 @@ public class CustomFilter extends AbstractSmartFilter {
     }
 
     public static CustomFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
-        String[] parts = str.split("/");
+        String[] parts = str.split("/", 2);
 
         return new CustomFilter(parent, parts[0], parts.length > 1 ? parts[1] : "");
     }

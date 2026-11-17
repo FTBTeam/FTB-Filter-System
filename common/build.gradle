@@ -14,10 +14,11 @@ dependencies {
 	compileOnly "net.fabricmc:sponge-mixin:0.17.0+mixin.0.8.7"
 	compileOnly "io.github.llamalad7:mixinextras-fabric:0.5.0"
 
+	compileOnly("dev.ftb.mods:ftb-library:${rootProject.ftb_library_version}")
+	compileOnly("dev.ftb.mods:ftb-quests:${rootProject.ftb_quests_version}")
+
 	compileOnly("mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}")
 	compileOnly("mezz.jei:jei-${project.minecraft_version}-common:${project.jei_version}")
-
-	compileOnly("dev.ftb.mods:ftb-library:${rootProject.ftb_library_version}")
 }
 
 test {
