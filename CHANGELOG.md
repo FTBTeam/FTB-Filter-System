@@ -9,11 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Added some glob/regex functionality to the item, item tag, and mod filters (thanks @Furglitch)
   * Not available via the GUI, but can be set via CLI, e.g.: `/ftbfiltersystem set_filter item(minecraft:iron_*)`
-  * Glob strings must contain a '*' or '?' character and are implictly anchored to start and of text being testd
+  * Glob strings must contain a '*' or '?' character and are implictly anchored to start and of text being tested
   * Full regex strings must start and end with a '/' character, e.g. `/ftbfiltersystem set_filter item(/:iron_/)`
+* Added ability to auto-create an OR (Any Of) filter while your inventory (or creative inventory) screen is open
+  * Added GUI hotkey (default "Keypad +") to create an OR filter from items on your hotbar
+  * Added GUI hotkey (default "Shift - Keypad +") to create an OR filter from all items in your inventory
+* In addition, if FTB Quests is present, and you are currently viewing a quest, the same hotkeys create an OR filter from the viewed item tasks
+* Item Filter tooltip now displays the full filter tree if you hold Shift while viewing it
 
 ### Fixed
-* Fixed Custom Filter not allow "/" characters in the "Extra Data" string
+* Fixed Custom Filter not allowing "/" characters in the "Extra Data" string
 
 ## [21.1.4]
 
