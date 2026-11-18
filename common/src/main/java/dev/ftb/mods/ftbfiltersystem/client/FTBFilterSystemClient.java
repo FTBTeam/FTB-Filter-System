@@ -68,6 +68,10 @@ public enum FTBFilterSystemClient implements FTBFilterSystemClientAPI {
         return Objects.requireNonNull(Minecraft.getInstance().level).registryAccess();
     }
 
+    public static boolean isShiftHeld() {
+        return Screen.hasShiftDown();
+    }
+
     public void init() {
         FTBFilterSystemAPI._initClient(this);
 
