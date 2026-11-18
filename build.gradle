@@ -1,9 +1,9 @@
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
-    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
+    id "architectury-plugin" version "3.5-SNAPSHOT"
+    id "dev.architectury.loom" version "1.17-SNAPSHOT" apply false
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 }
 
 apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/changelog.gradle'
@@ -12,23 +12,39 @@ architectury {
     minecraft = rootProject.minecraft_version
 }
 
+subprojects {
+    apply plugin: "dev.architectury.loom"
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        mappings loom.officialMojangMappings()
+    }
+}
+
 allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
     apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/git-md-changelog.gradle"
 
+    version = project.mod_version
+    group = project.maven_group
+
     base {
         archivesName = project.archives_base_name
     }
 
-    version = project.mod_version
-    group = project.maven_group
-    archivesBaseName = project.archives_base_name
-
     // needs to be done AFTER version is set
     apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"
-//    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
+
+    compileJava {
+        options.encoding = "UTF-8"
+        options.release = 21
+    }
 
     repositories {
         mavenLocal()
@@ -58,27 +74,8 @@ allprojects {
         }
     }
 
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 21
-    }
-
     java {
         withSourcesJar()
-    }
-}
-
-subprojects {
-    apply plugin: "dev.architectury.loom"
-    apply plugin: "maven-publish"
-
-    loom {
-        silentMojangMappingsLicense()
-    }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.officialMojangMappings()
     }
 
     publishing {
@@ -124,6 +121,8 @@ publishMods {
         requires {
             slug = 'architectury-api'
         }
+        client = true
+        server = true
     }
 
 //    curseforge("forge") {
