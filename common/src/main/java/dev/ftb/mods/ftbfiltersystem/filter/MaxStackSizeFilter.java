@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +29,7 @@ public class MaxStackSizeFilter extends AbstractComparisonFilter {
         return stack.getMaxStackSize();
     }
 
-    public static MaxStackSizeFilter fromString(SmartFilter.Compound parent, String str) {
+    public static MaxStackSizeFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         return new MaxStackSizeFilter(parent, NumericComparison.fromString(str, false));
     }
 }

@@ -1,54 +1,19 @@
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
-    id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+    id "architectury-plugin" version "3.5-SNAPSHOT"
+    id "dev.architectury.loom" version "1.17-SNAPSHOT" apply false
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 }
+
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/changelog.gradle'
 
 architectury {
     minecraft = rootProject.minecraft_version
 }
 
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/git-md-changelog.gradle"
-
-    base {
-        archivesName = project.archives_base_name
-    }
-
-    version = project.mod_version
-    group = project.maven_group
-    archivesBaseName = project.archives_base_name
-
-    // needs to be done AFTER version is set
-    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"
-
-    repositories {
-        maven {
-            url "https://maven.blamejared.com"
-            content {
-                includeGroup "mezz.jei"
-            }
-        }
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 21
-    }
-
-    java {
-        withSourcesJar()
-    }
-}
-
 subprojects {
     apply plugin: "dev.architectury.loom"
-    apply plugin: "maven-publish"
 
     loom {
         silentMojangMappingsLicense()
@@ -57,6 +22,60 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         mappings loom.officialMojangMappings()
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/git-md-changelog.gradle"
+
+    version = project.mod_version
+    group = project.maven_group
+
+    base {
+        archivesName = project.archives_base_name
+    }
+
+    // needs to be done AFTER version is set
+    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/publishing.gradle"
+
+    compileJava {
+        options.encoding = "UTF-8"
+        options.release = 21
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            url "https://maven.architectury.dev/"
+        }
+
+        maven {
+            url "https://maven.ftb.dev/releases"
+            content {
+                includeGroup "dev.ftb.mods"
+            }
+        }
+
+        maven {
+            url "https://maven.ftb.dev/snapshots"
+            content {
+                includeGroup "dev.ftb.mods"
+            }
+        }
+
+        maven {
+            url "https://maven.blamejared.com"
+            content {
+                includeGroup "mezz.jei"
+            }
+        }
+    }
+
+    java {
+        withSourcesJar()
     }
 
     publishing {
@@ -70,38 +89,31 @@ subprojects {
                     }
                 }
             }
-
-            if (ftbPublishing.sapsToken) {
-                maven {
-                    url ftbPublishing.sapsURL
-                    credentials {
-                        username = ftbPublishing.sapsUser
-                        password = ftbPublishing.sapsToken
-                    }
-                }
-            }
         }
-    }
-}
-
-
-// TODO: Move this to a common location?
-Closure<ReleaseType> releaseTypeToPublishType = { type ->
-    switch(type) {
-        case "release": return ReleaseType.STABLE
-        case "beta": return ReleaseType.BETA
-        case "alpha": return ReleaseType.ALPHA
-        default: return ReleaseType.STABLE
     }
 }
 
 publishMods {
     dryRun = providers.environmentVariable("CURSEFORGE_KEY").getOrNull() == null
-    changelog = providers.environmentVariable("CHANGELOG").orElse("")
+    changelog = createChangelog(project)
     version = mod_version
-    type = releaseTypeToPublishType(ftbPublishing.relType)
 
-    def curseOptions = curseforgeOptions {
+    def tag = providers.environmentVariable("TAG").getOrElse("release")
+    type = tag.endsWith("-beta") ? BETA : (tag.endsWith("-alpha") ? ALPHA : STABLE)
+
+    def createOptions = (String projectName) -> {
+        publishOptions {
+            file = project.provider { project(":$projectName").tasks.remapJar }.flatMap { it.archiveFile }
+            displayName = "[${projectName.toUpperCase()}][${minecraft_version}] ${readable_name} ${mod_version}"
+            modLoaders.add(projectName.toLowerCase())
+        }
+    }
+
+    def fabricOptions = createOptions("fabric")
+    def neoForgeOptions = createOptions("neoforge")
+//	def forgeOptions = createOptions("forge")
+
+    def curseForgeOptions = curseforgeOptions {
         accessToken = providers.environmentVariable("CURSEFORGE_KEY")
         projectId = project.curseforge_id
         minecraftVersions.add(rootProject.minecraft_version)
@@ -109,34 +121,26 @@ publishMods {
         requires {
             slug = 'architectury-api'
         }
+        client = true
+        server = true
     }
 
 //    curseforge("forge") {
-//        from curseOptions
-//        modLoaders.add("forge")
-//        file = project(":forge").tasks.remapJar.archiveFile
-//        displayName = "[FORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
+//        from (curseForgeOptions, forgeOptions)
 //    }
 
     curseforge("neoforge") {
-        from curseOptions
-        modLoaders.add("neoforge")
-        file = project(":neoforge").tasks.remapJar.archiveFile
-        displayName = "[NEOFORGE] FTB Filter System ${mod_version} MC ${minecraft_version}"
+        from (curseForgeOptions, neoForgeOptions)
     }
 
     curseforge("fabric") {
-        from curseOptions
-        modLoaders.add("fabric")
-        file = project(":fabric").tasks.remapJar.archiveFile
-        displayName = "[FABRIC] FTB Filter System ${mod_version} MC ${minecraft_version}"
-
+        from (curseForgeOptions, fabricOptions)
         requires {
             slug = "fabric-api"
         }
     }
 
-    // TODO uncomment this one day but will need to redo how our publishing workflow happens
+    // TODO uncomment this one day but we need to redo how our publishing workflow happens
 //    github {
 //        repository = "ftbteam/ftb-filter-system"
 //        accessToken = providers.environmentVariable("GITHUB_TOKEN")

@@ -7,6 +7,7 @@ license = "All Rights Reserved"
 modId = "ftbfiltersystem"
 version = "${version}"
 displayName = "FTB Filter System"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/ftb-filter-system"
 authors = "FTB Team"
 description = '''
 Smart and highly configurable item filtering system with useful GUI configuration
@@ -16,7 +17,7 @@ Smart and highly configurable item filtering system with useful GUI configuratio
 [[dependencies.ftbfiltersystem]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${neoforgeversion},)"
+versionRange = "${neoforgeversionrange}"
 ordering = "NONE"
 side = "BOTH"
 
@@ -32,4 +33,24 @@ modId = "architectury"
 type = "required"
 versionRange = "[${archversion},)"
 ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "ftblibrary"
+type = "required"
+versionRange = "[${ftblibraryversion},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.5.0.40,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ftbfiltersystem]]
+modId = "ftbxmodcompat"
+type = "optional"
+versionRange = "[21.1.7,)"
 side = "BOTH"

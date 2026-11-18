@@ -7,6 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 public interface FTBFilterSystemNet {
     static void init() {
         NetworkManager.registerReceiver(NetworkManager.c2s(), SyncFilterMessage.TYPE, SyncFilterMessage.STREAM_CODEC, SyncFilterMessage::handle);
+        NetworkManager.registerReceiver(NetworkManager.c2s(), RequestFilterCreationMessage.TYPE, RequestFilterCreationMessage.STREAM_CODEC, RequestFilterCreationMessage::handle);
     }
 
     static <B extends FriendlyByteBuf, V extends Enum<V>> StreamCodec<B, V> enumCodec(Class<V> enumClass) {

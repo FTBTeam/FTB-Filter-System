@@ -31,7 +31,7 @@ public record SyncFilterMessage(String filterStr, Optional<String> newTitle, Int
         ItemStack stack = context.getPlayer().getItemInHand(message.hand);
         if (stack.getItem() instanceof SmartFilterItem) {
             try {
-                SmartFilterItem.setFilter(stack, FilterParser.parse(message.filterStr).toString());
+                SmartFilterItem.setFilter(stack, FilterParser.parse(message.filterStr, context.registryAccess()).asString(context.registryAccess()));
                 message.newTitle.ifPresent(title -> {
                     if (title.isEmpty()) {
                         stack.remove(DataComponents.CUSTOM_NAME);

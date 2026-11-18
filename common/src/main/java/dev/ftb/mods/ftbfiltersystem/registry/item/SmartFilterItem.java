@@ -2,13 +2,16 @@ package dev.ftb.mods.ftbfiltersystem.registry.item;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.ftb.mods.ftbfiltersystem.FilterSystemCommands;
+import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
+import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.client.FTBFilterSystemClient;
 import dev.ftb.mods.ftbfiltersystem.registry.ModDataComponents;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -33,8 +36,10 @@ public class SmartFilterItem extends Item {
     }
 
     @NotNull
-    public static SmartFilter getFilter(ItemStack filterStack) throws FilterException {
-        return FilterParser.parse(getFilterString(filterStack));
+    public static SmartFilter getFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException {
+        // don't pull from cache here; we could be editing this filter,
+        //   and don't want to edit something in the cache already
+        return FilterParser.parseRaw(getFilterString(filterStack), registryAccess);
     }
 
     public static void setFilter(ItemStack filterStack, String string) {
@@ -58,10 +63,23 @@ public class SmartFilterItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> list, TooltipFlag tooltipFlag) {
-        if (context.registries() == null || !FTBFilterSystemClient.shouldShowItemTooltip()) {
+        HolderLookup.Provider registries = context.registries();
+        if (registries == null || !FTBFilterSystemClient.shouldShowItemTooltip()) {
             return;  // avoids spurious tooltips in places like FTB Quests where a filter could be a matching display item
         }
         list.add(Component.translatable("item.ftbfiltersystem.smart_filter.tooltip.1").withStyle(ChatFormatting.GRAY));
         list.add(Component.translatable("item.ftbfiltersystem.smart_filter.tooltip.2").withStyle(ChatFormatting.GRAY));
+
+        String filterStr = itemStack.get(ModDataComponents.FILTER_STRING.get());
+        if (filterStr != null) {
+            if (FTBFilterSystemClient.isShiftHeld()) {
+                SmartFilter parsed = FilterParser.parse(filterStr, registries);
+                for (DumpedFilter entry : FTBFilterSystemAPI.api().dump(parsed)) {
+                    list.add(entry.display(registries));
+                }
+            } else {
+                list.add(Component.translatable("ftbfiltersystem.message.hold_shift").withStyle(ChatFormatting.DARK_AQUA));
+            }
+        }
     }
 }

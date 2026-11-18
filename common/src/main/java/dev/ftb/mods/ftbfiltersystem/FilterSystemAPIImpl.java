@@ -10,6 +10,7 @@ import dev.ftb.mods.ftbfiltersystem.registry.FilterRegistry;
 import dev.ftb.mods.ftbfiltersystem.registry.ModItems;
 import dev.ftb.mods.ftbfiltersystem.registry.item.SmartFilterItem;
 import dev.ftb.mods.ftbfiltersystem.util.FilterParser;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -25,7 +26,7 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
 
     @Override
     public FTBFilterSystemRegistry getRegistry() {
-        return FilterRegistry.INSTANCE;
+        return FilterRegistry.getInstance();
     }
 
     @Override
@@ -39,10 +40,10 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
     }
 
     @Override
-    public boolean doesFilterMatch(ItemStack filterStack, ItemStack toMatch) {
+    public boolean doesFilterMatch(ItemStack filterStack, ItemStack toMatch, HolderLookup.Provider registryAccess) {
         try {
             return isFilterItem(filterStack)
-                    && FilterParser.parse(SmartFilterItem.getFilterString(filterStack)).test(toMatch);
+                    && FilterParser.parse(SmartFilterItem.getFilterString(filterStack), registryAccess).test(toMatch);
         } catch (FilterException e) {
             return false;
         }
@@ -55,22 +56,22 @@ public enum FilterSystemAPIImpl implements FTBFilterSystemAPI.API {
 
     @Override
     public Optional<SmartFilter> createDefaultFilter(SmartFilter.Compound parent, ResourceLocation filterId) {
-        return FilterRegistry.INSTANCE.createDefaultFilter(parent, filterId);
+        return FilterRegistry.getInstance().createDefaultFilter(parent, filterId);
     }
 
     @Override
-    public SmartFilter parseFilter(String filterStr) throws FilterException {
-        return FilterParser.parse(filterStr);
+    public SmartFilter parseFilter(String filterStr, HolderLookup.Provider registryAccess) throws FilterException {
+        return FilterParser.parse(filterStr, registryAccess);
     }
 
     @Override
-    public SmartFilter parseFilter(ItemStack filterStack) throws FilterException {
-        return parseFilter(SmartFilterItem.getFilterString(filterStack));
+    public SmartFilter parseFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException {
+        return parseFilter(SmartFilterItem.getFilterString(filterStack), registryAccess);
     }
 
     @Override
-    public List<SmartFilter> parseFilterList(SmartFilter.Compound parent, String filterStr) throws FilterException {
-        return FilterParser.parseFilterList(parent, filterStr);
+    public List<SmartFilter> parseFilterList(SmartFilter.Compound parent, String filterStr, HolderLookup.Provider registryAccess) throws FilterException {
+        return FilterParser.parseFilterList(parent, filterStr, registryAccess);
     }
 
     @Override

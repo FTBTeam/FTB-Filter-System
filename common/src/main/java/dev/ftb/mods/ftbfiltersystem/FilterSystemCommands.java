@@ -77,15 +77,12 @@ public class FilterSystemCommands {
 
     private static int tryParseCommand(CommandSourceStack source, String string) throws CommandSyntaxException {
         try {
-            SmartFilter parsed = FilterParser.parse(string);
-            if (parsed == null) {
-                throw new FilterException("can't parse: " + string);
-            }
+            SmartFilter parsed = FilterParser.parse(string, source.registryAccess());
             for (DumpedFilter entry :  FTBFilterSystemAPI.api().dump(parsed)) {
                 source.sendSuccess(() -> {
                             MutableComponent txt = entry.filter().getDisplayName().copy().withStyle(ChatFormatting.AQUA);
                             if (!(entry.filter() instanceof SmartFilter.Compound)) {
-                                txt.append(" ").append(entry.filter().getDisplayArg().copy().withStyle(ChatFormatting.YELLOW));
+                                txt.append(" ").append(entry.filter().getDisplayArg(source.registryAccess()).copy().withStyle(ChatFormatting.YELLOW));
                             }
                             return Component.literal(makeDumpPrefix(entry.indent())).withStyle(ChatFormatting.YELLOW).append(txt);
                         },
@@ -112,8 +109,8 @@ public class FilterSystemCommands {
 
     private static int trySetFilter(CommandSourceStack source, String string) throws CommandSyntaxException {
         try {
-            SmartFilter parsed = FilterParser.parse(string);
-            SmartFilterItem.setFilter(getHeldFilter(source), parsed.toString());
+            SmartFilter parsed = FilterParser.parse(string, source.registryAccess());
+            SmartFilterItem.setFilter(getHeldFilter(source), parsed.asString(source.registryAccess()));
             return 1;
         } catch (FilterException e) {
             source.sendFailure(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
@@ -128,7 +125,7 @@ public class FilterSystemCommands {
         }
 
         try {
-            SmartFilter filter = FilterParser.parse(SmartFilterItem.getFilterString(getHeldFilter(source)));
+            SmartFilter filter = FilterParser.parse(SmartFilterItem.getFilterString(getHeldFilter(source)), source.registryAccess());
             if (filter.test(offhandItem)) {
                 source.sendSuccess(() -> TICK_MARK.copy().append(Component.translatable("ftbfiltersystem.message.matched", offhandItem.getDisplayName())), false);
                 return 1;

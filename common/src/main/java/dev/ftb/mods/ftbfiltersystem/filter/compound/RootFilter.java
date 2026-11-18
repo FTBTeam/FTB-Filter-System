@@ -1,13 +1,15 @@
 package dev.ftb.mods.ftbfiltersystem.filter.compound;
 
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 
 /**
  * Special root-level filter which isn't registered, so can't be created via parsing, but is implicitly created
- * as the top-level filter in any filter tree built by {@link dev.ftb.mods.ftbfiltersystem.util.FilterParser#parse(String)}
+ * as the top-level filter in any filter tree built by
+ * {@link dev.ftb.mods.ftbfiltersystem.util.FilterParser#parse(String,HolderLookup.Provider)}
  * It acts otherwise just like an AND filter.
  */
 public class RootFilter extends AndFilter {
@@ -23,7 +25,8 @@ public class RootFilter extends AndFilter {
     }
 
     @Override
-    public String toString() {
-        return getStringArg();
+    public String asString(HolderLookup.Provider registryAccess) {
+        // root filter stringifies as just its arguments (it doesn't have a registered ID)
+        return getStringArg(registryAccess);
     }
 }

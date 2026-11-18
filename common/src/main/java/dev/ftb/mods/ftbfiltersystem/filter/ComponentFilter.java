@@ -1,11 +1,13 @@
 package dev.ftb.mods.ftbfiltersystem.filter;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.ftb.mods.ftbfiltersystem.FTBFilterSystem;
 import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.FilterException;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractSmartFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
 import dev.ftb.mods.ftbfiltersystem.util.PlatformUtil;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -37,6 +39,10 @@ public class ComponentFilter extends AbstractSmartFilter {
         return fuzzy ? "fuzzy:" : "strict:";
     }
 
+    public String getStringArgWithoutPrefix(HolderLookup.Provider registryAccess) {
+        return getStringArg(registryAccess).replaceAll("(fuzzy|strict):", "");
+    }
+
     @Override
     public ResourceLocation getId() {
         return ID;
@@ -55,11 +61,12 @@ public class ComponentFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         try {
-            Tag tag = DataComponentMap.CODEC.encodeStart(NbtOps.INSTANCE, map).getOrThrow();
+            Tag tag = DataComponentMap.CODEC.encodeStart(registryAccess.createSerializationContext(NbtOps.INSTANCE), map).getOrThrow();
             return getPrefixStr(fuzzyMatch) + tag.toString();
         } catch (IllegalStateException e) {
+            FTBFilterSystem.LOGGER.error("can't encode component filter: {}", e.getMessage());
             return "";
         }
     }
@@ -72,14 +79,14 @@ public class ComponentFilter extends AbstractSmartFilter {
         return fuzzyMatch;
     }
 
-    public static ComponentFilter fromString(SmartFilter.Compound parent, String str) {
+    public static ComponentFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider registryAccess) {
         try {
             boolean fuzzy = true;
             if (str.startsWith("strict:") || str.startsWith("fuzzy:")) {
                 fuzzy = str.startsWith("fuzzy:");
                 str = str.substring(str.indexOf(':') + 1);
             }
-            DataComponentMap map = DataComponentMap.CODEC.parse(NbtOps.INSTANCE, parseNBT(str)).getOrThrow(FilterException::new);
+            DataComponentMap map = DataComponentMap.CODEC.parse(registryAccess.createSerializationContext(NbtOps.INSTANCE), parseNBT(str)).getOrThrow(FilterException::new);
             return new ComponentFilter(parent, fuzzy, map);
         } catch (CommandSyntaxException e) {
             throw new FilterException("invalid NBT tag: " + str, e);

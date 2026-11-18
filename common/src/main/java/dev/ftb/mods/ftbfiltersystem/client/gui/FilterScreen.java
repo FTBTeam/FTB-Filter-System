@@ -62,7 +62,7 @@ public class FilterScreen extends AbstractFilterScreen {
         selectionPanel = null;
 
         this.filter = filter;
-        this.origFilterStr = filter.toString();
+        this.origFilterStr = filter.asString(FTBFilterSystemClient.registryAccess());
     }
 
     @Override
@@ -141,7 +141,7 @@ public class FilterScreen extends AbstractFilterScreen {
 
     private void applyChanges() {
         NetworkManager.sendToServer(new SyncFilterMessage(
-                filter.toString(), newTitle == null ? Optional.empty() : Optional.of(newTitle.getString()), interactionHand)
+                filter.asString(FTBFilterSystemClient.registryAccess()), newTitle == null ? Optional.empty() : Optional.of(newTitle.getString()), interactionHand)
         );
 
         onClose();
@@ -154,7 +154,7 @@ public class FilterScreen extends AbstractFilterScreen {
     }
 
     private boolean changesHaveBeenMade() {
-        return !filter.toString().equals(origFilterStr) || newTitle != null;
+        return !filter.asString(FTBFilterSystemClient.registryAccess()).equals(origFilterStr) || newTitle != null;
     }
 
     private void createNewFilter(ResourceLocation filterId) {
@@ -422,12 +422,14 @@ public class FilterScreen extends AbstractFilterScreen {
         @Override
         public boolean mouseReleased(double mouseX, double mouseY, int btn) {
             if (dragging != null && dragTarget != null) {
-                FilterParser.parseFilterList(dragTarget, dragging.dumpedFilter.filter().toString()).stream().findFirst().ifPresent(newFilter -> {
-                    dragTarget.getChildren().add(newFilter);
-                    deleteSelectedFilter(false);
-                    addChildren();
-                    findAndSelect(newFilter);
-                });
+                FilterParser.parseFilterList(dragTarget, dragging.dumpedFilter.filter().asString(FTBFilterSystemClient.registryAccess()), FTBFilterSystemClient.registryAccess()).stream()
+                        .findFirst()
+                        .ifPresent(newFilter -> {
+                            dragTarget.getChildren().add(newFilter);
+                            deleteSelectedFilter(false);
+                            addChildren();
+                            findAndSelect(newFilter);
+                        });
             }
             dragging = null;
             dragTarget = null;
@@ -550,7 +552,7 @@ public class FilterScreen extends AbstractFilterScreen {
                 if (dumpedFilter.filter() instanceof SmartFilter.Compound) {
                     return disp;
                 } else {
-                    Component text = dumpedFilter.filter().getDisplayArg();
+                    Component text = dumpedFilter.filter().getDisplayArg(minecraft.level.registryAccess());
                     return disp.copy().append(" ").append(text.copy().withStyle(ChatFormatting.DARK_BLUE));
                 }
             }

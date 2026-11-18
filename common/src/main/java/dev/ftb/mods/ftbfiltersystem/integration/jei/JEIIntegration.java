@@ -24,7 +24,6 @@ public class JEIIntegration implements IModPlugin {
         registration.addGhostIngredientHandler(ItemConfigScreen.class, new FFSGhostHandler<>());
 
         registration.addGuiScreenHandler(ComponentConfigScreen.class, new FFSScreenHandler<>());
-//        registration.addGhostIngredientHandler(NBTConfigScreen.class, new FFSGhostHandler<>(ItemStack::hasTag));
         registration.addGhostIngredientHandler(ComponentConfigScreen.class, new FFSGhostHandler<>(s -> false));
 
         registration.addGuiScreenHandler(ModConfigScreen.class, new FFSScreenHandler<>());

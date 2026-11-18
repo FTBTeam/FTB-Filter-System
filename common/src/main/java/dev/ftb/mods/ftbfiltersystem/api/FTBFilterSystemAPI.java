@@ -3,18 +3,23 @@ package dev.ftb.mods.ftbfiltersystem.api;
 import dev.ftb.mods.ftbfiltersystem.api.client.FTBFilterSystemClientAPI;
 import dev.ftb.mods.ftbfiltersystem.api.filter.DumpedFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class FTBFilterSystemAPI {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FTBFilterSystemAPI.class);
+
     public static final String MOD_ID = "ftbfiltersystem";
 
     private static API instance;
@@ -49,7 +54,7 @@ public class FTBFilterSystemAPI {
      * @return a new resource location
      */
     public static ResourceLocation rl(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**
@@ -59,7 +64,17 @@ public class FTBFilterSystemAPI {
      * @return a resource location
      */
     public static ResourceLocation modDefaultedRL(String str) {
-        return str.indexOf(':') > 0 ? new ResourceLocation(str) : new ResourceLocation(FTBFilterSystemAPI.MOD_ID, str);
+        if (str.indexOf(":") > 0) {
+            var result = ResourceLocation.tryParse(str);
+            if (result == null) {
+                LOGGER.warn("Invalid resource location: {}, falling back to ftbfiltersystem:", str);
+                return rl(str);
+            }
+
+            return result;
+        }
+
+        return rl(str);
     }
 
     /**
@@ -121,11 +136,13 @@ public class FTBFilterSystemAPI {
         /**
          * Check if the given filter stack matches the given item stack
          * .
-         * @param filterStack the filter stack, which should be a FTB Filter System filter
-         * @param toMatch the item stack to test
+         *
+         * @param filterStack    the filter stack, which should be a FTB Filter System filter
+         * @param toMatch        the item stack to test
+         * @param registryAccess registry access, required for parsing some filters
          * @return true if the filter stack matches, false otherwise (the filter stack isn't a filter, or the filter NBT is bad)
          */
-        boolean doesFilterMatch(ItemStack filterStack, ItemStack toMatch);
+        boolean doesFilterMatch(ItemStack filterStack, ItemStack toMatch, HolderLookup.Provider registryAccess);
 
         /**
          * Get a list of dumped filter records representing all the subfilters found in this filter, in order. Generally
@@ -147,35 +164,38 @@ public class FTBFilterSystemAPI {
 
         /**
          * Create a new filter, parsed from the given serialized string. Such strings are produced by calling
-         * the overridden {@code toString()} on any {@link SmartFilter} implementation.
+         * {@link SmartFilter#asString(HolderLookup.Provider)}.
          *
-         * @param filterStr the string to parse
+         * @param filterStr      the string to parse
+         * @param registryAccess registry access, required for parsing some filters
          * @return a new filter
          * @throws FilterException if there's a problem parsing the data
          */
-        SmartFilter parseFilter(String filterStr) throws FilterException;
+        SmartFilter parseFilter(String filterStr, HolderLookup.Provider registryAccess) throws FilterException;
 
         /**
          * Create a new filter, parsed from the given serialized string. Such strings are produced by calling
-         * the overridden {@code toString()} on any {@link SmartFilter} implementation.
+         * {@link SmartFilter#asString(HolderLookup.Provider)}.
          *
-         * @param filterStack the itemstack, which should be a valid filter item
+         * @param filterStack    the itemstack, which should be a valid filter item
+         * @param registryAccess registry access, required for parsing some filters
          * @return a new filter
          * @throws FilterException if the item stack doesn't have valid filter NBT, or there's a problem parsing the data
          */
-        SmartFilter parseFilter(ItemStack filterStack) throws FilterException;
+        SmartFilter parseFilter(ItemStack filterStack, HolderLookup.Provider registryAccess) throws FilterException;
 
         /**
          * Create a list of new filters, parsed from the given serialized string. Such strings are produced by calling
-         * the overridden {@code toString()} method on any {@link SmartFilter} implementation; multiples of such strings
-         * can be concatenated to act as input for this method.
+         * {@link SmartFilter#asString(HolderLookup.Provider)}; multiples of such strings can be concatenated to act as
+         * input for this method.
          *
-         * @param parent the compound filter which will be the parent of all returned filters
-         * @param filterStr the string to parse
+         * @param parent         the compound filter which will be the parent of all returned filters
+         * @param filterStr      the string to parse
+         * @param registryAccess registry access, required for parsing some filters
          * @return a list of filters, parsed from the string data
          * @throws FilterException if there's a problem parsing the data
          */
-        List<SmartFilter> parseFilterList(@NotNull SmartFilter.Compound parent, String filterStr) throws FilterException;
+        List<SmartFilter> parseFilterList(@NotNull SmartFilter.Compound parent, String filterStr, HolderLookup.Provider registryAccess) throws FilterException;
 
         /**
          * Create a simple filter which just filters on a specific item tag.

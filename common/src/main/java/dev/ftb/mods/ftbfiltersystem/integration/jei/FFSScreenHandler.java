@@ -14,37 +14,37 @@ class FFSScreenHandler<T extends AbstractFilterConfigScreen<?>> implements IScre
 
     private record GuiProps(AbstractFilterConfigScreen<?> guiScreen) implements IGuiProperties {
         @Override
-        public Class<? extends Screen> getScreenClass() {
+        public Class<? extends Screen> screenClass() {
             return guiScreen.getClass();
         }
 
         @Override
-        public int getGuiLeft() {
+        public int guiLeft() {
             return guiScreen.getGuiBounds().getX();
         }
 
         @Override
-        public int getGuiTop() {
+        public int guiTop() {
             return guiScreen.getGuiBounds().getY();
         }
 
         @Override
-        public int getGuiXSize() {
+        public int guiXSize() {
             return guiScreen.getGuiBounds().getWidth();
         }
 
         @Override
-        public int getGuiYSize() {
+        public int guiYSize() {
             return guiScreen.getGuiBounds().getHeight();
         }
 
         @Override
-        public int getScreenWidth() {
+        public int screenWidth() {
             return guiScreen.width;
         }
 
         @Override
-        public int getScreenHeight() {
+        public int screenHeight() {
             return guiScreen.height;
         }
     }

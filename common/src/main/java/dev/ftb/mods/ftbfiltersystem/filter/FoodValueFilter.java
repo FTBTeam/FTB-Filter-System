@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbfiltersystem.api.FTBFilterSystemAPI;
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
 import dev.ftb.mods.ftbfiltersystem.api.filter.AbstractComparisonFilter;
 import dev.ftb.mods.ftbfiltersystem.api.filter.SmartFilter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,7 @@ public class FoodValueFilter extends AbstractComparisonFilter {
         return stack.has(DataComponents.FOOD) ? stack.get(DataComponents.FOOD).nutrition() : 0;
     }
 
-    public static FoodValueFilter fromString(SmartFilter.Compound parent, String str) {
+    public static FoodValueFilter fromString(SmartFilter.Compound parent, String str, HolderLookup.Provider ignored2) {
         return new FoodValueFilter(parent, NumericComparison.fromString(str, false));
     }
 }

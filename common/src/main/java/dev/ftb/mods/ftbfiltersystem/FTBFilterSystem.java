@@ -37,9 +37,9 @@ public class FTBFilterSystem {
         CommandRegistrationEvent.EVENT.register(FilterSystemCommands::registerCommands);
 
         FilterRegistrationEvent.REGISTER.register(this::registerBuiltinFilters);
-        ModItems.TABS.register();
-        ModItems.ITEMS.register();
         ModDataComponents.COMPONENT_TYPES.register();
+        ModItems.ITEMS.register();
+        ModItems.init();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> FTBFilterSystemClient.INSTANCE::init);
 
@@ -51,7 +51,7 @@ public class FTBFilterSystem {
     }
 
     private void serverStarted(MinecraftServer minecraftServer) {
-        FilterRegistry.INSTANCE.freeze();
+        FilterRegistry.getInstance().freeze();
     }
 
     private void registerBuiltinFilters(FTBFilterSystemRegistry reg) {

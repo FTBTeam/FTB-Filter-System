@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbfiltersystem.api.filter;
 
 import dev.ftb.mods.ftbfiltersystem.api.NumericComparison;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -39,7 +40,7 @@ public abstract class AbstractComparisonFilter extends AbstractSmartFilter {
     }
 
     @Override
-    public String getStringArg() {
+    public String getStringArg(HolderLookup.Provider registryAccess) {
         return comparison.toString();
     }
 }

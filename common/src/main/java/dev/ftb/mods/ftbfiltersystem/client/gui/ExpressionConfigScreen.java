@@ -38,7 +38,7 @@ public class ExpressionConfigScreen extends AbstractItemEditorConfigScreen<Expre
     protected @Nullable ExpressionFilter makeNewFilter() {
         try {
             String str = customEditBox.getValue().isEmpty() ? editBox.getValue() : editBox.getValue() + "/" + customEditBox.getValue();
-            return new ExpressionFilter(filter.getParent(), str);
+            return new ExpressionFilter(filter.getParent(), str, FTBFilterSystemClient.registryAccess());
         } catch (FilterException e) {
             return null;
         }
@@ -65,7 +65,7 @@ public class ExpressionConfigScreen extends AbstractItemEditorConfigScreen<Expre
             setStatus(true, Component.empty(), null);
         } else {
             try {
-                FilterParser.parse(editBox.getValue());
+                FilterParser.parse(editBox.getValue(), FTBFilterSystemClient.registryAccess());
                 setStatus(true, Component.translatable("ftbfiltersystem.gui.filter_ok"), null);
             } catch (FilterException e) {
                 setStatus(false, Component.translatable("ftbfiltersystem.gui.filter_bad"), e.getMessage());
