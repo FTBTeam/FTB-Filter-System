@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added ability to auto-create an OR (Any Of) filter while your inventory (or creative inventory) screen is open
   * Added GUI hotkey (default "Keypad +") to create an OR filter from items on your hotbar
   * Added GUI hotkey (default "Shift - Keypad +") to create an OR filter from all items in your inventory
-* In addition, if FTB Quests is present, and you are currently viewing a quest, the same hotkeys create an OR filter from the viewed item tasks
 * Item Filter tooltip now displays the full filter tree if you hold Shift while viewing it
 
 ### Fixed
